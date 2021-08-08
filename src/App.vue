@@ -1,14 +1,27 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+      <custom-navbar/>
     </div>
     <router-view/>
   </div>
 </template>
 
-<style>
+<script>
+import CustomNavbar from './components/CustomNavbar.vue'
+export default {
+  name: 'App',
+  components: {
+      CustomNavbar
+  }
+}
+
+</script>
+
+
+
+<style scoped>
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
