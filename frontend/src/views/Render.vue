@@ -1,0 +1,104 @@
+<template>
+  <canvas id="renderCanvas"></canvas>
+</template>
+
+
+<script>
+import  * as BABYLON from  "@babylonjs/core";
+import {
+    GridMaterial
+} from "@babylonjs/materials/grid";
+import 'babylonjs-materials'
+// Required side effects to populate the Create methods on the mesh class. Without this, the bundle would be smaller but the createXXX methods from mesh would not be accessible.
+import "@babylonjs/core/Meshes/meshBuilder";
+
+
+
+
+export default {
+  name: 'Render',
+  components: {
+  },
+  mounted() {
+    var canvas = document.getElementById("renderCanvas"); // 得到canvas对象的引用
+    var engine = new BABYLON.Engine(canvas, true); // 初始化 BABYLON 3D engine
+    /******* Add the create scene function ******/
+    var createScene = function () {
+      // 创建一个场景scene
+    var scene = new BABYLON.Scene(engine);
+
+          // 添加一个相机，并绑定鼠标事件
+const camera = new BABYLON.ArcRotateCamera(
+  "camera",
+   -Math.PI / 2,
+    Math.PI / 2.5, 3,
+    new BABYLON.Vector3(0, 4, 0),
+    scene
+      );
+      camera.attachControl(canvas, true);
+      // 添加一组灯光到场景
+      // eslint-disable-next-line no-unused-vars
+      var light1 = new BABYLON.HemisphericLight(
+        "light1",
+        new BABYLON.Vector3(1, 1, 0),
+        scene
+      );
+      // eslint-disable-next-line no-unused-vars
+      var light2 = new BABYLON.PointLight(
+        "light2",
+        new BABYLON.Vector3(0, 1, -1),
+        scene
+      );
+    //my code
+    // Create Container
+    let container_width=10;
+    let container_height=10;
+    let container_deepth=20; 
+    const container = BABYLON.MeshBuilder.CreateBox("box", 
+    {height: container_height,
+     width: container_width,
+      depth: container_deepth});
+    //Create the container material
+    var mat_for_container = new BABYLON.StandardMaterial("mat", scene);
+    mat_for_container.diffuseColor = BABYLON.Color3.White();
+    mat_for_container.alpha = 0.5;
+    //Attach material to the container
+    container.material=mat_for_container;
+    
+    //set the position y of container so that it can stand on the "ground"
+    container.position.y+=container_height/2;
+    // Create ground
+    var ground = BABYLON.MeshBuilder.CreateGround("ground1", {height: 100, width: 100, subdivisions: 4});
+    //Attach grid material to the ground
+    var material = new GridMaterial("grid", scene);
+    ground.material=material;
+	
+  //uncomment the following line to make eviroment rotate.
+  /* 
+	engine.runRenderLoop(function () {
+		camera.alpha += 0.004;
+	});
+  */	
+      return scene;
+    };
+    /******* End of the create scene function ******/
+    var scene = createScene(); //Call the createScene function
+    // 最后一步调用engine的runRenderLoop方案，执行scene.render()，让我们的3d场景渲染起来
+    engine.runRenderLoop(function () {
+      scene.render();
+    });
+    // 监听浏览器改变大小的事件，通过调用engine.resize()来自适应窗口大小
+    window.addEventListener("resize", function () {
+      engine.resize();
+    });
+}//end monted
+}
+</script>
+
+<style>
+#renderCanvas {
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+</style>
