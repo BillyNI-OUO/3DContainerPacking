@@ -5,6 +5,8 @@
       bg-dark
       d-flex
       justify-content-between
+      sticky-top
+      p-3
     "
   >
     <router-link class="navbar-brand" to="/">3D-Bin Packing</router-link> |

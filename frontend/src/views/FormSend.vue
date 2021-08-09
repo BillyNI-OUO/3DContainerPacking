@@ -13,7 +13,7 @@
         <create-boxes/>
       </a-tab-pane>
       <!--end of tap pane 2-->
-      <a-tab-pane key="3" tab="Comfirm the informaiton"> Tab 3 </a-tab-pane>
+      <a-tab-pane key="3" tab="Comfirm the informaiton"> Confirminformation</a-tab-pane>
     </a-tabs>
   </div>
   <!--end root element -->
