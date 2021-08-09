@@ -1,33 +1,36 @@
 <template>
-<div><!--root div -->
-  <div class="container ">
-      <button class="btn btn-success mt-5 mb-5 float-start">
-          New Employee
-    </button>
+  <div>
+    <!--root div -->
+    <!--Begin of ant tap-->
+    <a-tabs default-active-key="1" tab-position="left" size="large" >
+      <a-tab-pane key="1" tab="Create containers" >
+        <!--Tap 1 shows new create container-->
+        <create-container/>
+       </a-tab-pane>
+       <!--end tap pane 1-->
+      <!--Tap 2 shows new create box-->
+      <a-tab-pane key="2" tab="Create boxes">
+        <create-boxes/>
+      </a-tab-pane>
+      <!--end of tap pane 2-->
+      <a-tab-pane key="3" tab="Comfirm the informaiton"> Tab 3 </a-tab-pane>
+    </a-tabs>
   </div>
-  <div class="d-flex justify-content-center "><!--card container make element in center-->
-  <div class="card">
-      <div class="card-body ">
-          <span class="float-end" style="cursor:pointer">
-              x
-          </span>
-          <h4 class="card-title">Add employee </h4>
-          <div class="employee-form">
-              <input type="text" class="form-control mb-2" placeholder="Name">
-              <input type="text" class="form-control mb-2" placeholder="Job">
-              <textarea cols="30" rows="10"></textarea>
-          </div>
-      </div><!-- end card body-->
-  </div><!-- end card  -->
-  </div><!--end card container-->
-</div><!--end root element -->
+  <!--end root element -->
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-      }
-    }
-  }
+import CreateBoxes from '../components/CreateBoxes.vue';
+import CreateContainer from '../components/CreateContainer.vue';
+
+export default {
+  components:{
+    CreateContainer,
+    CreateBoxes
+  },
+  data() {
+    return {};
+  },
+};
 </script>
+

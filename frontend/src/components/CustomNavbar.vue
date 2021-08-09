@@ -47,7 +47,7 @@
       </form>
     </div>
   </nav>
-</template>>
+</template>
 <script>
 
 export default {
