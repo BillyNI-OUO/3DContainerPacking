@@ -26,6 +26,8 @@ export default {
     var createScene = function () {
       // 创建一个场景scene
     var scene = new BABYLON.Scene(engine);
+    //debuging mode
+    scene.debugLayer.show();
 
           // 添加一个相机，并绑定鼠标事件
 const camera = new BABYLON.ArcRotateCamera(
@@ -115,8 +117,34 @@ const camera = new BABYLON.ArcRotateCamera(
       boxes_array[iter].position.x+=box1_width*(iter+1)+initial_x_position;
     }//end for loop
 
-    // Create ground
+
+//=======================================================
+//Sky box test
+//=======================================================
+	var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:1000.0}, scene);
+	var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+	skyboxMaterial.backFaceCulling = false;
+	skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("https://upload.wikimedia.org/wikipedia/commons/8/87/Alaskan_Malamute%2BBlank.png", scene);
+	skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+	skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+	skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+	skybox.material = skyboxMaterial;	
+    
+  container.material=skyboxMaterial;
+    
+  //another texture test
+  var mat = new BABYLON.StandardMaterial("dog", scene);
+  mat.diffuseTexture = new BABYLON.Texture("https://upload.wikimedia.org/wikipedia/commons/8/87/Alaskan_Malamute%2BBlank.png", scene);
+  mat.diffuseTexture.hasAlpha = true;
+  mat.backFaceCulling = false;
+  var box = BABYLON.MeshBuilder.CreateBox("box", {}, scene);
+  box.material = mat;
+
+
+    
+    // Create my custom ground
     var ground = BABYLON.MeshBuilder.CreateGround("ground1", {height: 100, width: 100, subdivisions: 4});
+
     //Attach grid material to the ground
     var material = new GridMaterial("grid", scene);
     ground.material=material;
