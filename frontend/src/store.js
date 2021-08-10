@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 
 Vue.use(Vuex);
 
+<<<<<<< refs/remotes/origin/Home
 // 定義一個新的 Vue Store
 const store = new Vuex.Store({
     state: {
@@ -20,4 +21,20 @@ const store = new Vuex.Store({
         }
     }
     })//end store
+=======
+// define new Vue Store
+const store = new Vuex.Store({
+    state: {
+      isLoading: false,
+    },
+    mutations: {
+      // setting state as parameters
+      Loaded(state) {
+        //isLoading have two state true/false 
+        state.isLoading = !state.isLoading
+      }
+    }
+
+})
+>>>>>>> add save container changes and boxes changes
 export default store;

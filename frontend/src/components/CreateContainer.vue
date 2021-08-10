@@ -7,12 +7,17 @@
     <!--Butoon to create new container-->
 
       <button 
+<<<<<<< refs/remotes/origin/Home
       class="btn btn-success m-3  "
+=======
+      class="btn btn-success m-3"
+>>>>>>> add save container changes and boxes changes
       @click="newContainer"
       >
       New container
       </button>
       <!--End new button-->
+<<<<<<< refs/remotes/origin/Home
       <!--Butoon to commit changes to store-->
 
       <button 
@@ -23,6 +28,17 @@
       </button>
       <!--End new button-->
     <div class="card  mt-3 " v-for="(container_info, index) in  container_infos" v-bind:key="index">
+=======
+     <!--Butoon to save the change-->
+      <button 
+      class="btn btn-success m-3 "
+      @click="saveContainerInfo"
+      >
+      Save the containers setting.
+      </button>
+      <!--End new button-->
+    <div class="card  " v-for="(container_info, index) in  container_infos" v-bind:key="index">
+>>>>>>> add save container changes and boxes changes
       <div class="card-body pd-3">
 
           <!--this span (on right top corner) handle the delete form method-->
@@ -151,9 +167,15 @@ export default {
       },//end newContainer
       deleteContainerInfo(index){
           this.container_infos.splice(index,1);
+<<<<<<< refs/remotes/origin/Home
       },//end deleteContainerInfo
       saveChanges(){
         this.$store.dispatch('loadContainerInfos', this.container_infos);
+=======
+      },
+      saveContainerInfo(){
+          console.log(this.container_infos);
+>>>>>>> add save container changes and boxes changes
       }
   }//end methods
 };

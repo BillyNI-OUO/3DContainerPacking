@@ -6,13 +6,21 @@
   <div class="container container-bg pb-3 mr-3 pr-3 rounded">
           <!--Butoon to create new container-->
       <button 
-      class="btn btn-success mt-3 float-md-left"
+      class="btn btn-success m-3 float-md-left"
       @click="newBox"
       >
       New Box
       </button>
       <!--End new button-->
-    <div class="card  mt-3 " v-for="(box_info, index) in  box_infos" v-bind:key="index">
+    <!--Butoon to create new container-->
+      <button 
+      class="btn btn-success m-3 float-md-left"
+      @click="saveBoxInfo"
+      >
+      Saves the boxes setting.
+      </button>
+      <!--End new button-->
+    <div class="card mt-3 " v-for="(box_info, index) in  box_infos" v-bind:key="index">
       <div class="card-body pd-3">
 
           <!--this span (on right top corner) handle the delete form method-->
@@ -140,6 +148,9 @@ export default {
       },//end newBox
       deleteBoxInfo(index){
           this.box_infos.splice(index,1);
+      },
+      saveBoxInfo(){
+          console.log(this.box_infos);
       }
   }//end methods
 };
