@@ -13,20 +13,25 @@
         <create-boxes/>
       </a-tab-pane>
       <!--end of tap pane 2-->
+      <!--Tap 3 shows the comfirmation table and send the result to backedn-->
       <a-tab-pane key="3" tab="Comfirm the informaiton"> Confirminformation</a-tab-pane>
+      <comfirm-information/>
     </a-tabs>
+          <!--end of tap pane 3-->
   </div>
   <!--end root element -->
 </template>
 
 <script>
+import ComfirmInformation from '../components/ComfirmInformation.vue';
 import CreateBoxes from '../components/CreateBoxes.vue';
 import CreateContainer from '../components/CreateContainer.vue';
 
 export default {
   components:{
     CreateContainer,
-    CreateBoxes
+    CreateBoxes,
+    ComfirmInformation
   },
   data() {
     return {};

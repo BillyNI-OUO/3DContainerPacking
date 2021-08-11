@@ -13,6 +13,11 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
 
+//vuex
+import Vuex from 'vuex'
+import store from './store.js'
+
+
 // Make BootstrapVue available throughout your project
 Vue.use(BootstrapVue);
 // Optionally install the BootstrapVue icon components plugin
@@ -20,10 +25,15 @@ Vue.use(IconsPlugin);
 // Ant Design
 Vue.use(Antd);
 
+//load vuex
+Vue.use(Vuex);
+
+
 new Vue({
   el:'#app',
   components:{App},
   template: 'App/',
   router,
+  store,
   render: h => h(App)
 }).$mount('#app')

@@ -7,10 +7,19 @@
     <!--Butoon to create new container-->
 
       <button 
-      class="btn btn-success mt-3  "
+      class="btn btn-success m-3  "
       @click="newContainer"
       >
       New container
+      </button>
+      <!--End new button-->
+      <!--Butoon to commit changes to store-->
+
+      <button 
+      class="btn btn-success m-3  "
+      @click="saveChanges"
+      >
+      Save changes
       </button>
       <!--End new button-->
     <div class="card  mt-3 " v-for="(container_info, index) in  container_infos" v-bind:key="index">
@@ -142,6 +151,9 @@ export default {
       },//end newContainer
       deleteContainerInfo(index){
           this.container_infos.splice(index,1);
+      },//end deleteContainerInfo
+      saveChanges(){
+        this.$store.dispatch('loadContainerInfos', this.container_infos);
       }
   }//end methods
 };
