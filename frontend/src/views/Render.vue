@@ -11,14 +11,29 @@ import {
 import 'babylonjs-materials'
 // Required side effects to populate the Create methods on the mesh class. Without this, the bundle would be smaller but the createXXX methods from mesh would not be accessible.
 import "@babylonjs/core/Meshes/meshBuilder";
-
-
-
+import { mapState } from "vuex";
 
 export default {
   name: 'Render',
   components: {
   },
+ 
+//container: 
+//            ID:'',
+//            X:'',
+//            Y:'',
+//            Z:'',
+//            Weight_limmit:'',
+//            Numbers:''
+
+
+  computed: mapState({
+    container_infos: (state) => state.container_infos,
+  }),
+
+
+
+
   mounted() {
     var canvas = document.getElementById("renderCanvas"); // 得到canvas对象的引用
     var engine = new BABYLON.Engine(canvas, true); // 初始化 BABYLON 3D engine

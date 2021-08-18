@@ -150,7 +150,7 @@ export default {
           this.box_infos.splice(index,1);
       },
       saveBoxInfo(){
-          console.log(this.box_infos);
+           this.$store.dispatch('loadBoxInfos', this.box_infos);
       }
   }//end methods
 };
