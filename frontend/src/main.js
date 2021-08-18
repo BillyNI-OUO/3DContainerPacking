@@ -13,17 +13,10 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
 
-<<<<<<< refs/remotes/origin/Home
 //vuex
 import Vuex from 'vuex'
 import store from './store.js'
 
-=======
-//Vuex for state management
-import Vuex from 'vuex'
-//import store.js
-import store from './store'
->>>>>>> add save container changes and boxes changes
 
 // Make BootstrapVue available throughout your project
 Vue.use(BootstrapVue);
