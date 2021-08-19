@@ -5,7 +5,9 @@
 
 <script>
 import * as BABYLON from "@babylonjs/core";
-//import * as GUI from 'babylonjs-gui';
+import {AdvancedDynamicTexture} from "@babylonjs/gui";
+import {Button} from "@babylonjs/gui";
+import Swal from 'sweetalert2'
 import { GridMaterial } from "@babylonjs/materials/grid";
 import "babylonjs-materials";
 // Required side effects to populate the Create methods on the mesh class. Without this, the bundle would be smaller but the createXXX methods from mesh would not be accessible.
@@ -185,7 +187,27 @@ export default {
       ground_material.majorUnitFrequency = 20;
       ground_material.minorUnitVisibility = 0;
       ground.material = ground_material;
+        
+        
+        // GUI
+    var advancedTexture =AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
+    var button1 = Button.CreateSimpleButton("but1", "Click Me");
+    button1.width = "150px"
+    button1.height = "40px";
+    button1.color = "white";
+    button1.cornerRadius = 20;
+    button1.background = "green";
+    button1.onPointerUpObservable.add(function() {
+Swal.fire({
+  title: 'Error!',
+  text: 'Do you want to continue',
+  icon: 'error',
+  confirmButtonText: 'Cool'
+})
+
+    });
+    advancedTexture.addControl(button1);    
       //uncomment the following line to make eviroment rotate.
       /* 
 	engine.runRenderLoop(function () {

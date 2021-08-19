@@ -18,6 +18,9 @@ import Vuex from 'vuex'
 import store from './store.js'
 
 
+//Flickity
+import Flickity from 'vue-flickity';
+
 // Make BootstrapVue available throughout your project
 Vue.use(BootstrapVue);
 // Optionally install the BootstrapVue icon components plugin
@@ -26,6 +29,7 @@ Vue.use(IconsPlugin);
 Vue.use(Antd);
 //load Vuex
 Vue.use(Vuex);
+Vue.use(Flickity);
 
 
 
