@@ -43,6 +43,7 @@ export default {
 
     //box setting
     console.log("box_infos:x" + this.box_infos[0].X);
+    console.log("box_infos:ID"+this.box_infos[0].ID)
     var box_infos = this.box_infos;
 
     var canvas = document.getElementById("renderCanvas"); // 得到canvas对象的引用
@@ -134,17 +135,24 @@ export default {
         //attach material
         boxes_array[iter].material = mat_for_boxes0;
 
-        boxes_array[iter].position.x = box_infos[0].X * (iter+1) + origin_coordinate_x-box_infos[0].X/2 ;
+        boxes_array[iter].position.x =
+          box_infos[0].X * (iter + 1) +
+          origin_coordinate_x -
+          box_infos[0].X / 2;
         boxes_array[iter].position.y += box_infos[0].Y / 2;
-        boxes_array[iter].position.z = origin_coordinate_z-box_infos[0].Z/2;
+        boxes_array[iter].position.z = origin_coordinate_z - box_infos[0].Z / 2;
 
         //register the action that,if box is clicked, alert the box ID
-         
-
-
+        boxes_array[iter].actionManager = new BABYLON.ActionManager(scene);
+        boxes_array[iter].actionManager.registerAction(
+          new BABYLON.ExecuteCodeAction(
+            BABYLON.ActionManager.OnPickUpTrigger,
+            function () {
+              alert(box_infos[0].ID + "clicked");
+            }
+          )
+        );
       } //end for loop
-
-
 
       //container.material=skyboxMaterial;
       TestRender.testTexture(scene);
