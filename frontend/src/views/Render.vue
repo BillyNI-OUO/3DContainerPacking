@@ -4,53 +4,67 @@
 
 
 <script>
-import  * as BABYLON from  "@babylonjs/core";
-import {
-    GridMaterial
-} from "@babylonjs/materials/grid";
-import 'babylonjs-materials'
+import * as BABYLON from "@babylonjs/core";
+import { GridMaterial } from "@babylonjs/materials/grid";
+import "babylonjs-materials";
 // Required side effects to populate the Create methods on the mesh class. Without this, the bundle would be smaller but the createXXX methods from mesh would not be accessible.
 import "@babylonjs/core/Meshes/meshBuilder";
 import { mapState } from "vuex";
 
+//import my render javascript functions.
+import TestRender from "@/Render_functions/TestRender";
+
 export default {
-  name: 'Render',
-  components: {
-  },
- 
-//container: 
-//            ID:'',
-//            X:'',
-//            Y:'',
-//            Z:'',
-//            Weight_limmit:'',
-//            Numbers:''
+  name: "Render",
+  components: {},
+  //container_info structure:
+  //            ID:'',
+  //            X:'',
+  //            Y:'',
+  //            Z:'',
+  //            Weight_limmit:'',
+  //            Numbers:''
 
-
+  //========================================
+  //Computed:
+  //Description: Initialize the variable
+  //========================================
   computed: mapState({
     container_infos: (state) => state.container_infos,
+    box_infos: (state) => state.box_infos,
   }),
 
-
-
-
   mounted() {
+    //*You have to initialize the value before create scene
+
+    //container setting
+    console.log("container_infos:x" + this.container_infos[0].X);
+    var container_infos = this.container_infos;
+
+    //box setting
+    console.log("box_infos:x" + this.box_infos[0].X);
+    var box_infos = this.box_infos;
+
     var canvas = document.getElementById("renderCanvas"); // 得到canvas对象的引用
     var engine = new BABYLON.Engine(canvas, true); // 初始化 BABYLON 3D engine
+
+    /*========================WARNNING======================================= */
+    //you can not asccess 'this.xxx' property after create the scene
+
     /******* Add the create scene function ******/
     var createScene = function () {
-      // 创建一个场景scene
-    var scene = new BABYLON.Scene(engine);
-    //debuging mode
-    scene.debugLayer.show();
+      //create scene
+      var scene = new BABYLON.Scene(engine);
+      //=========uncomment the following line to set debug mode=======*/
+      //scene.debugLayer.show();
 
-          // 添加一个相机，并绑定鼠标事件
-const camera = new BABYLON.ArcRotateCamera(
-  "camera",
-   -Math.PI / 2,
-    Math.PI / 2.5, 3,
-    new BABYLON.Vector3(0, 4, 0),
-    scene
+      const camera = new BABYLON.ArcRotateCamera(
+        "camera",
+        -Math.PI / 2,
+        Math.PI / 2.5,
+        3,
+        new BABYLON.Vector3(0, 4, 0),
+        scene
       );
       camera.attachControl(canvas, true);
       // 添加一组灯光到场景
@@ -66,110 +80,92 @@ const camera = new BABYLON.ArcRotateCamera(
         new BABYLON.Vector3(0, 1, -1),
         scene
       );
-    //my code
-    //================================================
-    // Create Container
-    //================================================
-    let container_width=10;
-    let container_height=10;
-    let container_deepth=20; 
-    const container = BABYLON.MeshBuilder.CreateBox("container", 
-    {height: container_height,
-     width: container_width,
-      depth: container_deepth});
-    //Create the container material
-    var mat_for_container = new BABYLON.StandardMaterial("mat", scene);
-    mat_for_container.diffuseColor = BABYLON.Color3.White();
-    mat_for_container.alpha = 0.5;
-    //Attach material to the container
-    container.material=mat_for_container;
-    
-    //set the position y of container so that it can stand on the "ground"
-    container.position.y+=container_height/2;
+      //my code
+      //================================================
+      // Create Container
+      //================================================
+      var container_width = container_infos[0].X;
 
-    //===================================================
-    //Create the box
-    //===================================================
-    let box1_width=2;
-    let box1_height=2;
-    let box1_deepth=2;
+      var container_height = container_infos[0].Y;
+      var container_deepth = container_infos[0].Z;
+      const container = BABYLON.MeshBuilder.CreateBox("container", {
+        height: container_height,
+        width: container_width,
+        depth: container_deepth,
+      });
+      //Create the container material
+      var mat_for_container = new BABYLON.StandardMaterial("mat", scene);
+      mat_for_container.diffuseColor = BABYLON.Color3.White();
+      mat_for_container.alpha = 0.3;
+      //Attach material to the container
+      container.material = mat_for_container;
 
-    const box1=BABYLON.MeshBuilder.CreateBox("box1",
-    {height: box1_height,
-    width: box1_width,
-    depth: box1_deepth}
-    );
+      //set the position y of container so that it can stand on the "ground"
+      container.position.y += container_height / 2;
 
-    //Create the box1 material
-    var mat_for_box1 = new BABYLON.StandardMaterial("matbox1", scene);
-    mat_for_box1.diffuseColor = BABYLON.Color3.Blue();
-    mat_for_box1.alpha = 0.5;
-    //Attach material to the box1
-    box1.material=mat_for_box1;
+      //===================================================
+      //Calculate the upper left corner position on x-z plane
+      //===================================================
+      var origin_coordinate_x = 0 - container_infos[0].X / 2;
+      //var origin_coordinate_y; y base on box its own height
+      var origin_coordinate_z = container_infos[0].Z / 2;
 
-    //set the position y of container so that it can stand on the "ground"
-    box1.position.y+=box1_height/2;
-    //move the position x
-    box1.position.x+=box1_width;
+      //===================================================
+      //Create the box
+      //===================================================
+      var boxes_array = [];
 
-    //====================================================
-    //Create the box1 clone
-    //====================================================
-    let boxes_array=[];
-    let number_of_boxes=5;
-    var iter;
-    let initial_x_position=2;
-    for(iter=0;iter!=number_of_boxes;iter++){
-      let box_name="box_"+iter//box_0, box_1, box_2 ...
-      console.log("box_name:"+box_name);
-      boxes_array.push(BABYLON.MeshBuilder.CreateBox(box_name,
-    {height: box1_height,
-    width: box1_width,
-    depth: box1_deepth}
-      ));
-      boxes_array[iter].material=mat_for_box1;
-      boxes_array[iter].position.y+=box1_height/2;
-      boxes_array[iter].position.x+=box1_width*(iter+1)+initial_x_position;
-    }//end for loop
+      //Create the box1 material
+      var mat_for_boxes0 = new BABYLON.StandardMaterial("matboxes0", scene);
+      mat_for_boxes0.diffuseColor = BABYLON.Color3.Blue();
+      mat_for_boxes0.alpha = 0.5;
+
+      //for loop create box
+      for (var iter = 0; iter != box_infos[0].Numbers; iter++) {
+        let box_name = "box_" + iter; //box_0, box_1, box_2 ...
+        console.log("create boxes, box_name:" + box_name);
+        boxes_array.push(
+          BABYLON.MeshBuilder.CreateBox(box_name, {
+            height: box_infos[0].X,
+            width: box_infos[0].Y,
+            depth: box_infos[0].Z,
+          })
+        );
+        //attach material
+        boxes_array[iter].material = mat_for_boxes0;
+
+        boxes_array[iter].position.x = box_infos[0].X * (iter+1) + origin_coordinate_x-box_infos[0].X/2 ;
+        boxes_array[iter].position.y += box_infos[0].Y / 2;
+        boxes_array[iter].position.z = origin_coordinate_z-box_infos[0].Z/2;
+
+        //register the action that,if box is clicked, alert the box ID
+         
 
 
-//=======================================================
-//Sky box test
-//=======================================================
-	var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:1000.0}, scene);
-	var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
-	skyboxMaterial.backFaceCulling = false;
-	skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("https://upload.wikimedia.org/wikipedia/commons/8/87/Alaskan_Malamute%2BBlank.png", scene);
-	skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-	skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
-	skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-	skybox.material = skyboxMaterial;	
-    
-  container.material=skyboxMaterial;
-    
-  //another texture test
-  var mat = new BABYLON.StandardMaterial("dog", scene);
-  mat.diffuseTexture = new BABYLON.Texture("https://upload.wikimedia.org/wikipedia/commons/8/87/Alaskan_Malamute%2BBlank.png", scene);
-  mat.diffuseTexture.hasAlpha = true;
-  mat.backFaceCulling = false;
-  var box = BABYLON.MeshBuilder.CreateBox("box", {}, scene);
-  box.material = mat;
+      } //end for loop
 
 
-    
-    // Create my custom ground
-    var ground = BABYLON.MeshBuilder.CreateGround("ground1", {height: 100, width: 100, subdivisions: 4});
 
-    //Attach grid material to the ground
-    var material = new GridMaterial("grid", scene);
-    ground.material=material;
-	
-  //uncomment the following line to make eviroment rotate.
-  /* 
+      //container.material=skyboxMaterial;
+      TestRender.testTexture(scene);
+
+      // Create my custom ground
+      var ground = BABYLON.MeshBuilder.CreateGround("ground1", {
+        height: 100,
+        width: 100,
+        subdivisions: 4,
+      });
+
+      //Attach grid material to the ground
+      var material = new GridMaterial("grid", scene);
+      ground.material = material;
+
+      //uncomment the following line to make eviroment rotate.
+      /* 
 	engine.runRenderLoop(function () {
 		camera.alpha += 0.004;
 	});
-  */	
+  */
       return scene;
     };
     /******* End of the create scene function ******/
@@ -182,8 +178,8 @@ const camera = new BABYLON.ArcRotateCamera(
     window.addEventListener("resize", function () {
       engine.resize();
     });
-}//end monted
-}
+  }, //end monted
+};
 </script>
 
 <style>

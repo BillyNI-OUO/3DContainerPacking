@@ -17,7 +17,7 @@
       class="btn btn-success m-3 float-md-left"
       @click="saveBoxInfo"
       >
-      Saves the boxes setting.
+      Save changes.
       </button>
       <!--End new button-->
     <div class="card mt-3 " v-for="(box_info, index) in  box_infos" v-bind:key="index">

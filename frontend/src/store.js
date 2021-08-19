@@ -6,8 +6,22 @@ Vue.use(Vuex);
 // 定義一個新的 Vue Store
 const store = new Vuex.Store({
     state: {
-        container_infos: [],
-        box_infos:[],
+        container_infos: [{
+            ID:'',
+            X:'',
+            Y:'',
+            Z:'',
+            Weight_limmit:'',
+            Numbers:''
+        },],
+        box_infos:[{
+            ID:'',
+            X:'',
+            Y:'',
+            Z:'',
+            Weight:'',
+            Numbers:''
+        }],
     },
     mutations: {
         // 將state設定為參數
@@ -25,6 +39,11 @@ const store = new Vuex.Store({
         loadBoxInfos:(context, box_infos)=>{
             context.commit('MUTATE_BOX_INFO', box_infos);
         },
+    },//end actions
+    getters:{
+        getContainerInfos:state=>{
+            return state.container_infos
+        }
     }
     })//end store
 export default store;
