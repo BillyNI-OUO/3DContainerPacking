@@ -15,7 +15,7 @@ const store = new Vuex.Store({
             Numbers:''
         },],
         box_infos:[{
-            ID:'',
+            TypeName:'',
             X:'',
             Y:'',
             Z:'',

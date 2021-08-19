@@ -30,8 +30,19 @@
         > X 
         </span>
 
-        <h4 class="card-title">Box ID {{index}}</h4>
+        <h4 class="card-title">Box index number {{index}}</h4>
         <div>
+          <!--Modified!, to let user can set the name of the Box. add Name option upon the original first input-->
+             <div class="input-group mb-3">
+
+            <input
+              type="text"
+              class="form-control mb-2"
+              placeholder="Name of the box type"
+              v-model="box_info.TypeName"
+            />
+            </div>
+          <!--end of Modified-->
           <!--Begin of first input form content-->
           <div class="input-group mb-3">
             <input
@@ -125,7 +136,7 @@ export default {
   data:function(){
       return{
       box_infos:[{
-          ID:'',
+          TypeName:'',
            X:'',
            Y:'',
            Z:'',
@@ -138,7 +149,7 @@ export default {
   methods:{
       newBox(){
         this.box_infos.push({
-            ID:'',
+            TypeName:'',
             X:'',
             Y:'',
             Z:'',

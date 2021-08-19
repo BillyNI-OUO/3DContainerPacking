@@ -5,6 +5,7 @@
 
 <script>
 import * as BABYLON from "@babylonjs/core";
+//import * as GUI from 'babylonjs-gui';
 import { GridMaterial } from "@babylonjs/materials/grid";
 import "babylonjs-materials";
 // Required side effects to populate the Create methods on the mesh class. Without this, the bundle would be smaller but the createXXX methods from mesh would not be accessible.
@@ -43,7 +44,7 @@ export default {
 
     //box setting
     console.log("box_infos:x" + this.box_infos[0].X);
-    console.log("box_infos:ID"+this.box_infos[0].ID)
+    console.log("box_infos:ID" + this.box_infos[0].TypeName);
     var box_infos = this.box_infos;
 
     var canvas = document.getElementById("renderCanvas"); // 得到canvas对象的引用
@@ -121,6 +122,19 @@ export default {
       mat_for_boxes0.diffuseColor = BABYLON.Color3.Blue();
       mat_for_boxes0.alpha = 0.5;
 
+
+      //define box hover actions
+          // Over/Out
+    var makeOverOut = function (mesh) {
+        mesh.actionManager.registerAction(new BABYLON.SetValueAction(BABYLON.ActionManager.OnPointerOutTrigger, mesh.material, "emissiveColor", mesh.material.emissiveColor));
+        mesh.actionManager.registerAction(new BABYLON.SetValueAction(BABYLON.ActionManager.OnPointerOverTrigger, mesh.material, "emissiveColor", BABYLON.Color3.White()));
+        //uncomment the following line to make the box size chage while clicked.
+        //mesh.actionManager.registerAction(new BABYLON.InterpolateValueAction(BABYLON.ActionManager.OnPointerOutTrigger, mesh, "scaling", new BABYLON.Vector3(1, 1, 1), 150));
+        //mesh.actionManager.registerAction(new BABYLON.InterpolateValueAction(BABYLON.ActionManager.OnPointerOverTrigger, mesh, "scaling", new BABYLON.Vector3(1.1, 1.1, 1.1), 150));
+    }
+
+
+
       //for loop create box
       for (var iter = 0; iter != box_infos[0].Numbers; iter++) {
         let box_name = "box_" + iter; //box_0, box_1, box_2 ...
@@ -143,30 +157,34 @@ export default {
         boxes_array[iter].position.z = origin_coordinate_z - box_infos[0].Z / 2;
 
         //register the action that,if box is clicked, alert the box ID
-        boxes_array[iter].actionManager = new BABYLON.ActionManager(scene);
-        boxes_array[iter].actionManager.registerAction(
-          new BABYLON.ExecuteCodeAction(
-            BABYLON.ActionManager.OnPickUpTrigger,
-            function () {
-              alert(box_infos[0].ID + "clicked");
-            }
-          )
-        );
+        boxes_array[iter].actionManager=new BABYLON.ActionManager(scene);
+
       } //end for loop
+      console.log(boxes_array)
+    
+  
+
+
+
+      //register action for all of the boxes
+      makeOverOut(boxes_array[0]);
+
 
       //container.material=skyboxMaterial;
       TestRender.testTexture(scene);
 
       // Create my custom ground
       var ground = BABYLON.MeshBuilder.CreateGround("ground1", {
-        height: 100,
-        width: 100,
+        height: 500,
+        width: 500,
         subdivisions: 4,
       });
 
       //Attach grid material to the ground
-      var material = new GridMaterial("grid", scene);
-      ground.material = material;
+      var ground_material = new GridMaterial("grid", scene);
+      ground_material.majorUnitFrequency = 20;
+      ground_material.minorUnitVisibility = 0;
+      ground.material = ground_material;
 
       //uncomment the following line to make eviroment rotate.
       /* 
