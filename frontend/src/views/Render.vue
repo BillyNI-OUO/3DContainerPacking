@@ -1,13 +1,15 @@
 <template>
+<div  class="w-100 p-3">
   <canvas id="renderCanvas"></canvas>
+</div>
 </template>
 
 
 <script>
 import * as BABYLON from "@babylonjs/core";
-import {AdvancedDynamicTexture} from "@babylonjs/gui";
-import {Button} from "@babylonjs/gui";
-import Swal from 'sweetalert2'
+//import { AdvancedDynamicTexture } from "@babylonjs/gui";
+//import { Button } from "@babylonjs/gui";
+import Swal from "sweetalert2";
 import { GridMaterial } from "@babylonjs/materials/grid";
 import "babylonjs-materials";
 // Required side effects to populate the Create methods on the mesh class. Without this, the bundle would be smaller but the createXXX methods from mesh would not be accessible.
@@ -113,32 +115,64 @@ export default {
       var origin_coordinate_x = 0 - container_infos[0].X / 2;
       //var origin_coordinate_y; y base on box its own height
       var origin_coordinate_z = container_infos[0].Z / 2;
+      
+
 
       //===================================================
       //Create the box
       //===================================================
       var boxes_array = [];
-
+    //  var plane_array = [];
       //Create the box1 material
       var mat_for_boxes0 = new BABYLON.StandardMaterial("matboxes0", scene);
       mat_for_boxes0.diffuseColor = BABYLON.Color3.Blue();
       mat_for_boxes0.alpha = 0.5;
 
-
       //define box hover actions
-          // Over/Out
-    var makeOverOut = function (mesh) {
-        mesh.actionManager.registerAction(new BABYLON.SetValueAction(BABYLON.ActionManager.OnPointerOutTrigger, mesh.material, "emissiveColor", mesh.material.emissiveColor));
-        mesh.actionManager.registerAction(new BABYLON.SetValueAction(BABYLON.ActionManager.OnPointerOverTrigger, mesh.material, "emissiveColor", BABYLON.Color3.White()));
+      // Over/Out
+      var makeOverOut = function (mesh) {
+        mesh.actionManager.registerAction(
+          new BABYLON.SetValueAction(
+            BABYLON.ActionManager.OnPointerOutTrigger,
+            mesh.material,
+            "emissiveColor",
+            mesh.material.emissiveColor
+          )
+        );
+        mesh.actionManager.registerAction(
+          new BABYLON.SetValueAction(
+            BABYLON.ActionManager.OnPointerOverTrigger,
+            mesh.material,
+            "emissiveColor",
+            BABYLON.Color3.White()
+          )
+        );
         //uncomment the following line to make the box size chage while clicked.
         //mesh.actionManager.registerAction(new BABYLON.InterpolateValueAction(BABYLON.ActionManager.OnPointerOutTrigger, mesh, "scaling", new BABYLON.Vector3(1, 1, 1), 150));
         //mesh.actionManager.registerAction(new BABYLON.InterpolateValueAction(BABYLON.ActionManager.OnPointerOverTrigger, mesh, "scaling", new BABYLON.Vector3(1.1, 1.1, 1.1), 150));
-    }
+      };
 
 
+
+      var makeOnClickShowInfo=function (mesh){
+        mesh.actionManager.registerAction(
+          new BABYLON.ExecuteCodeAction(
+              BABYLON.ActionManager.OnPickTrigger,
+              function(evt){
+       Swal.fire({
+          title: "Error!",
+          text: "Do you want to continue",
+          icon: "error",
+          confirmButtonText: "Cool",
+        });
+        console.log(evt);
+              }//end function
+          )
+        )
+      }
 
       //for loop create box
-      for (var iter = 0; iter != box_infos[0].Numbers; iter++) {
+      for (let iter = 0; iter != box_infos[0].Numbers; iter++) {
         let box_name = "box_" + iter; //box_0, box_1, box_2 ...
         console.log("create boxes, box_name:" + box_name);
         boxes_array.push(
@@ -159,18 +193,26 @@ export default {
         boxes_array[iter].position.z = origin_coordinate_z - box_infos[0].Z / 2;
 
         //register the action that,if box is clicked, alert the box ID
-        boxes_array[iter].actionManager=new BABYLON.ActionManager(scene);
+        boxes_array[iter].actionManager = new BABYLON.ActionManager(scene);
+
 
       } //end for loop
-      console.log(boxes_array)
-    
-  
 
 
+
+
+
+
+      console.log(boxes_array);
 
       //register action for all of the boxes
-      makeOverOut(boxes_array[0]);
+      for(let iter=0; iter!=boxes_array.length;iter++){
+        makeOverOut(boxes_array[iter]);
+        makeOnClickShowInfo(boxes_array[iter]);
+      }
 
+      //makeOverOut(boxes_array[0]);
+      //makeOnClickShowInfo(boxes_array[0]);
 
       //container.material=skyboxMaterial;
       TestRender.testTexture(scene);
@@ -184,32 +226,34 @@ export default {
 
       //Attach grid material to the ground
       var ground_material = new GridMaterial("grid", scene);
+      ground_material.diffuseColor = BABYLON.Color3.Blue();
       ground_material.majorUnitFrequency = 20;
       ground_material.minorUnitVisibility = 0;
       ground.material = ground_material;
-        
-        
-        // GUI
-    var advancedTexture =AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
-    var button1 = Button.CreateSimpleButton("but1", "Click Me");
-    button1.width = "150px"
-    button1.height = "40px";
-    button1.color = "white";
-    button1.cornerRadius = 20;
-    button1.background = "green";
-    button1.onPointerUpObservable.add(function() {
-Swal.fire({
-  title: 'Error!',
-  text: 'Do you want to continue',
-  icon: 'error',
-  confirmButtonText: 'Cool'
-})
+      // GUI
+/*
+      var advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
-    });
-    advancedTexture.addControl(button1);    
+      var button1 = Button.CreateSimpleButton("but1", "Click Me");
+      button1.width = "150px";
+      button1.height = "40px";
+      button1.color = "white";
+      button1.cornerRadius = 20;
+      button1.background = "green";
+      button1.onPointerUpObservable.add(function () {
+        Swal.fire({
+          title: "Error!",
+          text: "Do you want to continue",
+          icon: "error",
+          confirmButtonText: "Cool",
+        });
+      });
+      advancedTexture.addControl(button1);
       //uncomment the following line to make eviroment rotate.
       /* 
+
+
 	engine.runRenderLoop(function () {
 		camera.alpha += 0.004;
 	});
