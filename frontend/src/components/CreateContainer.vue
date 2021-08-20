@@ -114,6 +114,7 @@
       </div>
       <!--end root container-->
     </div>
+        <button v-on:click="updateWithFakeData"> Update with fake data</button>
     <!--end root div-->
   </div>
 </template>
@@ -160,6 +161,17 @@ export default {
       });
       this.$store.dispatch("loadContainerInfos", this.container_infos);
     },
+    updateWithFakeData(){
+      let test_box=[{
+        ID: "0",
+        X: "50",
+        Y: "60",
+        Z: "70",
+        Weight_limmit: "2",
+        Numbers: "1",
+      },]
+      this.$store.dispatch("loadContainerInfos", test_box);
+    }
   }, //end methods
 };
 </script>

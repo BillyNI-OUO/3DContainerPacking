@@ -6,22 +6,8 @@ Vue.use(Vuex);
 // 定義一個新的 Vue Store
 const store = new Vuex.Store({
     state: {
-        container_infos: [{
-            ID:'',
-            X:'',
-            Y:'',
-            Z:'',
-            Weight_limmit:'',
-            Numbers:''
-        },],
-        box_infos:[{
-            TypeName:'',
-            X:'',
-            Y:'',
-            Z:'',
-            Weight:'',
-            Numbers:''
-        }],
+        container_infos: [],
+        box_infos:[],
     },
     mutations: {
         // 將state設定為參數

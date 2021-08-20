@@ -120,6 +120,7 @@
     </div>
     <!--end container-->
     <!--end root div-->
+    <button v-on:click="updateWithFakeData"> Update with fake data</button>
   </div>
 </template>
 <script>
@@ -164,9 +165,19 @@ export default {
         showConfirmButton: false,
         timer: 1500,
       });
-
       this.$store.dispatch("loadBoxInfos", this.box_infos);
     },
+    updateWithFakeData(){
+      let test_box=[{
+        TypeName: "box1",
+        X: "10",
+        Y: "10",
+        Z: "10",
+        Weight: "2",
+        Numbers: "3",
+      },]
+      this.$store.dispatch("loadBoxInfos", test_box);
+    }
   }, //end methods
 };
 </script>

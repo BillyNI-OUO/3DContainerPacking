@@ -17,6 +17,10 @@ import 'ant-design-vue/dist/antd.css';
 import Vuex from 'vuex'
 import store from './store.js'
 
+//axios
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+
 
 //Flickity
 import Flickity from 'vue-flickity';
@@ -31,7 +35,8 @@ Vue.use(Antd);
 Vue.use(Vuex);
 Vue.use(Flickity);
 
-
+//load axios for vue
+Vue.use(VueAxios, axios)
 
 
 //load vuex
