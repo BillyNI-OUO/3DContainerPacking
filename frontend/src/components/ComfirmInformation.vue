@@ -1,10 +1,14 @@
 <!--reuslt can reference to  https://github.com/A6Hz/3D-bin-packing -->
 <template>
   <!--root div-->
-  <div >
+  <div>
     <!--beggin of container toggle-->
     <div class="container-lg w-100 p-3">
-      <b-button v-b-toggle href="#container-collapse" variant="light" class="w-100"
+      <b-button
+        v-b-toggle
+        href="#container-collapse"
+        variant="light"
+        class="w-100"
         >Containers</b-button
       >
       <b-collapse id="container-collapse" class="mt-2">
@@ -40,10 +44,7 @@
             size="sm"
             >Details</b-button
           >
-          <b-collapse
-            v-bind:id="concateStringToGetBoxID(index)"
-            class="mt-2"
-          >
+          <b-collapse v-bind:id="concateStringToGetBoxID(index)" class="mt-2">
             <b-card>Hello!</b-card>
           </b-collapse>
         </b-card>
@@ -52,6 +53,7 @@
 
     <!--end of box toggle-->
     <button v-on:click="sendTestMessage">sendtestjson message</button>
+    <button v-on:click="sendStoredMessage"> Send stored json data to remote API</button>
   </div>
 </template>
 
@@ -86,6 +88,20 @@ export default {
     },
     concateStringToGetBoxIDhref(index) {
       return "#innerbox_box_id" + index;
+    },
+    sendStoredMessage() {
+      this.axios({
+        method: "post",
+        baseURL: "http://localhost:4000",
+        url: "/api/ContainerAndBox/info/",
+        "Content-Type": "application/json",
+        data:{
+          "containers":this.container_infos,
+          "boxes":this.box_infos
+        }
+      }).then((response) => {
+        console.log(response.data);
+      });
     },
   }, //end methods,
   data: function () {
