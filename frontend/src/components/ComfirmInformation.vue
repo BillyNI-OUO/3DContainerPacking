@@ -2,8 +2,30 @@
 <template>
   <!--root div-->
   <div>
+<!--show error message if there are empty value-->
+    <div v-if="ContainerArrayHaveNoData" class="m-3">
+    <a-alert
+      message="There are no data settring for Box"
+      description="Please go to previous page to create new container"
+      type="error"
+      closable
+      @close="ConAlertOnClose"
+    />
+    </div>
+    <!--end error message -->
+     <!-- (box)show error message if there are empty value-->
+    <div v-if="BoxArrayHaveNoData" class="m-3">
+    <a-alert
+      message="There are no data settring for Box"
+      description="Please go to previous page to create new box"
+      type="error"
+      closable
+      @close="ConAlertOnClose"
+    />
+    </div>
+    <!--end error message -->
     <!--beggin of container toggle-->
-    <div class="container-lg w-100 p-3">
+    <div class="container-lg w-100 p-3 ">
       <b-button
         v-b-toggle
         href="#container-collapse"
@@ -11,15 +33,19 @@
         class="w-100"
         >Containers</b-button
       >
-      <b-collapse id="container-collapse" class="mt-2">
-        <b-card v-for="(container_info, index) in container_infos" :key="index">
+      <b-collapse id="container-collapse" class="mt-2 ">
+        <b-card v-for="(container_info, index) in container_infos" :key="index" >
+          <img class="card-img img-thumbnail rounded float-start iconImage" src="../../imgs/container.png">
           <p class="card-text">ID {{ container_info.ID }}</p>
           <b-button
             v-b-toggle
             v-bind:href="concateStringToGetContainerIDhref(index)"
+            variant="success"
             size="sm"
+            block
             >Details</b-button
           >
+  
           <b-collapse
             v-bind:id="concateStringToGetContainerID(index)"
             class="mt-2"
@@ -28,8 +54,11 @@
           </b-collapse>
         </b-card>
       </b-collapse>
+
     </div>
     <!--end-of container toggle-->
+
+
     <!--beggin of box toggle-->
     <div class="container-lg w-100 p-3">
       <b-button v-b-toggle href="#box-collapse" variant="light" class="w-100"
@@ -60,13 +89,39 @@
 <script>
 import { mapState } from "vuex";
 
+
 export default {
   //get the information from store first
-  computed: mapState({
+  computed: {
+      BoxArrayHaveNoData(){
+      console.log("box_infos.length"+this.box_infos.length)
+        if(this.box_infos.length===0){
+          return true;
+        }else{
+          return false;
+        }
+    },    
+    ContainerArrayHaveNoData(){
+        if(this.container_infos.length===0){
+          return true;
+        }else{
+          return false;
+        }
+    },
+  ...mapState({
     container_infos: (state) => state.container_infos,
     box_infos: (state) => state.box_infos,
-  }), //end compute
+  }, 
+  )}, //end compute
   methods: {
+
+    ConAlertOnClose(event){
+          console.log(event, 'Alert was closed.');
+
+    },
+
+
+
     sendTestMessage() {
       this.axios({
         method: "get",
@@ -111,3 +166,11 @@ export default {
   },
 };
 </script>
+<style scoped>
+.iconImage{
+max-width: 5em;
+max-height:4em;
+}
+
+
+</style>>
