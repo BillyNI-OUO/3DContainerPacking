@@ -16,7 +16,7 @@
       </a-tab-pane>
       <!--end of tap pane 2-->
       <!--Tap 3 shows the comfirmation table and send the result to backedn-->
-      <a-tab-pane key="3" tab="Comfirm the informaiton"> Confirminformation
+      <a-tab-pane key="3" tab="Comfirm the informaiton">
       <comfirm-information/>
       </a-tab-pane>
     </a-tabs>
