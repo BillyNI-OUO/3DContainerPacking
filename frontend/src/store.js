@@ -16,6 +16,9 @@ const store = new Vuex.Store({
         },
         MUTATE_BOX_INFO:(state, new_box_infos)=>{
             state.box_infos=new_box_infos;
+        },
+        MUTATE_APPEND_CONTAINER_INFO(state, container_info_to_be_appended){
+            state.container_infos=[...state.container_infos, ...container_info_to_be_appended]
         }
     },//end mutation
     actions: {
@@ -25,6 +28,9 @@ const store = new Vuex.Store({
         loadBoxInfos:(context, box_infos)=>{
             context.commit('MUTATE_BOX_INFO', box_infos);
         },
+        appendContainerInfos:(contex, container_info)=>{
+            contex.commit("MUTATE_APPEND_CONTAINER_INFO", container_info)
+        }
     },//end actions
     getters:{
         getContainerInfos:state=>{

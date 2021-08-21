@@ -48,7 +48,7 @@
             src="../../imgs/container.png"
           />
           <h1 class="display-6 ml-5">X{{ container_info.Numbers }}</h1>
-            <h5 class="showID ">ABCD</h5>
+            <h5 class="showID ">{{container_info.TypeName}}</h5>
              </div> 
              <b-button
             v-b-toggle
@@ -77,7 +77,7 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <th scope="row">1</th>
+                    <th scope="row">{{container_info.ID}}</th>
                     <td>{{container_info.X}}</td>
                     <td>{{container_info.Y}}</td>
                     <td>{{container_info.Z}}</td>
