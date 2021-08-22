@@ -34,7 +34,7 @@
         >Containers</b-button
       >
       <b-collapse id="container-collapse" class="mt-2">
-        <b-card v-for="(container_info, index) in container_infos" :key="index">
+        <b-card v-for="(container_info, index) in container_infos" :key="index" class="mb-1">
           <span
             class="float-end delete-span"
             @click="deleteContainerInfo(index)"
@@ -48,7 +48,9 @@
             src="../../imgs/container.png"
           />
           <h1 class="display-6 ml-5">X{{ container_info.Numbers }}</h1>
-            <h5 class="showID ">{{container_info.TypeName}}</h5>
+          <div class="showID2 ">
+            <h5 >{{container_info.TypeName}}</h5>
+            </div>
              </div> 
              <b-button
             v-b-toggle
@@ -242,4 +244,11 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
 }
-</style>>
+
+.showID2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: right pix;
+}
+</style>

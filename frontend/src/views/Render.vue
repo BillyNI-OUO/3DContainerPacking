@@ -159,7 +159,7 @@ export default {
           new BABYLON.ExecuteCodeAction(
               BABYLON.ActionManager.OnPickTrigger,
               function(evt){
-            let titlestr="BoxName:"+box_infos[iter_of_type]+"_"+iter
+            let titlestr="BoxName:"+box_infos[iter_of_type].TypeName+"_"+iter
        Swal.fire({
           title: titlestr,
           text: "Do you want to continue",

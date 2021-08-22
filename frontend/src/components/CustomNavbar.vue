@@ -7,6 +7,7 @@
       justify-content-between
       sticky-top
       p-3
+      fixed-top
     "
   >
     <router-link class="navbar-brand" to="/">3D-Bin Packing</router-link> |
@@ -58,3 +59,5 @@ export default {
   }
 }
 </script>
+<style>
+</style>
