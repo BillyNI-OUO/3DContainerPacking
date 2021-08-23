@@ -254,4 +254,9 @@ export default {
   align-items: center;
   margin: right pix;
 }
+.delete-span {
+  cursor: pointer;
+  color: #a0a1a7;
+}
+
 </style>
