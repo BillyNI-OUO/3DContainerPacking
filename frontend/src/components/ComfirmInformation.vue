@@ -5,7 +5,7 @@
     <!--show error message if there are empty value-->
     <div v-if="ContainerArrayHaveNoData" class="m-3">
       <a-alert
-        message="There are no data settring for Box"
+        message="There are no data for container"
         description="Please go to previous page to create new container"
         type="error"
         closable
@@ -16,7 +16,7 @@
     <!-- (box)show error message if there are empty value-->
     <div v-if="BoxArrayHaveNoData" class="m-3">
       <a-alert
-        message="There are no data settring for Box"
+        message="There are no data for Box"
         description="Please go to previous page to create new box"
         type="error"
         closable
@@ -34,27 +34,24 @@
         >Containers</b-button
       >
       <b-collapse id="container-collapse" class="mt-2">
-        <b-card v-for="(container_info, index) in container_infos" :key="index" class="mb-1">
+        <b-card v-for="(container_info) in container_infos" :key="container_info.ID" class="mb-1">
           <span
             class="float-end delete-span"
-            @click="deleteContainerInfo(index)"
+            @click="deleteContainerInfo(container_info.ID)"
           >
             X
           </span>
           <!--flex container -->
-          <div class="d-flex flex-row ">
           <img
             class="card-img img-thumbnail rounded float-start mr-4 iconImage"
             src="../../imgs/container.png"
           />
           <h1 class="display-6 ml-5">X{{ container_info.Numbers }}</h1>
-          <div class="showID2 ">
-            <h5 >{{container_info.TypeName}}</h5>
-            </div>
-             </div> 
+            <h4 class="showID">{{container_info.TypeName}}</h4>
+
              <b-button
             v-b-toggle
-            v-bind:href="concateStringToGetContainerIDhref(index)"
+            v-bind:href="concateStringToGetContainerIDhref(container_info.ID)"
             variant="success"
             size="sm"
             block
@@ -62,7 +59,7 @@
             >Details</b-button
           >    
           <b-collapse
-            v-bind:id="concateStringToGetContainerID(index)"
+            v-bind:id="concateStringToGetContainerID(container_info.ID)"
             class="mt-2"
           >
             <!-- container detial-->
@@ -101,10 +98,10 @@
         >Boxes</b-button
       >
       <b-collapse id="box-collapse" class="mt-2">
-        <b-card v-for="(box_info, index) in box_infos" :key="index">
+        <b-card v-for="(box_info) in box_infos" :key="box_info.ID" class="mb-1">
                     <span
             class="float-end delete-span"
-            @click="deleteContainerInfo(index)"
+            @click="deleteBoxInfo(box_info.ID)"
           >
             X
           </span>
@@ -113,15 +110,15 @@
             src="../../imgs/package-box.png"
           />
       <h1 class="display-6 ml-5">X{{ box_info.Numbers }}</h1>
-      <h1 class="showID">{{box_info.TypeName}}</h1>
+      <h4 class="showID">{{box_info.TypeName}}</h4>
           <b-button
             v-b-toggle
-            v-bind:href="concateStringToGetBoxIDhref(index)"
+            v-bind:href="concateStringToGetBoxIDhref(box_info.ID)"
             size="sm"
             class="float-end"
             >Details</b-button
           >
-          <b-collapse v-bind:id="concateStringToGetBoxID(index)" class="mt-2">
+          <b-collapse v-bind:id="concateStringToGetBoxID(box_info.ID)" class="mt-2">
             <b-card>
               <table class="table">
                 <thead class="thead-light">
@@ -135,7 +132,7 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <th scope="row">1</th>
+                    <th scope="row">{{box_info.ID}}</th>
                     <td>{{box_info.X}}</td>
                     <td>{{box_info.Y}}</td>
                     <td>{{box_info.Z}}</td>
@@ -224,6 +221,15 @@ export default {
       }).then((response) => {
         console.log(response.data);
       });
+    },
+    deleteContainerInfo(container_info_uuid){
+         this.$store.dispatch("deleteContainer_infosItemWithUUID", container_info_uuid);
+         console.log(this.$store.state.container_infos)
+    },
+    deleteBoxInfo(box_info_uuid){
+        this.$store.dispatch("deleteBox_infosItemWithUUID", box_info_uuid);
+        console.log(box_info_uuid)
+        console.log(this.$store.state.box_infos)
     },
   }, //end methods,
   data: function () {

@@ -125,6 +125,7 @@
 </template>
 <script>
 import Swal from "sweetalert2";
+import { v4 as uuidv4 } from 'uuid';
 export default {
   name: "CreateBoxes",
   components: {},
@@ -132,6 +133,7 @@ export default {
     return {
       box_infos: [
         {
+          ID:"",
           TypeName: "",
           X: "",
           Y: "",
@@ -145,6 +147,7 @@ export default {
   methods: {
     newBox() {
       this.box_infos.push({
+        ID:uuidv4(),
         TypeName: "",
         X: "",
         Y: "",
@@ -169,6 +172,7 @@ export default {
     },
     updateWithFakeData(){
       let test_box=[{
+        ID:uuidv4(),
         TypeName: "box1",
         X: "10",
         Y: "10",
@@ -176,7 +180,7 @@ export default {
         Weight: "2",
         Numbers: "3",
       },]
-      this.$store.dispatch("loadBoxInfos", test_box);
+      this.$store.dispatch("appendBoxInfos", test_box);
     }
   }, //end methods
 };

@@ -19,6 +19,26 @@ const store = new Vuex.Store({
         },
         MUTATE_APPEND_CONTAINER_INFO(state, container_info_to_be_appended){
             state.container_infos=[...state.container_infos, ...container_info_to_be_appended]
+        },
+        MUTATE_APPEND_BOX_INFO(state, box_info_to_be_append){
+            state.box_infos=[...state.box_infos, ...box_info_to_be_append]
+        },
+        MUTATE_DELETE_CONTAINER_WITH_UUID(state, uuid){
+
+            //initial value is empty array
+            state.container_infos=state.container_infos.reduce((new_array, current_val)=>{
+                current_val.ID!==uuid && new_array.push(current_val);
+                return new_array;
+            },[])
+        },
+        MUTATE_DELETE_BOX_WITH_UUID(state, uuid){
+
+            //initial value is empty array
+            console.log(uuid)
+            state.box_infos=state.box_infos.reduce((new_array, current_val)=>{
+                current_val.ID!==uuid && new_array.push(current_val);
+                return new_array;
+            },[])
         }
     },//end mutation
     actions: {
@@ -28,8 +48,17 @@ const store = new Vuex.Store({
         loadBoxInfos:(context, box_infos)=>{
             context.commit('MUTATE_BOX_INFO', box_infos);
         },
-        appendContainerInfos:(contex, container_info)=>{
-            contex.commit("MUTATE_APPEND_CONTAINER_INFO", container_info)
+        appendContainerInfos:(context, container_info)=>{
+            context.commit("MUTATE_APPEND_CONTAINER_INFO", container_info)
+        },
+        appendBoxInfos:(context, box_info)=>{
+            context.commit("MUTATE_APPEND_BOX_INFO", box_info)
+        },
+        deleteContainer_infosItemWithUUID:(context, uuid)=>{
+            context.commit("MUTATE_DELETE_CONTAINER_WITH_UUID", uuid)
+        },
+        deleteBox_infosItemWithUUID:(context, uuid) =>{
+            context.commit("MUTATE_DELETE_BOX_WITH_UUID", uuid)
         }
     },//end actions
     getters:{
