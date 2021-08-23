@@ -23,7 +23,7 @@ import VueAxios from 'vue-axios'
 
 
 //Flickity
-import Flickity from 'vue-flickity';
+//import Flickity from 'vue-flickity';
 
 // Make BootstrapVue available throughout your project
 Vue.use(BootstrapVue);
@@ -33,7 +33,7 @@ Vue.use(IconsPlugin);
 Vue.use(Antd);
 //load Vuex
 Vue.use(Vuex);
-Vue.use(Flickity);
+//Vue.use(Flickity);
 
 //load axios for vue
 Vue.use(VueAxios, axios)

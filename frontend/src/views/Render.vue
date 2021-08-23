@@ -49,8 +49,7 @@ export default {
     //box setting
     console.log("box_infos:x" + this.box_infos[0].X);
     console.log("box_infos:ID" + this.box_infos[0].TypeName);
-    var box_infos = this.box_infos;
-
+    var box_infos = this.box_infos
     var canvas = document.getElementById("renderCanvas"); // 得到canvas对象的引用
     var engine = new BABYLON.Engine(canvas, true); // 初始化 BABYLON 3D engine
 
@@ -154,18 +153,20 @@ export default {
 
 
 
-      var makeOnClickShowInfo=function (mesh){
+      var makeOnClickShowInfo=function (mesh, box_infos, iter_of_type, iter){
+
         mesh.actionManager.registerAction(
           new BABYLON.ExecuteCodeAction(
               BABYLON.ActionManager.OnPickTrigger,
               function(evt){
+            let titlestr="BoxName:"+box_infos[iter_of_type].TypeName+"_"+iter
        Swal.fire({
-          title: "Error!",
+          title: titlestr,
           text: "Do you want to continue",
           icon: "error",
           confirmButtonText: "Cool",
         });
-        console.log(evt);
+        console.log("clicked the box"+evt);
               }//end function
           )
         )
@@ -204,11 +205,13 @@ export default {
 
 
       console.log(boxes_array);
-
+      console.log(box_infos);
       //register action for all of the boxes
       for(let iter=0; iter!=boxes_array.length;iter++){
         makeOverOut(boxes_array[iter]);
-        makeOnClickShowInfo(boxes_array[iter]);
+
+        //iter of type is the index of box_infos, iter is the N th box in same type of box 
+        makeOnClickShowInfo(boxes_array[iter], box_infos, 0, iter);
       }
 
       //makeOverOut(boxes_array[0]);
@@ -231,29 +234,9 @@ export default {
       ground_material.minorUnitVisibility = 0;
       ground.material = ground_material;
 
-      // GUI
-/*
-      var advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
-      var button1 = Button.CreateSimpleButton("but1", "Click Me");
-      button1.width = "150px";
-      button1.height = "40px";
-      button1.color = "white";
-      button1.cornerRadius = 20;
-      button1.background = "green";
-      button1.onPointerUpObservable.add(function () {
-        Swal.fire({
-          title: "Error!",
-          text: "Do you want to continue",
-          icon: "error",
-          confirmButtonText: "Cool",
-        });
-      });
-      advancedTexture.addControl(button1);
       //uncomment the following line to make eviroment rotate.
-      /* 
-
-
+  /* 
 	engine.runRenderLoop(function () {
 		camera.alpha += 0.004;
 	});

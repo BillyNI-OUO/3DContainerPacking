@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,16 +29,13 @@ type List struct {
 	Messages []string `binding:"required"`
 }
 
-type jsonConcatedInfo struct {
-	ContainerTypeNumbers int `json:"ContainerTypeNumbers"`
-}
-
 func processingJsonInfoRequest(c *gin.Context) {
-	data := new(List)
-	err := c.Bind(data)
-	if err != nil {
-		c.AbortWithError(400, err)
-		return
-	}
-	c.String(200, fmt.Sprintf("%#v", data))
+	jsonData := make(map[string]interface{})
+	c.BindJSON(&jsonData)
+	fmt.Println("%v", &jsonData)
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.JSON(http.StatusOK, gin.H{
+		"containers": jsonData["containers"],
+		"boxes":      jsonData["boxes"],
+	})
 }

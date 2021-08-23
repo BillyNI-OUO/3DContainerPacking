@@ -32,6 +32,18 @@
 
           <h4 class="card-title">Container Index number {{ index }}</h4>
           <div>
+            <!--modified add a input from for typename-->
+              <div class="input-group mb-3">
+              <input
+                type="text"
+                class="form-control mb-2"
+                placeholder="Type name of the container"
+                v-model="container_info.TypeName"
+              />
+              </div>
+
+
+
             <!--Begin of first input form content-->
             <div class="input-group mb-3">
               <input
@@ -120,6 +132,7 @@
 </template>
 <script>
 import Swal from "sweetalert2";
+import { v4 as uuidv4 } from 'uuid';
 export default {
   name: "CreateContainer",
   components: {},
@@ -128,6 +141,7 @@ export default {
       container_infos: [
         {
           ID: "",
+          TypeName:"",
           X: "",
           Y: "",
           Z: "",
@@ -140,7 +154,8 @@ export default {
   methods: {
     newContainer() {
       this.container_infos.push({
-        ID: "",
+        ID: uuidv4(),
+        TypeName:"",
         X: "",
         Y: "",
         Z: "",
@@ -163,14 +178,15 @@ export default {
     },
     updateWithFakeData(){
       let test_box=[{
-        ID: "0",
+        ID: uuidv4(),
+        TypeName:"helloContainer",
         X: "50",
         Y: "60",
         Z: "70",
         Weight_limmit: "2",
         Numbers: "1",
       },]
-      this.$store.dispatch("loadContainerInfos", test_box);
+      this.$store.dispatch("appendContainerInfos", test_box);
     }
   }, //end methods
 };

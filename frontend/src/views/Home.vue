@@ -1,16 +1,16 @@
 <template>
   <div class="home">
    <!-- <img alt="Vue logo" src="../assets/logo.png">-->
-    <Test/>
+    <slide-bar/>
   </div>
 </template>
 
 <script>
-import Test from "../components/Test.vue";
+import SlideBar from '../components/SlideBar.vue';
 export default {
   name: 'Home',
   components: {
-    Test
+    SlideBar
   }
 }
 </script>
