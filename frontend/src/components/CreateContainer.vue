@@ -4,12 +4,6 @@
   <div class="mt-2 mr-2">
     <!--card container make element in center-->
     <div class="container container-bg pb-3 mr-3 pr-3 rounded">
-      <!--Butoon to create new container-->
-
-      <button class="btn btn-success m-3" @click="newContainer">
-        New container
-      </button>
-      <!--End new button-->
       <!--Butoon to commit changes to store-->
 
       <button class="btn btn-success m-3" @click="saveChanges">
@@ -18,19 +12,17 @@
       <!--End new button-->
       <div
         class="card mt-3"
-        v-for="(container_info, index) in container_infos"
-        v-bind:key="index"
       >
         <div class="card-body pd-3">
           <!--this span (on right top corner) handle the delete form method-->
           <span
             class="float-end delete-span"
-            @click="deleteContainerInfo(index)"
+            @click="deleteContainerInfo()"
           >
             X
           </span>
 
-          <h4 class="card-title">Container Index number {{ index }}</h4>
+          <h4 class="card-title">Container Index number </h4>
           <div>
             <!--modified add a input from for typename-->
               <div class="input-group mb-3">
@@ -138,31 +130,19 @@ export default {
   components: {},
   data: function () {
     return {
-      container_infos: [
-        {
-          ID: "",
+      container_infos:[],
+      container_info: {
+          ID: uuidv4(),
           TypeName:"",
           X: "",
           Y: "",
           Z: "",
           Weight_limmit: "",
           Numbers: "",
-        },
-      ],
+      }
     }; //end container_info
   }, //end data
   methods: {
-    newContainer() {
-      this.container_infos.push({
-        ID: uuidv4(),
-        TypeName:"",
-        X: "",
-        Y: "",
-        Z: "",
-        Weight_limmit: "",
-        Numbers: "",
-      });
-    }, //end newContainer
     deleteContainerInfo(index) {
       this.container_infos.splice(index, 1);
     }, //end deleteContainerInfo
@@ -174,7 +154,10 @@ export default {
         showConfirmButton: false,
         timer: 1500,
       });
-      this.$store.dispatch("loadContainerInfos", this.container_infos);
+      this.container_infos.push(this.container_info)
+      this.$store.dispatch("appendContainerInfos", this.container_infos);
+      this.container_infos=[];
+      this.container_info={ID:uuidv4()};
     },
     updateWithFakeData(){
       let test_box=[{

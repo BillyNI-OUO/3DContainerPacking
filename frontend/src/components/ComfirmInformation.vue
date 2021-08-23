@@ -224,12 +224,9 @@ export default {
     },
     deleteContainerInfo(container_info_uuid){
          this.$store.dispatch("deleteContainer_infosItemWithUUID", container_info_uuid);
-         console.log(this.$store.state.container_infos)
     },
     deleteBoxInfo(box_info_uuid){
         this.$store.dispatch("deleteBox_infosItemWithUUID", box_info_uuid);
-        console.log(box_info_uuid)
-        console.log(this.$store.state.box_infos)
     },
   }, //end methods,
   data: function () {
