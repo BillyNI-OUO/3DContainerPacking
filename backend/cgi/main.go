@@ -19,7 +19,15 @@ func ImportPythonModule() {
 
 }
 
-func embeddedPython() {
+type Container_struct struct {
+	name      string
+	x         float64
+	y         float64
+	z         float64
+	maxWeight int
+}
+
+func embeddedPython(config *Configuration_struct) {
 	python3.Py_Initialize()
 	if !python3.Py_IsInitialized() {
 		fmt.Println("Error initializing the python interpreter")
@@ -30,8 +38,24 @@ func embeddedPython() {
 
 	python3.PyRun_SimpleString("import sys")
 	python3.PyRun_SimpleString("print(sys.path)")
-	i, err := python3.PyRun_AnyFile("/opt/share/shared_experiments/3d-bin-packing-project/3D-Binpacking-GUI/backend/algorithm/example.py")
-	//i, err := python3.PyRun_AnyFile("./testgopy.py")
+	python3.PyRun_SimpleString("from py3dbp import Packer, Bin, Item")
+	python3.PyRun_SimpleString("packer = Packer()")
+	python3.PyRun_SimpleString("print(packer)")
+	python3.PyRun_SimpleString("packer.add_bin(Bin('small-envelope', 11.5, 6.125, 0.25, 10))")
+	python3.PyRun_SimpleString("packer.add_item(Item('50g [powder 1]', 3.9370, 1.9685, 1.9685, 1))")
+	python3.PyRun_SimpleString("packer.pack()")
+	python3.PyRun_SimpleString(`for b in packer.bins:
+    print(":::::::::::", b.string())
+    print("FITTED ITEMS:")
+for item in b.items:
+    print("====> ", item.string())
+
+    print("UNFITTED ITEMS:")
+for item in b.unfitted_items:
+    print("====> ", item.string())
+    `)
+	//algorithm := python3.PyImport_ImportModule("py3dbp")
+
 	if err != nil {
 		fmt.Printf("error launching the python interpreter: %s\n", err)
 		os.Exit(1)
@@ -47,8 +71,9 @@ func embeddedPython() {
 	python3.Py_Finalize()
 }
 func main() {
-
-	embeddedPython()
+	configurations := Configuration_struct{}
+	getConfiguration(&configurations)
+	embeddedPython(&configurations)
 	//==============================================================
 	//Gin routing table and handle request
 	//==============================================================

@@ -1,9 +1,24 @@
-import argparse
 
+from py3dbp import Packer, Bin, Item
 
+packer = Packer()
+packer.add_bin(Bin(*tuple_array))
 
-if __name__=="__main__":
-    parser=argparse.ArgumentParser()
-    parser.add_argument("-j", "--json-data", dest="json_data")
-    args=parser.parse_args
-    print("Hello json"+args.json_data)
+packer.add_item(Item('50g [powder 1]', 3.9370, 1.9685, 1.9685, 1))
+packer.add_item(Item('50g [powder 2]', 3.9370, 1.9685, 1.9685, 2))
+
+packer.pack()
+
+for b in packer.bins:
+    print(":::::::::::", b.string())
+
+    print("FITTED ITEMS:")
+    for item in b.items:
+        print("====> ", item.string())
+
+    print("UNFITTED ITEMS:")
+    for item in b.unfitted_items:
+        print("====> ", item.string())
+
+    print("***************************************************")
+    print("***************************************************")

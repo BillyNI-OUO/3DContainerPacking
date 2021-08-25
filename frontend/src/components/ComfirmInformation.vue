@@ -127,7 +127,7 @@
                     <th scope="col">X</th>
                     <th scope="col">Y</th>
                     <th scope="col">Z</th>
-                    <th scope="col">Weight limmit</th>
+                    <th scope="col">Weight</th>
                   </tr>
                 </thead>
                 <tbody>

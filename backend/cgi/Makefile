@@ -1,9 +1,12 @@
 CC=go
-OUT_FILE_NAME=ResfullApiCgi
+OUT_FILE_NAME=3d-bin-packing-backend-cgi
 
-$(OUT_FILE_NAME):
+
+
+
+$(OUT_FILE_NAME):  
 	$(CC) build  -o $@
 
 .PHONY: clean
 clean:
-	rm -f ./ResfullApiCgi
+	rm -f $(OUT_FILE_NAME)
