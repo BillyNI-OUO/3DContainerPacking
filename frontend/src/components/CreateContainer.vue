@@ -5,8 +5,14 @@
     <!--card container make element in center-->
     <div class="container container-bg pb-3 mr-3 pr-3 rounded">
       <!--Butoon to commit changes to store-->
-      <a-popconfirm title="If the number is too big, it may crash the frontend system, are you sure？" ok-text="Yes" cancel-text="No" @confirm="confirm">
-        <button class="btn btn-success m-3" v-bind:onclick="checkNumberIsTooBig? doNothing :saveChanges ">
+      <a-popconfirm title="If the number is too big, it may crash the frontend system, are you sure you want to continue?" 
+      ok-text="continue" 
+      cancel-text="cancel" 
+      @confirm="confirm"
+      :visible="visible"
+      @visibleChange="handleVisibleChange"
+      >
+        <button class="btn btn-success m-3">
           Save changes
         </button>
       </a-popconfirm>
@@ -126,7 +132,7 @@ export default {
     return {
       container_infos: [],
       container_info: {
-        ID: [uuidv4()],
+        ID: uuidv4(),
         TypeName: "",
         X: "",
         Y: "",
@@ -134,6 +140,7 @@ export default {
         Weight_limmit: "",
         Numbers: "",
       },
+      visible: false,
     }; //end container_info
   }, //end data
   computed:{
@@ -164,7 +171,7 @@ export default {
       this.container_infos = [];
     }, //end deleteContainerInfo
     saveChanges() {
-      console.log(this.container_info);
+    //  console.log(this.container_info);
       Swal.fire({
         position: "top-end",
         icon: "success",
@@ -172,21 +179,15 @@ export default {
         showConfirmButton: false,
         timer: 1500,
       });
-      //if number >1 add IDs for all instance
-      if (this.container_info["Numbers"] > 1) {
-        for (let i = 0; i <= this.container_info.length - 1; i++) {
-          this.container_info.ID.push(uuidv4());
-        }
-      }
       this.container_infos.push(this.container_info);
       this.$store.dispatch("appendContainerInfos", this.container_infos);
       this.container_infos = [];
-      this.container_info = { ID: [uuidv4()] };
+      this.container_info = { ID: uuidv4() };
     },
     updateWithFakeData() {
       let test_box = [
         {
-          ID: [uuidv4()],
+          ID: uuidv4(),
           TypeName: "helloContainer",
           X: "50",
           Y: "60",
@@ -197,6 +198,19 @@ export default {
       ];
       this.$store.dispatch("appendContainerInfos", test_box);
     },
+    
+      handleVisibleChange(visible) {
+      if (!visible) {
+        this.visible = false;
+        return;
+      }
+      // Determining condition before show the popconfirm.
+      if (this.checkNumberIsTooBig) {
+        this.visible = true;
+      } else {
+        this.confirm(); // next step
+      }
+      }
   }, //end methods
 };
 </script>

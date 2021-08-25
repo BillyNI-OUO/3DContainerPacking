@@ -29,8 +29,7 @@
       <b-button
         v-b-toggle
         href="#container-collapse"
-        variant="light"
-        class="w-100"
+        class="w-100 button_bg"
         >Containers</b-button
       >
       <b-collapse id="container-collapse" class="mt-2">
@@ -99,7 +98,7 @@
 
     <!--beggin of box toggle-->
     <div class="container-lg w-100 p-3">
-      <b-button v-b-toggle href="#box-collapse" variant="light" class="w-100"
+      <b-button v-b-toggle href="#box-collapse"  class="w-100 button_bg"
         >Boxes</b-button
       >
       <b-collapse id="box-collapse" class="mt-2">
@@ -115,19 +114,20 @@
           <h4 class="">{{box_info.TypeName}}</h4>
           <img
             class="card-img img-thumbnail rounded float-start mr-4 iconImage iconImage"
-            @click="OnClickShowNumber = !OnClickShowNumber"
             src="../../imgs/package-box.png"
           />
-          <span class="caption" v-if="OnClickShowNumber">numbers</span>
+          <span class="caption">numbers</span>
           </div>
-      <h1 class="display-6 ml-5" v-if="OnClickShowNumber">X{{ box_info.Numbers }}</h1>
+      <h1 class="display-6 ml-5">X{{ box_info.Numbers }}</h1>
 
 
           <b-button
             v-b-toggle
             v-bind:href="concateStringToGetBoxIDhref(box_info.ID)"
             size="sm"
-            class="float-end moveToBottom"
+            class=" moveToBottom"
+            block
+            variant="light"
             >Details</b-button
           >
           <b-collapse v-bind:id="concateStringToGetBoxID(box_info.ID)" class="mt-2">
@@ -243,7 +243,7 @@ export default {
   }, //end methods,
   data: function () {
     return {
-      OnClickShowNumber: true,
+      //OnClickShowNumber: true,
     };
   },
 };
@@ -272,9 +272,12 @@ export default {
     display: block;
 }
 .moveToBottom {
- bottom: 5%;
- right:1%; 
- position: absolute;
+ position: relative;
  z-index: 200;
+ display: block;
+
+}
+.button_bg{
+  background-color: rgb(57, 23, 112);
 }
 </style>
