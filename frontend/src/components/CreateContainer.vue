@@ -5,36 +5,30 @@
     <!--card container make element in center-->
     <div class="container container-bg pb-3 mr-3 pr-3 rounded">
       <!--Butoon to commit changes to store-->
-
-      <button class="btn btn-success m-3" @click="saveChanges">
-        Save changes
-      </button>
+      <a-popconfirm title="If the number is too big, it may crash the frontend system, are you sure？" ok-text="Yes" cancel-text="No" @confirm="confirm">
+        <button class="btn btn-success m-3" v-bind:onclick="checkNumberIsTooBig? doNothing :saveChanges ">
+          Save changes
+        </button>
+      </a-popconfirm>
       <!--End new button-->
-      <div
-        class="card mt-3"
-      >
+      <div class="card mt-3">
         <div class="card-body pd-3">
           <!--this span (on right top corner) handle the delete form method-->
-          <span
-            class="float-end delete-span"
-            @click="deleteContainerInfo()"
-          >
+          <span class="float-end delete-span" @click="deleteContainerInfo()">
             X
           </span>
 
-          <h4 class="card-title">Container Index number </h4>
+          <h4 class="card-title">Container Index number</h4>
           <div>
             <!--modified add a input from for typename-->
-              <div class="input-group mb-3">
+            <div class="input-group mb-3">
               <input
                 type="text"
                 class="form-control mb-2"
                 placeholder="Type name of the container"
                 v-model="container_info.TypeName"
               />
-              </div>
-
-
+            </div>
 
             <!--Begin of first input form content-->
             <div class="input-group mb-3">
@@ -118,35 +112,59 @@
       </div>
       <!--end root container-->
     </div>
-        <button v-on:click="updateWithFakeData"> Update with fake data</button>
+    <button v-on:click="updateWithFakeData">Update with fake data</button>
     <!--end root div-->
   </div>
 </template>
 <script>
 import Swal from "sweetalert2";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 export default {
   name: "CreateContainer",
   components: {},
   data: function () {
     return {
-      container_infos:[],
+      container_infos: [],
       container_info: {
-          ID: [uuidv4()],
-          TypeName:"",
-          X: "",
-          Y: "",
-          Z: "",
-          Weight_limmit: "",
-          Numbers: "",
-      }
+        ID: [uuidv4()],
+        TypeName: "",
+        X: "",
+        Y: "",
+        Z: "",
+        Weight_limmit: "",
+        Numbers: "",
+      },
     }; //end container_info
   }, //end data
+  computed:{
+    checkNumberIsTooBig(){
+      if(this.container_info.Numbers>10){
+        return true;
+      }else{
+        return false;
+      }
+    }
+  },//end computed
   methods: {
-    deleteContainerInfo(index) {
-      this.container_infos.splice(index, 1);
+    confirm(){
+      this.saveChanges();
+    },
+    doNothing(){
+    },
+    deleteContainerInfo() {
+      this.container_info = {
+        ID: [uuidv4()],
+        TypeName: "",
+        X: "",
+        Y: "",
+        Z: "",
+        Weight_limmit: "",
+        Numbers: "",
+      };
+      this.container_infos = [];
     }, //end deleteContainerInfo
     saveChanges() {
+      console.log(this.container_info);
       Swal.fire({
         position: "top-end",
         icon: "success",
@@ -155,28 +173,30 @@ export default {
         timer: 1500,
       });
       //if number >1 add IDs for all instance
-      if(this.contaier_info.Numbers>1){
-        for (let i=0; i!=this.container_info-1;i++){
-            this.container_info.ID.push(uuidv4());
+      if (this.container_info["Numbers"] > 1) {
+        for (let i = 0; i <= this.container_info.length - 1; i++) {
+          this.container_info.ID.push(uuidv4());
         }
       }
-      this.container_infos.push(this.container_info)
+      this.container_infos.push(this.container_info);
       this.$store.dispatch("appendContainerInfos", this.container_infos);
-      this.container_infos=[];
-      this.container_info={ID:[uuidv4()]};
+      this.container_infos = [];
+      this.container_info = { ID: [uuidv4()] };
     },
-    updateWithFakeData(){
-      let test_box=[{
-        ID: [uuidv4()],
-        TypeName:"helloContainer",
-        X: "50",
-        Y: "60",
-        Z: "70",
-        Weight_limmit: "2",
-        Numbers: "1",
-      },]
+    updateWithFakeData() {
+      let test_box = [
+        {
+          ID: [uuidv4()],
+          TypeName: "helloContainer",
+          X: "50",
+          Y: "60",
+          Z: "70",
+          Weight_limmit: "2",
+          Numbers: "1",
+        },
+      ];
       this.$store.dispatch("appendContainerInfos", test_box);
-    }
+    },
   }, //end methods
 };
 </script>

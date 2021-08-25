@@ -35,24 +35,28 @@
       >
       <b-collapse id="container-collapse" class="mt-2">
         <!--The container info have a ID array, if same type of container >0, we take the first ID as key  -->
-        <b-card v-for="(container_info) in container_infos" :key="container_info.ID[0]" class="mb-1">
+        <b-card v-for="(container_info) in container_infos" :key="container_info.ID" class="mb-1">
           <span
             class="float-end delete-span"
-            @click="deleteContainerInfo(container_info.ID[0])"
+            @click="deleteContainerInfo(container_info.ID)"
           >
             X
           </span>
           <!--flex container -->
+          <h4 class="">{{container_info.TypeName}}</h4>
+          <div class="item">
           <img
             class="card-img img-thumbnail rounded float-start mr-4 iconImage"
             src="../../imgs/container.png"
           />
+          <span class="caption" v-if="OnClickShowNumber">numbers</span>
+          </div>
           <h1 class="display-6 ml-5">X{{ container_info.Numbers }}</h1>
-            <h4 class="showID">{{container_info.TypeName}}</h4>
+
 
              <b-button
             v-b-toggle
-            v-bind:href="concateStringToGetContainerIDhref(container_info.ID[0])"
+            v-bind:href="concateStringToGetContainerIDhref(container_info.ID)"
             variant="success"
             size="sm"
             block
@@ -60,7 +64,7 @@
             >Details</b-button
           >    
           <b-collapse
-            v-bind:id="concateStringToGetContainerID(container_info.ID[0])"
+            v-bind:id="concateStringToGetContainerID(container_info.ID)"
             class="mt-2"
           >
             <!-- container detial-->
@@ -106,17 +110,24 @@
           >
             X
           </span>
+ 
+          <div class="item">
+          <h4 class="">{{box_info.TypeName}}</h4>
           <img
             class="card-img img-thumbnail rounded float-start mr-4 iconImage iconImage"
+            @click="OnClickShowNumber = !OnClickShowNumber"
             src="../../imgs/package-box.png"
           />
-      <h1 class="display-6 ml-5">X{{ box_info.Numbers }}</h1>
-      <h4 class="showID">{{box_info.TypeName}}</h4>
+          <span class="caption" v-if="OnClickShowNumber">numbers</span>
+          </div>
+      <h1 class="display-6 ml-5" v-if="OnClickShowNumber">X{{ box_info.Numbers }}</h1>
+
+
           <b-button
             v-b-toggle
             v-bind:href="concateStringToGetBoxIDhref(box_info.ID)"
             size="sm"
-            class="float-end"
+            class="float-end moveToBottom"
             >Details</b-button
           >
           <b-collapse v-bind:id="concateStringToGetBoxID(box_info.ID)" class="mt-2">
@@ -232,7 +243,7 @@ export default {
   }, //end methods,
   data: function () {
     return {
-      teststr: "collapse-1-inner",
+      OnClickShowNumber: true,
     };
   },
 };
@@ -243,10 +254,8 @@ export default {
   max-height: 6em;
 }
 .showID{
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
+  left: 30%;
 }
 
 .showID2 {
@@ -259,5 +268,13 @@ export default {
   cursor: pointer;
   color: #a0a1a7;
 }
-
+.caption {
+    display: block;
+}
+.moveToBottom {
+ bottom: 5%;
+ right:1%; 
+ position: absolute;
+ z-index: 200;
+}
 </style>

@@ -8,6 +8,7 @@ const store = new Vuex.Store({
     state: {
         container_infos: [],
         box_infos:[],
+        show_box_number:[]
     },
     mutations: {
         // 將state設定為參數
