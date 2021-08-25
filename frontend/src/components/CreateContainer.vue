@@ -161,7 +161,7 @@ export default {
     },
     updateWithFakeData(){
       let test_box=[{
-        ID: uuidv4(),
+        ID: [uuidv4()],
         TypeName:"helloContainer",
         X: "50",
         Y: "60",

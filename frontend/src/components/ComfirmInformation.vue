@@ -189,7 +189,7 @@ export default {
     sendTestMessage() {
       this.axios({
         method: "get",
-        baseURL: "http://localhost:4000",
+        baseURL: "http://localhost:5000",
         url: "/api/",
         "Content-Type": "application/json",
       }).then((response) => {
@@ -211,8 +211,8 @@ export default {
     sendStoredMessage() {
       this.axios({
         method: "post",
-        baseURL: "http://localhost:4000",
-        url: "/api/ContainerAndBox/info/",
+        baseURL: "http://localhost:5000",
+        url: "/api/recv/3dbinpack/info",
         "Content-Type": "application/json",
         data: {
           containers: this.container_infos,
