@@ -34,10 +34,11 @@
         >Containers</b-button
       >
       <b-collapse id="container-collapse" class="mt-2">
-        <b-card v-for="(container_info) in container_infos" :key="container_info.ID" class="mb-1">
+        <!--The container info have a ID array, if same type of container >0, we take the first ID as key  -->
+        <b-card v-for="(container_info) in container_infos" :key="container_info.ID[0]" class="mb-1">
           <span
             class="float-end delete-span"
-            @click="deleteContainerInfo(container_info.ID)"
+            @click="deleteContainerInfo(container_info.ID[0])"
           >
             X
           </span>
@@ -51,7 +52,7 @@
 
              <b-button
             v-b-toggle
-            v-bind:href="concateStringToGetContainerIDhref(container_info.ID)"
+            v-bind:href="concateStringToGetContainerIDhref(container_info.ID[0])"
             variant="success"
             size="sm"
             block
@@ -59,7 +60,7 @@
             >Details</b-button
           >    
           <b-collapse
-            v-bind:id="concateStringToGetContainerID(container_info.ID)"
+            v-bind:id="concateStringToGetContainerID(container_info.ID[0])"
             class="mt-2"
           >
             <!-- container detial-->

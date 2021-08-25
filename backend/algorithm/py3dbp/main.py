@@ -8,7 +8,7 @@ START_POSITION = [0, 0, 0]
 
 
 class Item:
-    def __init__(self,ID ,name, width, height, depth, weight):
+    def __init__(self,ID ,name, width, height, depth, weight, type_index):
         self.ID=ID
         self.name = name
         self.width = width
@@ -18,6 +18,7 @@ class Item:
         self.rotation_type = 0
         self.position = START_POSITION
         self.number_of_decimals = DEFAULT_NUMBER_OF_DECIMALS
+        self.type_index=type_index
 
     def format_numbers(self, number_of_decimals):
         self.width = set_to_decimal(self.width, number_of_decimals)
@@ -49,7 +50,8 @@ class Item:
         "Weight":float(self.weight),
         "position_x":float(self.position[0]),
         "position_y":float(self.position[1]),
-        "position_z":float(self.position[2])
+        "position_z":float(self.position[2]),
+        "TypeIndex":self.type_index
         }
 
     def get_volume(self):
@@ -77,7 +79,7 @@ class Item:
 
 
 class Bin:
-    def __init__(self, ID, name, width, height, depth, max_weight):
+    def __init__(self, ID, name, width, height, depth, max_weight, type_index):
         self.ID=ID
         self.name = name
         self.width = width
@@ -87,6 +89,7 @@ class Bin:
         self.items = []
         self.unfitted_items = []
         self.number_of_decimals = DEFAULT_NUMBER_OF_DECIMALS
+        self.type_index=type_index
 
     def format_numbers(self, number_of_decimals):
         self.width = set_to_decimal(self.width, number_of_decimals)
@@ -125,7 +128,8 @@ class Bin:
             "Z":float(self.depth),
             "Weight_limmit":float(self.max_weight),
             "Fitted_items":FittedItemArray,
-            "UnFitted_items":unFittedItemArray
+            "UnFitted_items":unFittedItemArray,
+            "TypeIndex":self.type_index
     }
 
     def get_volume(self):

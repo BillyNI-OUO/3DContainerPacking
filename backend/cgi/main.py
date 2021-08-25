@@ -1,9 +1,11 @@
+#main.py
+
 from flask import Flask
 from flask import request
 from flask_cors import CORS
 from py3dbp import Packer, Bin, Item
 import json
-
+import uuid
 
 
 #===========================================================
@@ -49,30 +51,46 @@ def Processing3DBP(container_infos, box_infos):
 
     flag_success=True
     flag_partial_success=False
+    
+
+    total_container_types=len(container_infos)
+    total_box_types=len(box_infos)
+
 
     #processing box_info
-    for box_info in box_infos:
+    for index, box_info in enumerate(box_infos):
         #if the sameType of box only is one, do nothing and pass it to algorithm
         if (box_info['Numbers'] ==1):
-            packer.add_item(Item(box_info['ID'], box_info['TypeName'], box_info['X'], box_info['Y'], box_info['Z'], box_info['Weight']))
+            packer.add_item(Item(box_info['ID'], box_info['TypeName'], box_info['X'], box_info['Y'], box_info['Z'], box_info['Weight'], type_index=index))
 
         #else create copy and pass it into algorithm
         else:
             for number_index in range(int(box_info['Numbers'])):
                 name_with_index=box_info['TypeName']+"_"+str(+number_index)
-                packer.add_item(Item(box_info['ID'], name_with_index, box_info['X'], box_info['Y'], box_info['Z'], box_info['Weight']))
+                #if the index is 0 new instance keep the original ID
+                if (number_index==0):
+                    packer.add_item(Item(box_info['ID'], name_with_index, box_info['X'], box_info['Y'], box_info['Z'], box_info['Weight'], type_index=index))
+                else:
+                    #else it will create new uuidv4 for this instance
+                    packer.add_item(str(uuid.uuid4()), name_with_index, box_info['X'], box_info['Y'], box_info['Z'], box_info['Weight'], type_index=index)
     
+
     #processing container_info
-    for container_info in container_infos:
+    for index, container_info in enumerate(container_infos):
         #if the sameType of container number only is one, do nothing and pass it to algorithm
         if (container_info['Numbers'] ==1):
-            packer.add_bin(Bin(container_info['ID'], container_info['TypeName'], container_info['X'], container_info['Y'], container_info['Z'], container_info['Weight']))
+            packer.add_bin(Bin(container_info['ID'], container_info['TypeName'], container_info['X'], container_info['Y'], container_info['Z'], container_info['Weight'], type_index=index))
 
-        #else create copy and pass it into algorithm
+        #else multiple numbers condition, create copy and pass it into algorithm
         else:
-            for number_index in container_info['Numbers']:
+            for number_index in  container_info['Numbers']:
                 name_with_index=container_info['TypeName']+"_"+number_index
-                packer.add_bin(Bin(container_info['ID'], name_with_index, container_info['X'], container_info['Y'], container_info['Z'], container_info['Weight_limmit']))     
+                #if the index is 0 new instance keep the original ID
+                if (number_index==0):
+                    packer.add_bin(Bin(container_info['ID'], name_with_index, container_info['X'], container_info['Y'], container_info['Z'], container_info['Weight_limmit'], type_index=index))
+                else:
+                    #else it will create new uuidv4 for this instance
+                    packer.add_bin(Bin(str(uuid.uuid4()), name_with_index, container_info['X'], container_info['Y'], container_info['Z'], container_info['Weight_limmit'], type_index=index))    
     #calculate
     packer.pack()
 
@@ -101,7 +119,13 @@ def Processing3DBP(container_infos, box_infos):
         statusNumber=2
 
     #add status of containers
-    final_info_dictionary={"status":statusNumber, "containers":containers_array}
+    final_info_dictionary={
+        "status":statusNumber,
+        "containers":containers_array,
+        "total_container_types":total_container_types,
+        "total_box_types":total_container_types
+        }
+
     result_json_info=json.dumps(final_info_dictionary, indent=4)
  
 

@@ -132,7 +132,7 @@ export default {
     return {
       container_infos:[],
       container_info: {
-          ID: uuidv4(),
+          ID: [uuidv4()],
           TypeName:"",
           X: "",
           Y: "",
@@ -154,10 +154,16 @@ export default {
         showConfirmButton: false,
         timer: 1500,
       });
+      //if number >1 add IDs for all instance
+      if(this.contaier_info.Numbers>1){
+        for (let i=0; i!=this.container_info-1;i++){
+            this.container_info.ID.push(uuidv4());
+        }
+      }
       this.container_infos.push(this.container_info)
       this.$store.dispatch("appendContainerInfos", this.container_infos);
       this.container_infos=[];
-      this.container_info={ID:uuidv4()};
+      this.container_info={ID:[uuidv4()]};
     },
     updateWithFakeData(){
       let test_box=[{
