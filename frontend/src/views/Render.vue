@@ -95,8 +95,8 @@ export default {
         cont.material =
           container_mat_array[render_infos["containers"][i]["TypeIndex"]];
           //registre actions
-          cont.actionManager = new BABYLON.ActionManager(scene);
-          makeOverOut(cont);
+          //cont.actionManager = new BABYLON.ActionManager(scene);
+          //makeOverOut(cont);
         //=========================================================
         //Move the first container to 0,0,0 and set its position as reference
         //=========================================================
@@ -104,7 +104,7 @@ export default {
           //move the container to the ground
           cont.position.y = render_infos["containers"][0]["Y"] / 2;
           //move the container[0] align to 0,0,0
-          cont.position.z = 0 - render_infos["containers"][0]["Z"] / 2;
+          cont.position.z = render_infos["containers"][0]["Z"] / 2;
           cont.position.x = render_infos["containers"][0]["X"] / 2;
           containers_mesh_array.push(cont);
         } else {
@@ -136,7 +136,7 @@ export default {
         render_infos["containers"][0]["Y"] / 2;
       //move the container[0] align to 0,0,0
       containers_mesh_array[0].position.z =
-        0 - render_infos["containers"][0]["Z"] / 2;
+         render_infos["containers"][0]["Z"] / 2;
       containers_mesh_array[0].position.x =
         render_infos["containers"][0]["X"] / 2;
 
@@ -157,9 +157,11 @@ export default {
         let origin_coordinate_x =
           containers_mesh_array[i].position.x -
           render_infos["containers"][i]["X"] / 2;
-        let origin_coordinate_z =
+        let origin_coordinate_z =0
+        /*
           containers_mesh_array[i].position.z +
           render_infos["containers"][i]["Z"] / 2;
+          */
         left_top_positions_array.push({
           X: origin_coordinate_x,
           Z: origin_coordinate_z,
@@ -197,20 +199,20 @@ export default {
           });
         
 
-
+          //======================================================
+          //Set the box material
+          //======================================================
+          box_instance.material =
+          box_mat_array[container["Fitted_items"][i]["TypeIndex"]];
 
           
           console.log(box_instance);
           //======================================================
           //Register actions
           //======================================================
-          //box_instance.actionManager = new BABYLON.ActionManager(scene);
-          //makeOverOut(box_instance)
-          //======================================================
-          //Set the box material
-          //======================================================
-          box_instance.material =
-            box_mat_array[container["Fitted_items"][i]["TypeIndex"]];
+          box_instance.actionManager = new BABYLON.ActionManager(scene);
+          makeOverOut(box_instance)
+
           //======================================================
           //Set the box position
           //======================================================
@@ -222,7 +224,7 @@ export default {
             box_y / 2 + container["Fitted_items"][i]["position_y"];
           box_instance.position.z =
             left_top_positions_array[index_of_container]["Z"] +
-            container["Fitted_items"][i]["position_z"] -
+            container["Fitted_items"][i]["position_z"] +
             box_z / 2;
           box_mesh_array.push(box_instance);
         } //end inner for
