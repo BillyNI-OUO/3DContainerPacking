@@ -191,7 +191,7 @@ export default {
           X: "50",
           Y: "60",
           Z: "70",
-          Weight_limmit: "2",
+          Weight_limmit: "200",
           Numbers: "1",
         },
       ];
