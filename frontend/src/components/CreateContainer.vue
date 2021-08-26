@@ -173,7 +173,6 @@ export default {
     saveChanges() {
     //  console.log(this.container_info);
       Swal.fire({
-        position: "top-end",
         icon: "success",
         title: "Your work has been saved",
         showConfirmButton: false,

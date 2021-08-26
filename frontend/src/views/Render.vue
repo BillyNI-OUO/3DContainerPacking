@@ -9,7 +9,7 @@
 import * as BABYLON from "@babylonjs/core";
 //import { AdvancedDynamicTexture } from "@babylonjs/gui";
 //import { Button } from "@babylonjs/gui";
-import Swal from "sweetalert2";
+//import Swal from "sweetalert2";
 import { GridMaterial } from "@babylonjs/materials/grid";
 import "babylonjs-materials";
 // Required side effects to populate the Create methods on the mesh class. Without this, the bundle would be smaller but the createXXX methods from mesh would not be accessible.
@@ -17,21 +17,13 @@ import "@babylonjs/core/Meshes/meshBuilder";
 import { mapState } from "vuex";
 
 //import my render javascript functions.
-import TestRender from "@/Render_functions/TestRender";
-import Utils from "@/Render_functions/Utils";
+//import TestRender from "@/Render_functions/TestRender";
+
 
 
 export default {
   name: "Render",
   components: {},
-  //container_info structure:
-  //            ID:'',
-  //            X:'',
-  //            Y:'',
-  //            Z:'',
-  //            Weight_limmit:'',
-  //            Numbers:''
-
   //========================================
   //Computed:
   //Description: Initialize the variable
@@ -43,30 +35,150 @@ export default {
   }),
 
   mounted() {
-    //*You have to initialize the value before create scene
 
-    //container setting
-    console.log("container_infos:x" + this.container_infos[0].X);
-    var container_infos = this.container_infos;
-    var render_infos=this.render_infos;
-    console.log(render_infos);
-
-    //box setting
-    console.log("box_infos:x" + this.box_infos[0].X);
-    console.log("box_infos:ID" + this.box_infos[0].TypeName);
-    var box_infos = this.box_infos
     var canvas = document.getElementById("renderCanvas"); // 得到canvas对象的引用
     var engine = new BABYLON.Engine(canvas, true); // 初始化 BABYLON 3D engine
-
-    /*========================WARNNING======================================= */
-    //you can not asccess 'this.xxx' property after create the scene
-
     /******* Add the create scene function ******/
-    var createScene = function () {
+    var createScene = function (render_infos) {
       //create scene
       var scene = new BABYLON.Scene(engine);
       //=========uncomment the following line to set debug mode=======*/
       //scene.debugLayer.show();
+
+      //======================starting create elements=======================
+      
+      
+      
+      //global variable
+      var ground_size=500;
+      var total_container_number=render_infos['containers'].length
+      //var container_margin=10
+
+
+
+
+      console.log("render_infos['containers'].lenght:"+total_container_number)
+
+    //draw containers
+    //random color function color(0~1)
+      function getRandomColor(min, max) {
+        let r=1;
+        let g=1;
+        let b=1;
+          r=Math.random() * (max - min) + min;
+          g=Math.random() * (max - min) + min;
+          b=Math.random() * (max - min) + min;
+          return new BABYLON.Color3(r,g,b);
+      }
+      
+      
+
+    //===================================================== 
+    //create material array for containers
+    //=====================================================
+      var container_mat_array=[];
+      for(let i=0; i<render_infos['total_container_types'];i++){
+        let container_mat_name=render_infos['containers'][i]['TypeName']+"mat"
+        let mat=  new BABYLON.StandardMaterial(container_mat_name, scene)
+        mat.diffuseColor =getRandomColor(0.6,1)
+        mat.alpha = 0.5;
+        container_mat_array.push(mat)
+      }
+    //=======================================================
+    //create container array
+    //=======================================================
+     var containers_mesh_array=[];
+     for(let i=0; i<render_infos['containers'].length;i++){
+       console.log(render_infos['containers'][i]['ID'])
+      let container_mesh_name=render_infos['containers'][i]['ID']
+      let cont=( BABYLON.MeshBuilder.CreateBox(container_mesh_name, {
+        height: render_infos['containers'][i]['X'],
+        width: render_infos['containers'][i]['Y'],
+        depth: render_infos['containers'][i]['Z'],
+      }));
+
+      cont.material=container_mat_array[render_infos['containers'][i]['TypeIndex']]
+      containers_mesh_array.push(cont);
+     }
+      console.log(containers_mesh_array)
+      
+    //move the position for each container
+
+    
+    //=========================================================
+    //Move the first container to 0,0,0 and set its position as reference
+    //=========================================================
+     //move the container to the ground
+    containers_mesh_array[0].position.y+=(render_infos['containers'][0]['Y'])/2;
+    //move the container[0] align to 0,0,0
+    containers_mesh_array[0].position.z+=(render_infos['containers'][0]['Z'])/2;
+    containers_mesh_array[0].position.x+=(render_infos['containers'][0]['X'])/2;
+
+    //move other containers if exsist
+    for(let i=1; i<total_container_number;i++){
+      //move the container to the ground
+        containers_mesh_array[i].position.y+=(render_infos['containers'][i]['Y'])/2;
+        //move the container[0] align to 0,0,0
+        containers_mesh_array[i].position.z+=(render_infos['containers'][i]['Z'])/2;
+        containers_mesh_array[i].position.x+=containers_mesh_array[i-1].position.x+30+render_infos['containers'][i]['X']/2+render_infos['containers'][i-1]['X']/2
+    }
+
+
+      //========================================================================
+      //Calculate the upper left corner position on x-z plane for each container
+      //========================================================================
+      var left_top_positions_array=[]
+      for(let i=0; i<=render_infos['total_container_number'];i++){
+      var origin_coordinate_x = containers_mesh_array[i].position.x - render_infos['containers'][i]['X'] / 2;
+      var origin_coordinate_y=containers_mesh_array[i].position.y;
+      var origin_coordinate_z =containers_mesh_array[i].position.z;
+      left_top_positions_array.push({"X":origin_coordinate_x,"Y":origin_coordinate_y, "Z":origin_coordinate_z})
+      console.log("left_top")
+      console.log(left_top_positions_array)
+      }
+    //===================================================== 
+    //create material array for boxes
+    //=====================================================
+      var box_mat_array=[];
+      for(let i=0; i<render_infos['total_box_types'];i++){
+        let box_mat_name="boxmat"+i
+        let mat=  new BABYLON.StandardMaterial(box_mat_name, scene)
+        mat.diffuseColor =getRandomColor(0.3,1)
+        mat.alpha = 0.5;
+        box_mat_array.push(mat)
+      }
+
+      //=========================================================================
+      //create the fitted boxes for each container      
+      //=========================================================================
+      var box_mesh_array=[] 
+      for(const [index_of_container, container] of render_infos["containers"].entries()){
+        console.log(container['Fitted_items'].length)
+        for(let i=0; i<container['Fitted_items'].length;i++){
+          let box_x=container["Fitted_items"][i]["X"]
+          let box_y=container["Fitted_items"][i]["Y"]
+          let box_z=container["Fitted_items"][i]["Z"]
+          let box_mesh_name=container["Fitted_items"][i]['ID']
+          let box_instance=( BABYLON.MeshBuilder.CreateBox(box_mesh_name, {
+              height: box_x,
+              width: box_y,
+              depth: box_z,
+        }));
+            box_instance.material=box_mat_array[container["Fitted_items"][i]["TypeIndex"]]
+            console.log(left_top_positions_array)
+            box_instance.position.x=(left_top_positions_array[index_of_container])['X']+container['Fitted_items']['position_x']
+            box_instance.position.y=(left_top_positions_array[index_of_container])['Y']+container['Fitted_items']['position_y']
+            box_instance.position.z=(left_top_positions_array[index_of_container])['Z']+container['Fitted_items']['position_z']
+            box_mesh_array.push(box_instance)
+       }//end inner for
+     }//end outter for
+
+
+
+
+
+
+
 
       const camera = new BABYLON.ArcRotateCamera(
         "camera",
@@ -81,165 +193,20 @@ export default {
       // eslint-disable-next-line no-unused-vars
       var light1 = new BABYLON.HemisphericLight(
         "light1",
-        new BABYLON.Vector3(1, 1, 0),
+        new BABYLON.Vector3(0, 150, 0),
         scene
       );
       // eslint-disable-next-line no-unused-vars
       var light2 = new BABYLON.PointLight(
         "light2",
-        new BABYLON.Vector3(0, 1, -1),
+        new BABYLON.Vector3(2, 150, -1),
         scene
       );
-      //my code
-      //================================================
-      // Create Container
-      //================================================
-      var container_width = render_infos[0].X;
-
-      var container_height = render_infos[0].Y;
-      var container_deepth = render_infos[0].Z;
-      const container = BABYLON.MeshBuilder.CreateBox("container", {
-        height: container_height,
-        width: container_width,
-        depth: container_deepth,
-      });
-      //Create the container material
-      var mat_for_container = new BABYLON.StandardMaterial("mat", scene);
-      mat_for_container.diffuseColor = BABYLON.Color3.White();
-      mat_for_container.alpha = 0.3;
-      //Attach material to the container
-      container.material = mat_for_container;
-
-      //set the position y of container so that it can stand on the "ground"
-      container.position.y += container_height / 2;
-
-      //===================================================
-      //Calculate the upper left corner position on x-z plane
-      //===================================================
-      var origin_coordinate_x = 0 - container_infos[0].X / 2;
-      //var origin_coordinate_y; y base on box its own height
-      var origin_coordinate_z = container_infos[0].Z / 2;
       
-
-
-      //===================================================
-      //Create the box
-      //===================================================
-      var ID_ARRAY=[]
-      for (fitted_box of render_infos['Fitted_items']){
-        ID_ARRAY.push(fitted_box['ID'])
-      }
-      var  unique=[]
-      var distinct=[]
-      for(let i=0; i<ID_ARRAY.length; i++)
-
-
-
-
-
-
-
-      var mat_for_boxes0 = new BABYLON.StandardMaterial("matboxes0", scene);
-      mat_for_boxes0.diffuseColor = BABYLON.Color3.Blue();
-      mat_for_boxes0.alpha = 0.5;
-
-      //define box hover actions
-      // Over/Out
-      var makeOverOut = function (mesh) {
-        mesh.actionManager.registerAction(
-          new BABYLON.SetValueAction(
-            BABYLON.ActionManager.OnPointerOutTrigger,
-            mesh.material,
-            "emissiveColor",
-            mesh.material.emissiveColor
-          )
-        );
-        mesh.actionManager.registerAction(
-          new BABYLON.SetValueAction(
-            BABYLON.ActionManager.OnPointerOverTrigger,
-            mesh.material,
-            "emissiveColor",
-            BABYLON.Color3.White()
-          )
-        );
-        //uncomment the following line to make the box size chage while clicked.
-        //mesh.actionManager.registerAction(new BABYLON.InterpolateValueAction(BABYLON.ActionManager.OnPointerOutTrigger, mesh, "scaling", new BABYLON.Vector3(1, 1, 1), 150));
-        //mesh.actionManager.registerAction(new BABYLON.InterpolateValueAction(BABYLON.ActionManager.OnPointerOverTrigger, mesh, "scaling", new BABYLON.Vector3(1.1, 1.1, 1.1), 150));
-      };
-
-
-
-      var makeOnClickShowInfo=function (mesh, box_infos, iter_of_type, iter){
-
-        mesh.actionManager.registerAction(
-          new BABYLON.ExecuteCodeAction(
-              BABYLON.ActionManager.OnPickTrigger,
-              function(evt){
-            let titlestr="BoxName:"+box_infos[iter_of_type].TypeName+"_"+iter
-       Swal.fire({
-          title: titlestr,
-          text: "Do you want to continue",
-          icon: "error",
-          confirmButtonText: "Cool",
-        });
-        console.log("clicked the box"+evt);
-              }//end function
-          )
-        )
-      }
-
-      //for loop create box
-      for (let iter = 0; iter != box_infos[0].Numbers; iter++) {
-        let box_name = "box_" + iter; //box_0, box_1, box_2 ...
-        console.log("create boxes, box_name:" + box_name);
-        boxes_array.push(
-          BABYLON.MeshBuilder.CreateBox(box_name, {
-            height: box_infos[0].X,
-            width: box_infos[0].Y,
-            depth: box_infos[0].Z,
-          })
-        );
-        //attach material
-        boxes_array[iter].material = mat_for_boxes0;
-
-        boxes_array[iter].position.x =
-          box_infos[0].X * (iter + 1) +
-          origin_coordinate_x -
-          box_infos[0].X / 2;
-        boxes_array[iter].position.y += box_infos[0].Y / 2;
-        boxes_array[iter].position.z = origin_coordinate_z - box_infos[0].Z / 2;
-
-        //register the action that,if box is clicked, alert the box ID
-        boxes_array[iter].actionManager = new BABYLON.ActionManager(scene);
-
-
-      } //end for loop
-
-
-
-
-
-
-      console.log(boxes_array);
-      console.log(box_infos);
-      //register action for all of the boxes
-      for(let iter=0; iter!=boxes_array.length;iter++){
-        makeOverOut(boxes_array[iter]);
-
-        //iter of type is the index of box_infos, iter is the N th box in same type of box 
-        makeOnClickShowInfo(boxes_array[iter], box_infos, 0, iter);
-      }
-
-      //makeOverOut(boxes_array[0]);
-      //makeOnClickShowInfo(boxes_array[0]);
-
-      //container.material=skyboxMaterial;
-      TestRender.testTexture(scene);
-
       // Create my custom ground
       var ground = BABYLON.MeshBuilder.CreateGround("ground1", {
-        height: 500,
-        width: 500,
+        height: ground_size,
+        width: ground_size,
         subdivisions: 4,
       });
 
@@ -260,7 +227,7 @@ export default {
       return scene;
     };
     /******* End of the create scene function ******/
-    var scene = createScene(); //Call the createScene function
+    var scene = createScene(this.render_infos); //Call the createScene function
     // 最后一步调用engine的runRenderLoop方案，执行scene.render()，让我们的3d场景渲染起来
     engine.runRenderLoop(function () {
       scene.render();

@@ -8,7 +8,7 @@ const store = new Vuex.Store({
     state: {
         container_infos: [],
         box_infos:[],
-        render_data:[],
+        render_infos:[],
     },
     mutations: {
         // 將state設定為參數
@@ -41,8 +41,8 @@ const store = new Vuex.Store({
                 return new_array;
             },[])
         },
-        MUTATE_RENDER_DATA(state, new_render_data){
-            state.render_data=new_render_data;
+        MUTATE_RENDER_DATA(state, new_render_infos){
+            state.render_infos=new_render_infos;
         },
     },//end mutation
     actions: {
@@ -64,8 +64,8 @@ const store = new Vuex.Store({
         deleteBox_infosItemWithUUID:(context, uuid) =>{
             context.commit("MUTATE_DELETE_BOX_WITH_UUID", uuid)
         },
-        loadRenderData:(context, render_data)=>{
-            context.commit("MUTATE_RENDER_DATA", render_data)
+        loadRenderInfos:(context, render_infos)=>{
+            context.commit("MUTATE_RENDER_DATA", render_infos)
         }
     },//end actions
     getters:{
