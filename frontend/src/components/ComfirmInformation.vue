@@ -48,7 +48,7 @@
             class="card-img img-thumbnail rounded float-start mr-4 iconImage"
             src="../../imgs/container.png"
           />
-          <span class="caption" v-if="OnClickShowNumber">numbers</span>
+          <span class="caption" >numbers</span>
           </div>
           <h1 class="display-6 ml-5">X{{ container_info.Numbers }}</h1>
 
@@ -56,10 +56,10 @@
              <b-button
             v-b-toggle
             v-bind:href="concateStringToGetContainerIDhref(container_info.ID)"
-            variant="success"
+            variant="light"
             size="sm"
             block
-            class="float-end"
+            class="moveToBottom shadow-sm"
             >Details</b-button
           >    
           <b-collapse
@@ -67,7 +67,7 @@
             class="mt-2"
           >
             <!-- container detial-->
-            <b-card>
+            <b-card class="shadow">
               <table class="table">
                 <thead class="thead-light">
                   <tr>
@@ -125,7 +125,7 @@
             v-b-toggle
             v-bind:href="concateStringToGetBoxIDhref(box_info.ID)"
             size="sm"
-            class=" moveToBottom"
+            class=" moveToBottom shadow-sm" 
             block
             variant="light"
             >Details</b-button
@@ -232,6 +232,16 @@ export default {
         },
       }).then((response) => {
         console.log(response.data);
+        if (response.data['status']==1){
+          console.log('status success')
+        }else if(response.data['status'==2]){
+          console.log('status fail')
+        }else if(response.data['status']==3){
+          console.log('status partial success')
+        }else{
+          console.log('unknow status code.')
+        }
+        this.$store.dispatch("loadRenderData", response.data);
       });
     },
     deleteContainerInfo(container_info_uuid){

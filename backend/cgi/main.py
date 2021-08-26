@@ -72,7 +72,7 @@ def Processing3DBP(container_infos, box_infos):
                     packer.add_item(Item(box_info['ID'], name_with_index, box_info['X'], box_info['Y'], box_info['Z'], box_info['Weight'], type_index=index))
                 else:
                     #else it will create new uuidv4 for this instance
-                    packer.add_item(str(uuid.uuid4()), name_with_index, box_info['X'], box_info['Y'], box_info['Z'], box_info['Weight'], type_index=index)
+                    packer.add_item(Item(str(uuid.uuid4()), name_with_index, box_info['X'], box_info['Y'], box_info['Z'], box_info['Weight'], type_index=index))
     
 
     #processing container_info
@@ -123,7 +123,7 @@ def Processing3DBP(container_infos, box_infos):
         "status":statusNumber,
         "containers":containers_array,
         "total_container_types":total_container_types,
-        "total_box_types":total_container_types
+        "total_box_types":total_box_types
         }
 
     result_json_info=json.dumps(final_info_dictionary, indent=4)

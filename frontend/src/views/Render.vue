@@ -18,6 +18,8 @@ import { mapState } from "vuex";
 
 //import my render javascript functions.
 import TestRender from "@/Render_functions/TestRender";
+import Utils from "@/Render_functions/Utils";
+
 
 export default {
   name: "Render",
@@ -37,6 +39,7 @@ export default {
   computed: mapState({
     container_infos: (state) => state.container_infos,
     box_infos: (state) => state.box_infos,
+    render_infos:(state)=>state.render_infos
   }),
 
   mounted() {
@@ -45,6 +48,8 @@ export default {
     //container setting
     console.log("container_infos:x" + this.container_infos[0].X);
     var container_infos = this.container_infos;
+    var render_infos=this.render_infos;
+    console.log(render_infos);
 
     //box setting
     console.log("box_infos:x" + this.box_infos[0].X);
@@ -89,10 +94,10 @@ export default {
       //================================================
       // Create Container
       //================================================
-      var container_width = container_infos[0].X;
+      var container_width = render_infos[0].X;
 
-      var container_height = container_infos[0].Y;
-      var container_deepth = container_infos[0].Z;
+      var container_height = render_infos[0].Y;
+      var container_deepth = render_infos[0].Z;
       const container = BABYLON.MeshBuilder.CreateBox("container", {
         height: container_height,
         width: container_width,
@@ -120,9 +125,20 @@ export default {
       //===================================================
       //Create the box
       //===================================================
-      var boxes_array = [];
-    //  var plane_array = [];
-      //Create the box1 material
+      var ID_ARRAY=[]
+      for (fitted_box of render_infos['Fitted_items']){
+        ID_ARRAY.push(fitted_box['ID'])
+      }
+      var  unique=[]
+      var distinct=[]
+      for(let i=0; i<ID_ARRAY.length; i++)
+
+
+
+
+
+
+
       var mat_for_boxes0 = new BABYLON.StandardMaterial("matboxes0", scene);
       mat_for_boxes0.diffuseColor = BABYLON.Color3.Blue();
       mat_for_boxes0.alpha = 0.5;
