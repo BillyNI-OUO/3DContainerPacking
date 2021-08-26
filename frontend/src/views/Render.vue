@@ -20,6 +20,7 @@ import { mapState } from "vuex";
 //====================================================
 import showAxis from "@/Render_functions/ShowAxis";
 import makeOverOut from "@/Render_functions/RegisterActions";
+import rotationWithType from "@/Render_functions/RotationWithType"
 export default {
   name: "Render",
   components: {},
@@ -121,10 +122,11 @@ export default {
               render_infos["containers"][i]["X"] / 2 +
               render_infos["containers"][i - 1]["X"] / 2;
               containers_mesh_array.push(cont);
-          }
+          
           console.log(containers_mesh_array);
         }
       }
+    }//end create container array for
 
       //move the position for each container
 
@@ -183,6 +185,7 @@ export default {
       //create the fitted boxes for each container
       //=========================================================================
       var box_mesh_array = [];
+      var sphere_array=[];
       for (const [index_of_container, container] of render_infos[
         "containers"
       ].entries()) {
@@ -226,9 +229,39 @@ export default {
             left_top_positions_array[index_of_container]["Z"] +
             container["Fitted_items"][i]["position_z"] +
             box_z / 2;
+          //===========================================================
+          //Draw Help sphere to know the location
+          //===========================================================
+          let sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {});
+          sphere.position.x=box_instance.position.x
+          sphere.position.y=box_instance.position.y
+          sphere.position.z=box_instance.position.z
+          sphere_array.push(sphere)
+
+          //==========================================================
+          //Rotate the boxes based on differend conditions
+          //==========================================================
+            let rotateType=container["Fitted_items"][i]["RotationType"]
+            rotationWithType(box_instance,rotateType)        
+
           box_mesh_array.push(box_instance);
         } //end inner for
       } //end outter for
+
+
+      //=====================================================================
+      //Create skybox
+      //=====================================================================
+      var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:1000.0}, scene);
+      var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+      skyboxMaterial.backFaceCulling = false;
+      skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("./textures/skybox", scene);
+      skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+      skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+      skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+      skybox.material = skyboxMaterial;
+
+
 
       const camera = new BABYLON.ArcRotateCamera(
         "camera",
