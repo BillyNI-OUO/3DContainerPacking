@@ -3,7 +3,9 @@
     <div id="nav">
       <custom-navbar/>
     </div>
+    <transition name="slide" mode="out-in">
     <router-view/>
+    </transition>
   </div>
 </template>
 
@@ -17,7 +19,17 @@ export default {
 }
 
 </script>
-
+<style scoped>
+.slide-enter-active,
+.slide-leave-active{
+transition:opacity 0.7s, transform 0.7s;
+}
+.slide-enter,
+.slide-leave-to{  
+  opacity:0;
+  transform: translateX(-40%);
+}
+</style>
 
 
 

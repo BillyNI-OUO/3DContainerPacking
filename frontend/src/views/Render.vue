@@ -19,8 +19,9 @@ import { mapState } from "vuex";
 //import my render javascript functions.
 //====================================================
 import showAxis from "@/Render_functions/ShowAxis";
-import makeOverOut from "@/Render_functions/RegisterActions";
+import actions from "@/Render_functions/RegisterActions";
 import rotationWithType from "@/Render_functions/RotationWithType"
+//import customLoadSreen from "@/Render_functions/RotationWithType"
 export default {
   name: "Render",
   components: {},
@@ -37,13 +38,22 @@ export default {
   mounted() {
     var canvas = document.getElementById("renderCanvas"); // 得到canvas对象的引用
     var engine = new BABYLON.Engine(canvas, true); // 初始化 BABYLON 3D engine
-    
+
+
+    //=========================================================================
+    //set loading screen before create scene
+    //=========================================================================
+    //engine.displayLoadingUI();
+
+
     /******* Add the create scene function ******/
     var createScene = function (render_infos) {
       //create scene
       var scene = new BABYLON.Scene(engine);
-      //=========uncomment the following line to set debug mode=======*/
-      scene.debugLayer.show();
+      //=====================================================================
+      //uncomment the following line to set debug mode
+      //=====================================================================
+      //scene.debugLayer.show();
 
       //======================starting create elements=======================
 
@@ -186,7 +196,9 @@ export default {
       //create the fitted boxes for each container
       //=========================================================================
       var box_mesh_array = [];
-      var sphere_array=[];
+      //also create additional box for show the box information
+      //var control_box_mesh_arrary=[];
+      
       for (const [index_of_container, container] of render_infos[
         "containers"
       ].entries()) {
@@ -199,9 +211,8 @@ export default {
           console.log("rotateType"+rotateType)
           //rotate the box
           let origin_xyz_array=[container["Fitted_items"][i]["X"], container["Fitted_items"][i]["Y"], container["Fitted_items"][i]["Z"]]
-          console.log("origianl"+origin_xyz_array)
           let xyz_array=rotationWithType(origin_xyz_array, rotateType);
-          console.log("afer"+xyz_array)
+
           let box_x =xyz_array[0] ;
           let box_y =xyz_array[1] ;
           let box_z =xyz_array[2];
@@ -211,9 +222,6 @@ export default {
             height: box_y,
             depth: box_z,
           });
-        console.log("xyz")
-        console.log(box_x,box_y,box_z)
-
           //======================================================
           //Set the box material
           //======================================================
@@ -226,7 +234,7 @@ export default {
           //Register actions
           //======================================================
           box_instance.actionManager = new BABYLON.ActionManager(scene);
-          makeOverOut(box_instance)
+          actions.makeOverOut(box_instance)
 
           //======================================================
           //Set the box position
@@ -239,27 +247,11 @@ export default {
             //left_top_positions_array[index_of_container]["Z"] +
             container["Fitted_items"][i]["position_z"] +
             box_z / 2;
-            console.log()
-            console.log("offset_pos_x")
-            console.log(container["Fitted_items"][i]["position_x"])
-            console.log("offset_pos_y")
-            console.log(container["Fitted_items"][i]["position_y"])
-            console.log("offset_pos_z")
-            console.log(container["Fitted_items"][i]["position_z"])
-            console.log("finale pos x")
-            console.log(box_instance.position.x)
-            console.log("finale pos y")
-            console.log(box_instance.position.y)
-            console.log("finale pos z")
-            console.log(box_instance.position.z)
           //===========================================================
-          //Draw Help sphere to know the location
+          //Create control box
           //===========================================================
-          let sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {});
-          sphere.position.x=box_instance.position.x
-          sphere.position.y=box_instance.position.y
-          sphere.position.z=box_instance.position.z
-          sphere_array.push(sphere)
+
+
 
           box_mesh_array.push(box_instance);
         } //end inner for
@@ -308,11 +300,16 @@ export default {
 		camera.alpha += 0.004;
 	});
   */
+
+
       return scene;
     };
     /******* End of the create scene function ******/
+    this.$store.dispatch("setRenderLoadingStatus", false);
     var scene = createScene(this.render_infos); //Call the createScene function
+    this.$store.dispatch("setRenderLoadingStatus", true);
     // 最后一步调用engine的runRenderLoop方案，执行scene.render()，让我们的3d场景渲染起来
+
     engine.runRenderLoop(function () {
       scene.render();
     });
@@ -321,6 +318,7 @@ export default {
       engine.resize();
     });
   }, //end monted
+
 };
 </script>
 

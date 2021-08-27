@@ -9,6 +9,7 @@ const store = new Vuex.Store({
         container_infos: [],
         box_infos:[],
         render_infos:[],
+        render_loading_status:false,
     },
     mutations: {
         // 將state設定為參數
@@ -44,6 +45,9 @@ const store = new Vuex.Store({
         MUTATE_RENDER_DATA(state, new_render_infos){
             state.render_infos=new_render_infos;
         },
+        MUTATE_RENDER_LOADING_STATUS(state, new_staus){
+            state.render_loading_status=new_staus;
+        }
     },//end mutation
     actions: {
         loadContainerInfos: (context, container_infos) => {
@@ -66,6 +70,10 @@ const store = new Vuex.Store({
         },
         loadRenderInfos:(context, render_infos)=>{
             context.commit("MUTATE_RENDER_DATA", render_infos)
+        },
+        setRenderLoadingStatus:(context, new_status)=>{
+            context.commit("MUTATE_RENDER_LOADING_STATUS", new_status);
+            console.log("render status become"+new_status)
         }
     },//end actions
     getters:{

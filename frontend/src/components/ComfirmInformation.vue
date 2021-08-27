@@ -4,12 +4,12 @@
   <div>
     <!-- STEPPER-->
     <div class="container m-3">
-   <a-steps :current="1" status="error">
-    <a-step title="Finished" description="This is a description." />
-    <a-step title="In Progress" description="This is a description." />
-    <a-step title="Waiting" description="This is a description." />
-  </a-steps>
-  </div>
+      <a-steps :current="1" status="error">
+        <a-step title="Finished" description="This is a description." />
+        <a-step title="In Progress" description="This is a description." />
+        <a-step title="Waiting" description="This is a description." />
+      </a-steps>
+    </div>
     <!--end stepper-->
     <!--show error message if there are empty value-->
     <div v-if="ContainerArrayHaveNoData" class="m-3">
@@ -53,11 +53,19 @@
           </span>
           <!--flex container -->
           <div class="">
-          <h4>{{ container_info.TypeName }}</h4>
+            <h4>{{ container_info.TypeName }}</h4>
           </div>
           <div class="item">
             <img
-              class="card-img img-thumbnail rounded float-start mr-4 iconImage   shadow-sm"
+              class="
+                card-img
+                img-thumbnail
+                rounded
+                float-start
+                mr-4
+                iconImage
+                shadow-sm
+              "
               src="../../imgs/container.png"
             />
             <span class="caption">numbers</span>
@@ -254,6 +262,8 @@ export default {
       })
         .then((response) => {
           //if request success, console log the status
+
+          //check the status
           console.log(response.data);
           if (response.data["status"] == 1) {
             console.log("status success");
@@ -265,33 +275,17 @@ export default {
             console.log("unknow status code.");
           }
           this.$store.dispatch("loadRenderInfos", response.data);
-          this.$router.push('../loading') 
+          this.$router.push("../loading");
         })
         .catch((error) => {
           //in error condition
-          console.log(error.response.data.error);
-          let timerInterval;
           Swal.fire({
-            title: "There is connection error to the backend server!",
-            html: "Please retry sending data after <b></b> milliseconds, or contact the adminitrator",
-            timer: 20000,
-            timerProgressBar: true,
-            didOpen: () => {
-              Swal.showLoading();
-              const b = Swal.getHtmlContainer().querySelector("b");
-              timerInterval = setInterval(() => {
-                b.textContent = Swal.getTimerLeft();
-              }, 100);
-            },
-            willClose: () => {
-              clearInterval(timerInterval);
-            },
-          }).then((result) => {
-            /* Read more about handling dismissals below */
-            if (result.dismiss === Swal.DismissReason.timer) {
-              console.log("I was closed by the timer");
-            }
+            icon: "error",
+            title: "Oops...",
+            text: "Something went wrong!, ",
+            footer: '<p>Cannot connect to backend server</p>',
           });
+          console.log(error.response.data.error);
         });
     }, //end sendStoreMessage
     deleteContainerInfo(container_info_uuid) {
@@ -342,12 +336,12 @@ export default {
 .button_bg {
   background-color: rgb(49, 48, 133);
 }
-.container{
+.container {
   display: block;
-  position:relative;
+  position: relative;
   width: 70%;
 }
-.card-bg{
+.card-bg {
   background: #fff;
 }
 </style>
