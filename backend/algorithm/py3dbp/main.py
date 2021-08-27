@@ -51,6 +51,7 @@ class Item:
         "position_x":float(self.position[0]),
         "position_y":float(self.position[1]),
         "position_z":float(self.position[2]),
+        "RotationType":self.rotation_type,
         "TypeIndex":self.type_index
         }
 

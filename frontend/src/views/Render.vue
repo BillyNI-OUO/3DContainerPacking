@@ -20,6 +20,7 @@ import { mapState } from "vuex";
 //====================================================
 import showAxis from "@/Render_functions/ShowAxis";
 import makeOverOut from "@/Render_functions/RegisterActions";
+import rotationWithType from "@/Render_functions/RotationWithType"
 export default {
   name: "Render",
   components: {},
@@ -36,12 +37,13 @@ export default {
   mounted() {
     var canvas = document.getElementById("renderCanvas"); // 得到canvas对象的引用
     var engine = new BABYLON.Engine(canvas, true); // 初始化 BABYLON 3D engine
+    
     /******* Add the create scene function ******/
     var createScene = function (render_infos) {
       //create scene
       var scene = new BABYLON.Scene(engine);
       //=========uncomment the following line to set debug mode=======*/
-      //scene.debugLayer.show();
+      scene.debugLayer.show();
 
       //======================starting create elements=======================
 
@@ -121,10 +123,11 @@ export default {
               render_infos["containers"][i]["X"] / 2 +
               render_infos["containers"][i - 1]["X"] / 2;
               containers_mesh_array.push(cont);
-          }
+          
           console.log(containers_mesh_array);
         }
       }
+    }//end create container array for
 
       //move the position for each container
 
@@ -183,21 +186,33 @@ export default {
       //create the fitted boxes for each container
       //=========================================================================
       var box_mesh_array = [];
+      var sphere_array=[];
       for (const [index_of_container, container] of render_infos[
         "containers"
       ].entries()) {
         console.log(container["Fitted_items"].length);
         for (let i = 0; i < container["Fitted_items"].length; i++) {
-          let box_x = container["Fitted_items"][i]["X"];
-          let box_y = container["Fitted_items"][i]["Y"];
-          let box_z = container["Fitted_items"][i]["Z"];
+          //==========================================================
+          //Rotate the boxes based on differend conditions
+          //==========================================================
+          let rotateType=container["Fitted_items"][i]["RotationType"]
+          console.log("rotateType"+rotateType)
+          //rotate the box
+          let origin_xyz_array=[container["Fitted_items"][i]["X"], container["Fitted_items"][i]["Y"], container["Fitted_items"][i]["Z"]]
+          console.log("origianl"+origin_xyz_array)
+          let xyz_array=rotationWithType(origin_xyz_array, rotateType);
+          console.log("afer"+xyz_array)
+          let box_x =xyz_array[0] ;
+          let box_y =xyz_array[1] ;
+          let box_z =xyz_array[2];
           let box_mesh_name = container["Fitted_items"][i]["ID"];
           let box_instance = BABYLON.MeshBuilder.CreateBox(box_mesh_name, {
-            height: box_x,
-            width: box_y,
+            width: box_x,
+            height: box_y,
             depth: box_z,
           });
-        
+        console.log("xyz")
+        console.log(box_x,box_y,box_z)
 
           //======================================================
           //Set the box material
@@ -218,17 +233,53 @@ export default {
           //======================================================
           box_instance.position.x =
             left_top_positions_array[index_of_container]["X"] +
-            container["Fitted_items"][i]["position_x"] +
-            box_x / 2;
-          box_instance.position.y +=
-            box_y / 2 + container["Fitted_items"][i]["position_y"];
+            container["Fitted_items"][i]["position_x"] + box_x/2
+          box_instance.position.y =(box_y/2)+ container["Fitted_items"][i]["position_y"];
           box_instance.position.z =
-            left_top_positions_array[index_of_container]["Z"] +
+            //left_top_positions_array[index_of_container]["Z"] +
             container["Fitted_items"][i]["position_z"] +
             box_z / 2;
+            console.log()
+            console.log("offset_pos_x")
+            console.log(container["Fitted_items"][i]["position_x"])
+            console.log("offset_pos_y")
+            console.log(container["Fitted_items"][i]["position_y"])
+            console.log("offset_pos_z")
+            console.log(container["Fitted_items"][i]["position_z"])
+            console.log("finale pos x")
+            console.log(box_instance.position.x)
+            console.log("finale pos y")
+            console.log(box_instance.position.y)
+            console.log("finale pos z")
+            console.log(box_instance.position.z)
+          //===========================================================
+          //Draw Help sphere to know the location
+          //===========================================================
+          let sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {});
+          sphere.position.x=box_instance.position.x
+          sphere.position.y=box_instance.position.y
+          sphere.position.z=box_instance.position.z
+          sphere_array.push(sphere)
+
           box_mesh_array.push(box_instance);
         } //end inner for
       } //end outter for
+
+
+      //=====================================================================
+      //Create skybox
+      //=====================================================================
+      /*
+      var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:1000.0}, scene);
+      var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+      skyboxMaterial.backFaceCulling = false;
+      skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("./textures/skybox", scene);
+      skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+      skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+      skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+      skybox.material = skyboxMaterial;
+      */
+
 
       const camera = new BABYLON.ArcRotateCamera(
         "camera",

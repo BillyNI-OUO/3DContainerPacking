@@ -188,9 +188,9 @@ export default {
         {
           ID: uuidv4(),
           TypeName: "helloContainer",
-          X: "50",
+          X: "60",
           Y: "60",
-          Z: "70",
+          Z: "60",
           Weight_limmit: "200",
           Numbers: "1",
         },
