@@ -14,7 +14,7 @@ import CustomNavbar from './components/CustomNavbar.vue'
 export default {
   name: 'App',
   components: {
-      CustomNavbar
+      CustomNavbar,
   }
 }
 

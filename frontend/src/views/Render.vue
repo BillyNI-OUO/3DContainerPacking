@@ -1,11 +1,17 @@
 <template>
+<div>
   <div class="w-100 p-3">
     <canvas id="renderCanvas"></canvas>
   </div>
+  <div v-if="render_loading_status" class="overlay">
+    <loading-page></loading-page>
+  </div>
+</div>
 </template>
 
 
 <script>
+import LoadingPage from "./LoadingPage.vue"
 import * as BABYLON from "@babylonjs/core";
 //import { AdvancedDynamicTexture } from "@babylonjs/gui";
 //import { Button } from "@babylonjs/gui";
@@ -24,7 +30,9 @@ import rotationWithType from "@/Render_functions/RotationWithType"
 //import customLoadSreen from "@/Render_functions/RotationWithType"
 export default {
   name: "Render",
-  components: {},
+  components: {
+    LoadingPage
+  },
   //========================================
   //Computed:
   //Description: Initialize the variable
@@ -33,11 +41,12 @@ export default {
     container_infos: (state) => state.container_infos,
     box_infos: (state) => state.box_infos,
     render_infos: (state) => state.render_infos,
+    render_loading_status:(state)=>state.render_loading_status,
   }),
-
   mounted() {
     var canvas = document.getElementById("renderCanvas"); // 得到canvas对象的引用
     var engine = new BABYLON.Engine(canvas, true); // 初始化 BABYLON 3D engine
+
 
 
     //=========================================================================
@@ -50,6 +59,25 @@ export default {
     var createScene = function (render_infos) {
       //create scene
       var scene = new BABYLON.Scene(engine);
+    //=========================================================================
+    //global variables
+    //=========================================================================
+    //var controlBoxes_originate_cordinate_z=100;
+    //var controlBoxes_originate_cordinate_x=-50;
+    //var controlBoxes_margin=20;
+    //array that store the mesh of the box inside the containers
+    var box_mesh_array = [];
+    //also create additional box for show the box information
+    //var control_box_mesh_arrary=[];
+
+    //control box setting
+    //const total_box_types=render_infos['total_box_types']
+    //var sameTypeHaveBeenDraw=new Array(total_box_types);
+    //for (let i=0; i<total_box_types;i++){
+    //  total_box_types[i]=false;
+    //}
+
+
       //=====================================================================
       //uncomment the following line to set debug mode
       //=====================================================================
@@ -195,10 +223,7 @@ export default {
       //=========================================================================
       //create the fitted boxes for each container
       //=========================================================================
-      var box_mesh_array = [];
-      //also create additional box for show the box information
-      //var control_box_mesh_arrary=[];
-      
+
       for (const [index_of_container, container] of render_infos[
         "containers"
       ].entries()) {
@@ -250,9 +275,19 @@ export default {
           //===========================================================
           //Create control box
           //===========================================================
-
-
-
+          /*
+          if (sameTypeHaveBeenDraw[container["Fitted_items"][i]["TypeIndex"]]==false){
+              let control_box=box_instance.clone("abox")
+              control_box.position.z=controlBoxes_originate_cordinate_z
+              control_box.position.x=controlBoxes_originate_cordinate_x
+              control_box_mesh_arrary.push(control_box)
+              controlBoxes_originate_cordinate_z=
+                        controlBoxes_originate_cordinate_z
+                        -box_z
+                        -controlBoxes_margin
+              sameTypeHaveBeenDraw[container["Fitted_items"][i]["TypeIndex"]]=true
+          }
+          */
           box_mesh_array.push(box_instance);
         } //end inner for
       } //end outter for
@@ -305,9 +340,9 @@ export default {
       return scene;
     };
     /******* End of the create scene function ******/
-    this.$store.dispatch("setRenderLoadingStatus", false);
-    var scene = createScene(this.render_infos); //Call the createScene function
     this.$store.dispatch("setRenderLoadingStatus", true);
+    var scene = createScene(this.render_infos); //Call the createScene function
+    this.$store.dispatch("setRenderLoadingStatus", false);
     // 最后一步调用engine的runRenderLoop方案，执行scene.render()，让我们的3d场景渲染起来
 
     engine.runRenderLoop(function () {
@@ -327,5 +362,15 @@ export default {
   width: 100%;
   height: 100%;
   touch-action: none;
+}
+.overlay{
+    opacity:0.8;
+    background-color:#ccc;
+    position:fixed;
+    width:100%;
+    height:100%;
+    top:0px;
+    left:0px;
+    z-index:1000;
 }
 </style>

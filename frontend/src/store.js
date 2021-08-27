@@ -9,7 +9,7 @@ const store = new Vuex.Store({
         container_infos: [],
         box_infos:[],
         render_infos:[],
-        render_loading_status:false,
+        render_loading_status:true,
     },
     mutations: {
         // 將state設定為參數
