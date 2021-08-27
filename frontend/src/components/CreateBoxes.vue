@@ -5,27 +5,20 @@
     <!--card container make element in center-->
     <div class="container container-bg pb-3 mr-3 pr-3 rounded">
       <!--Butoon to create new container-->
-      <button class="btn btn-success m-3 float-md-left" @click="newBox">
-        New Box
-      </button>
-      <!--End new button-->
-      <!--Butoon to create new container-->
       <button class="btn btn-success m-3 float-md-left" @click="saveBoxInfo">
         Save changes.
       </button>
       <!--End new button-->
       <div
         class="card mt-3"
-        v-for="(box_info, index) in box_infos"
-        v-bind:key="index"
       >
         <div class="card-body pd-3">
           <!--this span (on right top corner) handle the delete form method-->
-          <span class="float-end delete-span" @click="deleteBoxInfo(index)">
+          <span class="float-end delete-span" @click="deleteBoxInfo()">
             X
           </span>
 
-          <h4 class="card-title">Box index number {{ index }}</h4>
+          <h4 class="card-title">Box index number</h4>
           <div>
             <!--Modified!, to let user can set the name of the Box. add Name option upon the original first input-->
             <div class="input-group mb-3">
@@ -125,13 +118,16 @@
 </template>
 <script>
 import Swal from "sweetalert2";
+import { v4 as uuidv4 } from 'uuid';
 export default {
   name: "CreateBoxes",
   components: {},
   data: function () {
     return {
-      box_infos: [
+      box_infos:[],
+      box_info: 
         {
+          ID:uuidv4(),
           TypeName: "",
           X: "",
           Y: "",
@@ -139,36 +135,28 @@ export default {
           Weight: "",
           Numbers: "",
         },
-      ],
     }; //end box_info
   }, //end data
   methods: {
-    newBox() {
-      this.box_infos.push({
-        TypeName: "",
-        X: "",
-        Y: "",
-        Z: "",
-        Weight: "",
-        Numbers: "",
-      });
-    }, //end newBox
     deleteBoxInfo(index) {
       this.box_infos.splice(index, 1);
     },
     saveBoxInfo() {
       //show message
       Swal.fire({
-        position: "top-end",
         icon: "success",
         title: "Your work has been saved",
         showConfirmButton: false,
         timer: 1500,
       });
-      this.$store.dispatch("loadBoxInfos", this.box_infos);
-    },
+      this.box_infos.push(this.box_info)
+      this.$store.dispatch("appendBoxInfos", this.box_infos);
+      this.box_infos=[];
+      this.box_info={ID:uuidv4()};
+    },//end showBoxInfo
     updateWithFakeData(){
       let test_box=[{
+        ID:uuidv4(),
         TypeName: "box1",
         X: "10",
         Y: "10",
@@ -176,8 +164,8 @@ export default {
         Weight: "2",
         Numbers: "3",
       },]
-      this.$store.dispatch("loadBoxInfos", test_box);
-    }
+      this.$store.dispatch("appendBoxInfos", test_box);
+    }//end update withfakedata
   }, //end methods
 };
 </script>

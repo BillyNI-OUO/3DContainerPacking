@@ -1,12 +1,15 @@
 from .constants import RotationType, Axis
 from .auxiliary_methods import intersect, set_to_decimal
 
+
+
 DEFAULT_NUMBER_OF_DECIMALS = 3
 START_POSITION = [0, 0, 0]
 
 
 class Item:
-    def __init__(self, name, width, height, depth, weight):
+    def __init__(self,ID ,name, width, height, depth, weight, type_index):
+        self.ID=ID
         self.name = name
         self.width = width
         self.height = height
@@ -15,6 +18,7 @@ class Item:
         self.rotation_type = 0
         self.position = START_POSITION
         self.number_of_decimals = DEFAULT_NUMBER_OF_DECIMALS
+        self.type_index=type_index
 
     def format_numbers(self, number_of_decimals):
         self.width = set_to_decimal(self.width, number_of_decimals)
@@ -24,10 +28,32 @@ class Item:
         self.number_of_decimals = number_of_decimals
 
     def string(self):
-        return "%s(%sx%sx%s, weight: %s) pos(%s) rt(%s) vol(%s)" % (
-            self.name, self.width, self.height, self.depth, self.weight,
-            self.position, self.rotation_type, self.get_volume()
-        )
+        return f"""
+        {self.name}:       
+            ID:{self.ID}
+            X:{self.width}, 
+            Y:{self.height}, 
+            Z:{self.depth}, 
+            Weight:{self.weight}
+            rotation:{self.rotation_type}
+            position:{self.position}
+        """
+        #we have to covert the Decimal object to float so that
+        #java packer will be happy
+    def getResultDictionary(self):
+        #conver position information into float
+        return{"ID":self.ID,
+        "TypeName":self.name,
+        "X":float(self.width),
+        "Y":float(self.height),
+        "Z":float(self.depth), 
+        "Weight":float(self.weight),
+        "position_x":float(self.position[0]),
+        "position_y":float(self.position[1]),
+        "position_z":float(self.position[2]),
+        "RotationType":self.rotation_type,
+        "TypeIndex":self.type_index
+        }
 
     def get_volume(self):
         return set_to_decimal(
@@ -54,7 +80,8 @@ class Item:
 
 
 class Bin:
-    def __init__(self, name, width, height, depth, max_weight):
+    def __init__(self, ID, name, width, height, depth, max_weight, type_index):
+        self.ID=ID
         self.name = name
         self.width = width
         self.height = height
@@ -63,6 +90,7 @@ class Bin:
         self.items = []
         self.unfitted_items = []
         self.number_of_decimals = DEFAULT_NUMBER_OF_DECIMALS
+        self.type_index=type_index
 
     def format_numbers(self, number_of_decimals):
         self.width = set_to_decimal(self.width, number_of_decimals)
@@ -72,10 +100,38 @@ class Bin:
         self.number_of_decimals = number_of_decimals
 
     def string(self):
-        return "%s(%sx%sx%s, max_weight:%s) vol(%s)" % (
-            self.name, self.width, self.height, self.depth, self.max_weight,
-            self.get_volume()
-        )
+        return f"""
+            ID:{self.ID},
+            TypeName:{self.name},
+            X:{float(self.width)}, 
+            Y:{float(self.height)}, 
+            Z:{float(self.depth)}, 
+            Weight_limmit:{float(self.max_weight)}
+        """
+    def getResultDictionary(self):
+        #convet Fitted_items to dictionary(array of dics)
+        FittedItemArray=[]
+        for fitted_item in self.items:
+            FittedItemArray.append(fitted_item.getResultDictionary())
+        
+
+        unFittedItemArray=[]
+        #convert unfitted_items to array of dictionary
+        for unfitted_item in self.unfitted_items:
+            unFittedItemArray.append(unfitted_item.getResultDictionary())
+
+
+        return{
+            "ID":self.ID,
+            "TypeName":self.name,
+            "X":float(self.width),
+            "Y":float(self.height),
+            "Z":float(self.depth),
+            "Weight_limmit":float(self.max_weight),
+            "Fitted_items":FittedItemArray,
+            "UnFitted_items":unFittedItemArray,
+            "TypeIndex":self.type_index
+    }
 
     def get_volume(self):
         return set_to_decimal(
