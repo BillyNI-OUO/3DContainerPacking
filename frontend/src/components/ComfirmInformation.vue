@@ -265,6 +265,7 @@ export default {
             console.log("unknow status code.");
           }
           this.$store.dispatch("loadRenderInfos", response.data);
+          this.$router.push('../loading') 
         })
         .catch((error) => {
           //in error condition
