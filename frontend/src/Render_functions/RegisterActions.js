@@ -26,20 +26,19 @@
         //mesh.actionManager.registerAction(new BABYLON.InterpolateValueAction(BABYLON.ActionManager.OnPointerOutTrigger, mesh, "scaling", new BABYLON.Vector3(1, 1, 1), 150));
         //mesh.actionManager.registerAction(new BABYLON.InterpolateValueAction(BABYLON.ActionManager.OnPointerOverTrigger, mesh, "scaling", new BABYLON.Vector3(1.1, 1.1, 1.1), 150));
       },
-      makeOnClickShowInfo(mesh, render_infos){
+      makeOnClickShowInfo(mesh, box_infos){
+        this.box_infos=box_infos;
         mesh.actionManager.registerAction(
           new BABYLON.ExecuteCodeAction(
               BABYLON.ActionManager.OnPickTrigger,
-              function(evt){
-            let titlestr="BoxName:"+render_infos['TypeName']
-       Swal.fire({
-          title: titlestr,
-          text: "Do you want to continue",
-          icon: "error",
-          confirmButtonText: "Cool",
-        });
-        console.log("clicked the box"+evt);
-              }//end function
+              () => {
+                Swal.fire({
+                  icon: 'error',
+                  title: this.box_infos["TypeName"],
+                  text: 'X:'+this.box_infos['X']+'\n'+'Y:'+this.box_infos['Y']+'\n'+'Z:'+this.box_infos['Z']+'\n'+"Weight:"+this.box_infos['Weight'],
+                  //footer: '<a href="">Why do I have this issue?</a>'
+                })
+            }
           )
         )
       }//end makeOnClickShowInfo

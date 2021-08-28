@@ -277,7 +277,7 @@ export default {
               let control_box=box_instance.clone("abox")
               control_box.position.z=controlBoxes_originate_cordinate_z
               control_box.position.x=controlBoxes_originate_cordinate_x
-              control_box.position.y=box_y
+              control_box.position.y=box_y/2
               controlBoxes_originate_cordinate_z=
                         controlBoxes_originate_cordinate_z
                         -box_z
@@ -289,15 +289,21 @@ export default {
           //======================================================
               control_box.actionManager = new BABYLON.ActionManager(scene);
               actions.makeOverOut(control_box)
+              actions.makeOnClickShowInfo(control_box, container["Fitted_items"][i])
               control_box_mesh_arrary.push(control_box)
           }//end create control box
 
 
           box_instance.actionManager = new BABYLON.ActionManager(scene);
-          actions.makeOverOut(box_instance)
+          console.log("test")
+          console.log(container["Fitted_items"][i])
+          actions.makeOverOut(box_instance, 
+                container["Fitted_items"][i]['TypeName'],
+                container["Fitted_items"][i]['X'],
+                container["Fitted_items"][i]['Y'],
+                container["Fitted_items"][i]['Z'],
+                container["Fitted_items"][i]['Weight'])
 
-
-          
           box_mesh_array.push(box_instance);
         } //end inner for
       } //end outter for
