@@ -62,20 +62,20 @@ export default {
     //=========================================================================
     //global variables
     //=========================================================================
-    //var controlBoxes_originate_cordinate_z=100;
-    //var controlBoxes_originate_cordinate_x=-50;
-    //var controlBoxes_margin=20;
+    var controlBoxes_originate_cordinate_z=100;
+    var controlBoxes_originate_cordinate_x=-50;
+    var controlBoxes_margin=20;
     //array that store the mesh of the box inside the containers
     var box_mesh_array = [];
     //also create additional box for show the box information
-    //var control_box_mesh_arrary=[];
+    var control_box_mesh_arrary=[];
 
     //control box setting
-    //const total_box_types=render_infos['total_box_types']
-    //var sameTypeHaveBeenDraw=new Array(total_box_types);
-    //for (let i=0; i<total_box_types;i++){
-    //  total_box_types[i]=false;
-    //}
+    const total_box_types=render_infos['total_box_types']
+    var sameTypeHaveBeenDraw=new Array(total_box_types);
+    for (let i=0; i<total_box_types;i++){
+      sameTypeHaveBeenDraw[i]=false;
+    }
 
 
       //=====================================================================
@@ -255,11 +255,7 @@ export default {
 
           
           console.log(box_instance);
-          //======================================================
-          //Register actions
-          //======================================================
-          box_instance.actionManager = new BABYLON.ActionManager(scene);
-          actions.makeOverOut(box_instance)
+
 
           //======================================================
           //Set the box position
@@ -275,19 +271,33 @@ export default {
           //===========================================================
           //Create control box
           //===========================================================
-          /*
+          console.log("control box")
+          console.log(sameTypeHaveBeenDraw[container["Fitted_items"][i]["TypeIndex"]])
           if (sameTypeHaveBeenDraw[container["Fitted_items"][i]["TypeIndex"]]==false){
               let control_box=box_instance.clone("abox")
               control_box.position.z=controlBoxes_originate_cordinate_z
               control_box.position.x=controlBoxes_originate_cordinate_x
-              control_box_mesh_arrary.push(control_box)
+              control_box.position.y=box_y
               controlBoxes_originate_cordinate_z=
                         controlBoxes_originate_cordinate_z
                         -box_z
                         -controlBoxes_margin
               sameTypeHaveBeenDraw[container["Fitted_items"][i]["TypeIndex"]]=true
-          }
-          */
+              
+          //======================================================
+          //Register actions for control box and boxes
+          //======================================================
+              control_box.actionManager = new BABYLON.ActionManager(scene);
+              actions.makeOverOut(control_box)
+              control_box_mesh_arrary.push(control_box)
+          }//end create control box
+
+
+          box_instance.actionManager = new BABYLON.ActionManager(scene);
+          actions.makeOverOut(box_instance)
+
+
+          
           box_mesh_array.push(box_instance);
         } //end inner for
       } //end outter for
