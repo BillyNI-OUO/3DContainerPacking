@@ -12,8 +12,8 @@
   >
     <router-link class="navbar-brand" to="/">3D-Bin Packing</router-link> |
     <router-link class="navbar-brand" to="/">Home</router-link> |
-    <router-link class="navbar-brand" to="/render">Render</router-link>
     <router-link class="navbar-brand" to="/formsend">FormSend</router-link>
+    <router-link class="navbar-brand" to="/render">Render</router-link>
     <router-link class="navbar-brand" to="/about">About</router-link>
    
       <form class="form-inline my-2 my-lg-0 d-flex">

@@ -1,3 +1,33 @@
+Skip to content
+Search or jump to…
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@N0nent1ty 
+N0nent1ty
+/
+3D-Binpacking-GUI
+1
+00
+Code
+Issues
+Pull requests
+Actions
+Projects
+Wiki
+Security
+Insights
+Settings
+3D-Binpacking-GUI/frontend/src/views/LoadingPage.vue
+@littletrojan
+littletrojan add loading page, fix frontend UI
+Latest commit 0f63ae8 3 days ago
+ History
+ 1 contributor
+425 lines (369 sloc)  7.29 KB
+  
 <template>
 <div class="root">
 <div class="mycontainer">
@@ -14,7 +44,6 @@
 <div class="spinner-box">
   <div class="blue-orbit leo">
   </div>
-
   <div class="green-orbit leo">
   </div>
   
@@ -75,7 +104,6 @@
 -->
 
 <!-- Three Quarter Spinner 
-
 <div class="spinner-box">
   <div class="three-quarter-spinner"></div>
 </div>
@@ -104,5 +132,94 @@
     transform: rotate(359deg);
   }
 }
+@keyframes spin3D {
+  from {
+    transform: rotate3d(.5,.5,.5, 360deg);
+  }
+  to{
+    transform: rotate3d(0deg);
+  }
+}
+@keyframes configure-clockwise {
+  0% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes configure-xclockwise {
+  0% {
+    transform: rotate(45deg);
+  }
+  25% {
+    transform: rotate(-45deg);
+  }
+  50% {
+    transform: rotate(-135deg);
+  }
+  75% {
+    transform: rotate(-225deg);
+  }
+  100% {
+    transform: rotate(-315deg);
+  }
+}
+@keyframes pulse {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: .25;
+    transform: scale(.75);
+  }
+}
+/* GRID STYLING */
+* {
+  box-sizing: border-box;
+}
+.root{
+    height:100%;
+    width:100%;
+}
+.mycontainer {
+  min-height: 100vh;
+  background-image: linear-gradient(100deg, #d2dff1 0%, #80acf3 40%  70%);;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
+/* PULSE BUBBLES */
+.pulse-container {
+  width: 120px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.pulse-bubble {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #2c073d;
+}
+.pulse-bubble-1 {
+    animation: pulse .4s ease 0s infinite alternate;
+}
+.pulse-bubble-2 {
+    animation: pulse .4s ease .2s infinite alternate;
+}
+.pulse-bubble-3 {
+    animation: pulse .4s ease .4s infinite alternate;
+}
 </style>
