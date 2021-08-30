@@ -33,7 +33,7 @@
               BABYLON.ActionManager.OnPickTrigger,
               () => {
                 Swal.fire({
-                  icon: 'error',
+                  icon: 'info',
                   title: this.box_infos["TypeName"],
                   text: 'X:'+this.box_infos['X']+'\n'+'Y:'+this.box_infos['Y']+'\n'+'Z:'+this.box_infos['Z']+'\n'+"Weight:"+this.box_infos['Weight'],
                   //footer: '<a href="">Why do I have this issue?</a>'

@@ -4,7 +4,9 @@
       <custom-navbar/>
     </div>
     <transition name="slide" mode="out-in">
+    <keep-alive include="Render">
     <router-view/>
+    </keep-alive>
     </transition>
   </div>
 </template>

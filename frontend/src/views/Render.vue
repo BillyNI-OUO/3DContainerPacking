@@ -1,7 +1,9 @@
 <template>
 <div>
   <div class="w-100 p-3">
+
     <canvas id="renderCanvas"></canvas>
+
   </div>
   <div v-if="render_loading_status" class="overlay">
     <loading-page></loading-page>
@@ -369,6 +371,7 @@ export default {
       engine.resize();
     });
   }, //end monted
+  
 
 };
 </script>

@@ -265,17 +265,21 @@ export default {
 
           //check the status
           console.log(response.data);
+          console.log("statuscode"+response.data["status"])
           if (response.data["status"] == 1) {
             console.log("status success");
+            this.$store.dispatch("loadRenderInfos", response.data);
+            this.$router.push("../render");
           } else if (response.data["status" == 2]) {
             console.log("status fail");
+            this.$router.push('../PackingFailPage')
           } else if (response.data["status"] == 3) {
             console.log("status partial success");
           } else {
             console.log("unknow status code.");
+            this.$router.push('../PackingFailPage')
           }
-          this.$store.dispatch("loadRenderInfos", response.data);
-          this.$router.push("../render");
+
         })
         .catch((error) => {
           //in error condition

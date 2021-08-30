@@ -175,5 +175,5 @@ def reciveJsonFromClient():
 
     jsonData=Processing3DBP(container_infos, box_infos)
     return jsonData
-
-app.run()
+if __name__=="__main__":
+    app.run()
