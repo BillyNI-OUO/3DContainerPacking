@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="w-100 p-3">
-      <canvas id="renderCanvas"></canvas>
+      <canvas id="renderCanvas" ref="ref_renderCanvas"></canvas>
     </div>
     <div v-if="render_loading_status" class="overlay">
       <loading-page></loading-page>
@@ -43,21 +43,33 @@ export default {
     box_infos: (state) => state.box_infos,
     render_infos: (state) => state.render_infos,
     render_loading_status: (state) => state.render_loading_status,
-  }),
-  mounted() {
-    console.log("render mounted");
-    var canvas = document.getElementById("renderCanvas"); // 得到canvas对象的引用
-    var engine = new BABYLON.Engine(canvas, true); // 初始化 BABYLON 3D engine
+  })
+  ,//end compute
+  data(){
+    return{
+      engine:"",
+      canvas:""
+    }
+  },
+  methods:{
 
-    //=========================================================================
-    //set loading screen before create scene
-    //=========================================================================
-    //engine.displayLoadingUI();
+      handleRenderLoop(){
+      this.scene.render();
+      },
+      handleChangeWindowSize(){
+      this.engine.resize();
+      },//end change size
+      createScene() {
+      this.canvas=document.getElementById("renderCanvas") // 得到canvas对象的引用
+      this.engine= new BABYLON.Engine(this.canvas, true) // 初始化 BABYLON 3D engine
+      console.log("canvas"+ this.canvas)
+      console.log("engine"+this.engine)
 
-    /******* Add the create scene function ******/
-    var createScene = function (render_infos) {
+
+
+      var render_infos=this.render_infos
       //create scene
-      var scene = new BABYLON.Scene(engine);
+      var scene = new BABYLON.Scene(this.engine);
       //=========================================================================
       //global variables
       //=========================================================================
@@ -324,7 +336,7 @@ export default {
         new BABYLON.Vector3(0, 4, 0),
         scene
       );
-      camera.attachControl(canvas, true);
+      camera.attachControl(this.canvas, true);
       // 添加一组灯光到场景
       // eslint-disable-next-line no-unused-vars
       var light1 = new BABYLON.HemisphericLight(
@@ -359,14 +371,24 @@ export default {
 		camera.alpha += 0.004;
 	});
   */
-
       return scene;
-    };
+    },//end create scence
+  },//end method.s
+  mounted() {
+    console.log("render mounted");
+    //=========================================================================
+    //set loading screen before create scene
+    //=========================================================================
+    //engine.displayLoadingUI();
+
+    /******* Add the create scene function ******/
+
     /******* End of the create scene function ******/
     this.$store.dispatch("setRenderLoadingStatus", true);
     //try to create scence, and if error show alert
     try {
-      var scene = createScene(this.render_infos); //Call the createScene function
+      this.scene = this.createScene(); //Call the createScene function
+      console.log("scene"+this.scene)
     } catch (e) {
       console.log(e);
       Swal.fire({
@@ -379,14 +401,9 @@ export default {
     }
     this.$store.dispatch("setRenderLoadingStatus", false);
     // 最后一步调用engine的runRenderLoop方案，执行scene.render()，让我们的3d场景渲染起来
-
-    engine.runRenderLoop(function () {
-      scene.render();
-    });
+    this.engine.runRenderLoop(this.handleRenderLoop );
     // 监听浏览器改变大小的事件，通过调用engine.resize()来自适应窗口大小
-    window.addEventListener("resize", function () {
-      engine.resize();
-    });
+    window.addEventListener("resize", this.handleChangeWindowSize);
   }, //end monted
 };
 </script>
