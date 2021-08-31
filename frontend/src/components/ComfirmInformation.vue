@@ -230,7 +230,7 @@ export default {
     sendTestMessage() {
       this.axios({
         method: "get",
-        baseURL: "http://localhost:5000",
+        baseURL: "http://10.135.179.234:5000",
         url: "/api/",
         "Content-Type": "application/json",
       }).then((response) => {
@@ -252,7 +252,7 @@ export default {
     sendStoredMessage() {
       this.axios({
         method: "post",
-        baseURL: "http://localhost:5000",
+        baseURL: "http://10.135.179.234:5000",
         url: "/api/recv/3dbinpack/info",
         "Content-Type": "application/json",
         data: {
@@ -275,6 +275,7 @@ export default {
             this.$router.push('../PackingFailPage')
           } else if (response.data["status"] == 3) {
             console.log("status partial success");
+            this.$router.push('../render')
           } else {
             console.log("unknow status code.");
             this.$router.push('../PackingFailPage')

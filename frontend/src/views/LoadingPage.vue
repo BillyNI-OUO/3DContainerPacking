@@ -124,56 +124,7 @@ Latest commit 0f63ae8 3 days ago
   font-family: "Lucida Console", "Courier New", monospace ;
   margin-top:10%;
 }
-@keyframes spin {
-  from {
-    transform: rotate(0);
-  }
-  to{
-    transform: rotate(359deg);
-  }
-}
-@keyframes spin3D {
-  from {
-    transform: rotate3d(.5,.5,.5, 360deg);
-  }
-  to{
-    transform: rotate3d(0deg);
-  }
-}
-@keyframes configure-clockwise {
-  0% {
-    transform: rotate(0);
-  }
-  25% {
-    transform: rotate(90deg);
-  }
-  50% {
-    transform: rotate(180deg);
-  }
-  75% {
-    transform: rotate(270deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-@keyframes configure-xclockwise {
-  0% {
-    transform: rotate(45deg);
-  }
-  25% {
-    transform: rotate(-45deg);
-  }
-  50% {
-    transform: rotate(-135deg);
-  }
-  75% {
-    transform: rotate(-225deg);
-  }
-  100% {
-    transform: rotate(-315deg);
-  }
-}
+
 @keyframes pulse {
   from {
     opacity: 1;
@@ -222,4 +173,5 @@ Latest commit 0f63ae8 3 days ago
 .pulse-bubble-3 {
     animation: pulse .4s ease .4s infinite alternate;
 }
+
 </style>

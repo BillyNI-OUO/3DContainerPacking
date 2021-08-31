@@ -1,19 +1,17 @@
 <template>
-<div>
-  <div class="w-100 p-3">
-
-    <canvas id="renderCanvas"></canvas>
-
+  <div>
+    <div class="w-100 p-3">
+      <canvas id="renderCanvas"></canvas>
+    </div>
+    <div v-if="render_loading_status" class="overlay">
+      <loading-page></loading-page>
+    </div>
   </div>
-  <div v-if="render_loading_status" class="overlay">
-    <loading-page></loading-page>
-  </div>
-</div>
 </template>
 
 
 <script>
-import LoadingPage from "./LoadingPage.vue"
+import LoadingPage from "./LoadingPage.vue";
 import * as BABYLON from "@babylonjs/core";
 //import { AdvancedDynamicTexture } from "@babylonjs/gui";
 //import { Button } from "@babylonjs/gui";
@@ -28,12 +26,13 @@ import { mapState } from "vuex";
 //====================================================
 import showAxis from "@/Render_functions/ShowAxis";
 import actions from "@/Render_functions/RegisterActions";
-import rotationWithType from "@/Render_functions/RotationWithType"
+import rotationWithType from "@/Render_functions/RotationWithType";
 //import customLoadSreen from "@/Render_functions/RotationWithType"
+ import Swal from "sweetalert2";
 export default {
   name: "Render",
   components: {
-    LoadingPage
+    LoadingPage,
   },
   //========================================
   //Computed:
@@ -43,42 +42,39 @@ export default {
     container_infos: (state) => state.container_infos,
     box_infos: (state) => state.box_infos,
     render_infos: (state) => state.render_infos,
-    render_loading_status:(state)=>state.render_loading_status,
+    render_loading_status: (state) => state.render_loading_status,
   }),
   mounted() {
+    console.log("render mounted");
     var canvas = document.getElementById("renderCanvas"); // 得到canvas对象的引用
     var engine = new BABYLON.Engine(canvas, true); // 初始化 BABYLON 3D engine
-
-
 
     //=========================================================================
     //set loading screen before create scene
     //=========================================================================
     //engine.displayLoadingUI();
 
-
     /******* Add the create scene function ******/
     var createScene = function (render_infos) {
       //create scene
       var scene = new BABYLON.Scene(engine);
-    //=========================================================================
-    //global variables
-    //=========================================================================
-    var controlBoxes_originate_cordinate_z=100;
-    var controlBoxes_originate_cordinate_x=-50;
-    var controlBoxes_margin=20;
-    //array that store the mesh of the box inside the containers
-    var box_mesh_array = [];
-    //also create additional box for show the box information
-    var control_box_mesh_arrary=[];
+      //=========================================================================
+      //global variables
+      //=========================================================================
+      var controlBoxes_originate_cordinate_z = 100;
+      var controlBoxes_originate_cordinate_x = -50;
+      var controlBoxes_margin = 20;
+      //array that store the mesh of the box inside the containers
+      var box_mesh_array = [];
+      //also create additional box for show the box information
+      var control_box_mesh_arrary = [];
 
-    //control box setting
-    const total_box_types=render_infos['total_box_types']
-    var sameTypeHaveBeenDraw=new Array(total_box_types);
-    for (let i=0; i<total_box_types;i++){
-      sameTypeHaveBeenDraw[i]=false;
-    }
-
+      //control box setting
+      const total_box_types = render_infos["total_box_types"];
+      var sameTypeHaveBeenDraw = new Array(total_box_types);
+      for (let i = 0; i < total_box_types; i++) {
+        sameTypeHaveBeenDraw[i] = false;
+      }
 
       //=====================================================================
       //uncomment the following line to set debug mode
@@ -133,12 +129,12 @@ export default {
           height: render_infos["containers"][i]["Y"],
           depth: render_infos["containers"][i]["Z"],
         });
-          //attach material
+        //attach material
         cont.material =
           container_mat_array[render_infos["containers"][i]["TypeIndex"]];
-          //registre actions
-          //cont.actionManager = new BABYLON.ActionManager(scene);
-          //makeOverOut(cont);
+        //registre actions
+        //cont.actionManager = new BABYLON.ActionManager(scene);
+        //makeOverOut(cont);
         //=========================================================
         //Move the first container to 0,0,0 and set its position as reference
         //=========================================================
@@ -152,22 +148,20 @@ export default {
         } else {
           for (let i = 1; i < total_container_number; i++) {
             //move the container to the ground
-            cont.position.y =
-              render_infos["containers"][i]["Y"] / 2;
+            cont.position.y = render_infos["containers"][i]["Y"] / 2;
             //move the container[0] align to 0,0,0
-            cont.position.z +=
-              render_infos["containers"][i]["Z"] / 2;
-            cont.position.x=
+            cont.position.z += render_infos["containers"][i]["Z"] / 2;
+            cont.position.x =
               containers_mesh_array[i - 1].position.x +
               30 +
               render_infos["containers"][i]["X"] / 2 +
               render_infos["containers"][i - 1]["X"] / 2;
-              containers_mesh_array.push(cont);
-          
-          console.log(containers_mesh_array);
+            containers_mesh_array.push(cont);
+
+            console.log(containers_mesh_array);
+          }
         }
-      }
-    }//end create container array for
+      } //end create container array for
 
       //move the position for each container
 
@@ -179,7 +173,7 @@ export default {
         render_infos["containers"][0]["Y"] / 2;
       //move the container[0] align to 0,0,0
       containers_mesh_array[0].position.z =
-         render_infos["containers"][0]["Z"] / 2;
+        render_infos["containers"][0]["Z"] / 2;
       containers_mesh_array[0].position.x =
         render_infos["containers"][0]["X"] / 2;
 
@@ -200,7 +194,7 @@ export default {
         let origin_coordinate_x =
           containers_mesh_array[i].position.x -
           render_infos["containers"][i]["X"] / 2;
-        let origin_coordinate_z =0
+        let origin_coordinate_z = 0;
         /*
           containers_mesh_array[i].position.z +
           render_infos["containers"][i]["Z"] / 2;
@@ -234,15 +228,19 @@ export default {
           //==========================================================
           //Rotate the boxes based on differend conditions
           //==========================================================
-          let rotateType=container["Fitted_items"][i]["RotationType"]
-          console.log("rotateType"+rotateType)
+          let rotateType = container["Fitted_items"][i]["RotationType"];
+          console.log("rotateType" + rotateType);
           //rotate the box
-          let origin_xyz_array=[container["Fitted_items"][i]["X"], container["Fitted_items"][i]["Y"], container["Fitted_items"][i]["Z"]]
-          let xyz_array=rotationWithType(origin_xyz_array, rotateType);
+          let origin_xyz_array = [
+            container["Fitted_items"][i]["X"],
+            container["Fitted_items"][i]["Y"],
+            container["Fitted_items"][i]["Z"],
+          ];
+          let xyz_array = rotationWithType(origin_xyz_array, rotateType);
 
-          let box_x =xyz_array[0] ;
-          let box_y =xyz_array[1] ;
-          let box_z =xyz_array[2];
+          let box_x = xyz_array[0];
+          let box_y = xyz_array[1];
+          let box_z = xyz_array[2];
           let box_mesh_name = container["Fitted_items"][i]["ID"];
           let box_instance = BABYLON.MeshBuilder.CreateBox(box_mesh_name, {
             width: box_x,
@@ -253,58 +251,66 @@ export default {
           //Set the box material
           //======================================================
           box_instance.material =
-          box_mat_array[container["Fitted_items"][i]["TypeIndex"]];
+            box_mat_array[container["Fitted_items"][i]["TypeIndex"]];
 
-          
           console.log(box_instance);
-
 
           //======================================================
           //Set the box position
           //======================================================
           box_instance.position.x =
             left_top_positions_array[index_of_container]["X"] +
-            container["Fitted_items"][i]["position_x"] + box_x/2
-          box_instance.position.y =(box_y/2)+ container["Fitted_items"][i]["position_y"];
+            container["Fitted_items"][i]["position_x"] +
+            box_x / 2;
+          box_instance.position.y =
+            box_y / 2 + container["Fitted_items"][i]["position_y"];
           box_instance.position.z =
             //left_top_positions_array[index_of_container]["Z"] +
-            container["Fitted_items"][i]["position_z"] +
-            box_z / 2;
+            container["Fitted_items"][i]["position_z"] + box_z / 2;
           //===========================================================
           //Create control box
           //===========================================================
-          console.log("control box")
-          console.log(sameTypeHaveBeenDraw[container["Fitted_items"][i]["TypeIndex"]])
-          if (sameTypeHaveBeenDraw[container["Fitted_items"][i]["TypeIndex"]]==false){
-              let control_box=box_instance.clone("abox")
-              control_box.position.z=controlBoxes_originate_cordinate_z
-              control_box.position.x=controlBoxes_originate_cordinate_x
-              control_box.position.y=box_y/2
-              controlBoxes_originate_cordinate_z=
-                        controlBoxes_originate_cordinate_z
-                        -box_z
-                        -controlBoxes_margin
-              sameTypeHaveBeenDraw[container["Fitted_items"][i]["TypeIndex"]]=true
-              
-          //======================================================
-          //Register actions for control box and boxes
-          //======================================================
-              control_box.actionManager = new BABYLON.ActionManager(scene);
-              actions.makeOverOut(control_box)
-              actions.makeOnClickShowInfo(control_box, container["Fitted_items"][i])
-              control_box_mesh_arrary.push(control_box)
-          }//end create control box
+          console.log("control box");
+          console.log(
+            sameTypeHaveBeenDraw[container["Fitted_items"][i]["TypeIndex"]]
+          );
+          if (
+            sameTypeHaveBeenDraw[container["Fitted_items"][i]["TypeIndex"]] ==
+            false
+          ) {
+            let control_box = box_instance.clone("abox");
+            control_box.position.z = controlBoxes_originate_cordinate_z;
+            control_box.position.x = controlBoxes_originate_cordinate_x;
+            control_box.position.y = box_y / 2;
+            controlBoxes_originate_cordinate_z =
+              controlBoxes_originate_cordinate_z - box_z - controlBoxes_margin;
+            sameTypeHaveBeenDraw[
+              container["Fitted_items"][i]["TypeIndex"]
+            ] = true;
 
+            //======================================================
+            //Register actions for control box and boxes
+            //======================================================
+            control_box.actionManager = new BABYLON.ActionManager(scene);
+            actions.makeOverOut(control_box);
+            actions.makeOnClickShowInfo(
+              control_box,
+              container["Fitted_items"][i]
+            );
+            control_box_mesh_arrary.push(control_box);
+          } //end create control box
 
           box_instance.actionManager = new BABYLON.ActionManager(scene);
-          console.log("test")
-          console.log(container["Fitted_items"][i])
-          actions.makeOverOut(box_instance, 
-                container["Fitted_items"][i]['TypeName'],
-                container["Fitted_items"][i]['X'],
-                container["Fitted_items"][i]['Y'],
-                container["Fitted_items"][i]['Z'],
-                container["Fitted_items"][i]['Weight'])
+          console.log("test");
+          console.log(container["Fitted_items"][i]);
+          actions.makeOverOut(
+            box_instance,
+            container["Fitted_items"][i]["TypeName"],
+            container["Fitted_items"][i]["X"],
+            container["Fitted_items"][i]["Y"],
+            container["Fitted_items"][i]["Z"],
+            container["Fitted_items"][i]["Weight"]
+          );
 
           box_mesh_array.push(box_instance);
         } //end inner for
@@ -354,12 +360,23 @@ export default {
 	});
   */
 
-
       return scene;
     };
     /******* End of the create scene function ******/
     this.$store.dispatch("setRenderLoadingStatus", true);
-    var scene = createScene(this.render_infos); //Call the createScene function
+    //try to create scence, and if error show alert
+    try {
+      var scene = createScene(this.render_infos); //Call the createScene function
+    } catch (e) {
+      console.log(e);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong! wiil jump to formsend page in 5sec",
+        footer: '<p>Do you create the box and container information first?</p>',
+      });
+      setTimeout(()=>{this.$router.push("../formsend")},5000)
+    }
     this.$store.dispatch("setRenderLoadingStatus", false);
     // 最后一步调用engine的runRenderLoop方案，执行scene.render()，让我们的3d场景渲染起来
 
@@ -371,8 +388,6 @@ export default {
       engine.resize();
     });
   }, //end monted
-  
-
 };
 </script>
 
@@ -382,14 +397,14 @@ export default {
   height: 100%;
   touch-action: none;
 }
-.overlay{
-    opacity:0.8;
-    background-color:#ccc;
-    position:fixed;
-    width:100%;
-    height:100%;
-    top:0px;
-    left:0px;
-    z-index:1000;
+.overlay {
+  opacity: 0.8;
+  background-color: #ccc;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  z-index: 1000;
 }
 </style>
