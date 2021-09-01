@@ -6,7 +6,7 @@ from flask_cors import CORS
 from py3dbp import Packer, Bin, Item
 import json
 import uuid
-
+import configparser
 
 #===========================================================
 #Gobal variable
@@ -18,11 +18,18 @@ import uuid
 #Gobal config
 #============================================================
 app=Flask(__name__)
+#cors problem
 CORS(app, resources={r"/api/*": {"origins": "*"}})
-
-#=============================================================
+#upload setting
+config=configparser.ConfigParser()
+config.read("cgi_config.ini")
+app.config['UPLOAD_FOLDER']=config['DEFAULT']['UPLOAD_FOLDER']
+app.config['MAX_CONTENT_LENGTH']=config['DEFAULT']['MAX_CONTENT_LENGTH']
+ALLOWED_EXTENSIONS=set(['xlsx','xls'])
+#==================================``===========================
 #Function Name: Processsing3DBP
 #Description: convert box_info and container info 
+#EXAMPLE: HOW STRUCTURE LOOKS LIKE
 '''
 {
 status: 0, 1, 2 //0:success, 1:fail, 2: partial success 3: critical error 
@@ -157,6 +164,17 @@ def CheckValidJsonData(infoJsonData):
 @app.route('/api/',methods=['GET'])
 def IndexPage():
     return "hello"
+
+
+#===============================================================
+#Function Name: upLoadFile()
+#Description: handle the file that need to be upload
+# the relevent config setting written in cgi_config_ini
+# ===============================================================
+@app.route('/api/uploadExcelSettingFile',method=['POST'])
+def upLoadExcelSettingFile():
+    file=request.files['file']
+
 
 
 

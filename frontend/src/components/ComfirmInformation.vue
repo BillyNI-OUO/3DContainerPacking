@@ -270,7 +270,7 @@ export default {
             console.log("status success");
             this.$store.dispatch("loadRenderInfos", response.data);
             this.$router.push("../render");
-          } else if (response.data["status" == 2]) {
+          } else if (response.data["status"]== 2) {
             console.log("status fail");
             this.$router.push('../PackingFailPage')
           } else if (response.data["status"] == 3) {
