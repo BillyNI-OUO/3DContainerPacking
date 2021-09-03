@@ -199,6 +199,7 @@
 <script>
 import { mapState } from "vuex";
 import Swal from "sweetalert2";
+import { API_LOCATION } from "../config"
 export default {
   //get the information from store first
   computed: {
@@ -230,7 +231,7 @@ export default {
     sendTestMessage() {
       this.axios({
         method: "get",
-        baseURL: "http://10.135.179.234:5000",
+        baseURL: API_LOCATION,
         url: "/api/",
         "Content-Type": "application/json",
       }).then((response) => {
@@ -252,7 +253,7 @@ export default {
     sendStoredMessage() {
       this.axios({
         method: "post",
-        baseURL: "http://10.135.179.234:5000",
+        baseURL: API_LOCATION,
         url: "/api/recv/3dbinpack/info",
         "Content-Type": "application/json",
         data: {

@@ -21,6 +21,8 @@ import store from './store.js'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
+//google icon
+
 
 //Flickity
 //import Flickity from 'vue-flickity';

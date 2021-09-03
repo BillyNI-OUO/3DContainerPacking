@@ -171,7 +171,7 @@ def IndexPage():
 #Description: handle the file that need to be upload
 # the relevent config setting written in cgi_config_ini
 # ===============================================================
-@app.route('/api/uploadExcelSettingFile',method=['POST'])
+@app.route('/api/uploadExcelSettingFile',methods=['POST'])
 def upLoadExcelSettingFile():
     file=request.files['file']
 

@@ -1,8 +1,23 @@
 <template>
   <div>
-    <div class="w-100 p-3">
+
       <canvas id="renderCanvas" ref="ref_renderCanvas"></canvas>
-    </div>
+    <ul id="hover">
+        <li  id="camera" class="camera" title="Free Camera [S]" onclick="toolSelector('camera', false)" v-on:pointerdown="dragElement($event)"><i class="material-icons">control_camera</i></li>
+        <li class="add" title="Add [W]" onclick="toolSelector('add', true)"><i class="material-icons">create</i></li>
+        <li class="remove" title="Remove [D]" onclick="toolSelector('remove', true)"><i class="material-icons">clear</i></li>
+        <li class="transform" title="Transform [A]" onclick="toolSelector('transform', true)"><i class="material-icons">border_inner</i></li>
+        <li class="symmetry" title="Symmetry for Add, Remove, Transform, Paint Color">
+            <select id="inputsymmetry">
+                <option style="color: #444;" value="" selected="selected">&nbsp;S</option>
+                <option style="color: #C83C43;" value="x">&nbsp;X</option>
+                <option style="color: #47C64B;" value="y">&nbsp;Y</option>
+                <option style="color: #6493D2;" value="z">&nbsp;Z</option>
+            </select>
+        </li>
+    </ul>
+
+    <!-- dynamic -->
     <div v-if="render_loading_status" class="overlay">
       <loading-page></loading-page>
     </div>
@@ -28,7 +43,11 @@ import showAxis from "@/Render_functions/ShowAxis";
 import actions from "@/Render_functions/RegisterActions";
 import rotationWithType from "@/Render_functions/RotationWithType";
 //import customLoadSreen from "@/Render_functions/RotationWithType"
+//import hover_tool from "@/toolkit_functions/hover_tool";
+
+import 'material-icons/iconfont/material-icons.css';
  import Swal from "sweetalert2";
+
 export default {
   name: "Render",
   components: {
@@ -48,11 +67,65 @@ export default {
   data(){
     return{
       engine:"",
-      canvas:""
+      canvas:"",
+      xOffset : 0,
+      yOffset : 0
     }
   },
   methods:{
+dragStart(e) {
+            if (e.type === "touchstart") {
+                this.initialX = e.touches[0].clientX - this.xOffset;
+                this.initialY = e.touches[0].clientY - this.yOffset;
+            } else {
+                this.initialX = e.clientX - this.xOffset;
+                this.initialY = e.clientY - this.yOffset;
+            }
+            if (e.target === this.elem.target)
+                this.active = true;
+        },
+    dragElement(elem) {
+      this.elem=elem;
+        this.active = false;
+        //let currentX, currentY, initialX, initialY;
 
+        // prevent fast-dragging problem with background elements
+        document.body.addEventListener("pointerdown", this.dragStart, false);
+        document.body.addEventListener("pointerup", this.dragEnd, false);
+        document.body.addEventListener("pointermove", this.drag, false);
+        document.body.addEventListener("touchstart", this.dragStart, false);
+        document.body.addEventListener("touchend", this.dragEnd, false);
+        document.body.addEventListener("touchmove", this.drag, false);
+
+    },
+      dragEnd() {
+            this.initialX = this.currentX;
+            this.initialY = this.currentY;
+            this.active = false;
+            document.body.removeEventListener("pointerdown", this.dragStart, false);
+            document.body.removeEventListener("pointerup", this.dragEnd, false);
+            document.body.removeEventListener("pointermove", this.drag, false);
+            document.body.removeEventListener("touchstart", this.dragStart, false);
+            document.body.removeEventListener("touchend", this.dragEnd, false);
+            document.body.removeEventListener("touchmove", this.drag, false);
+        },
+    drag(e) {
+            if (this.active) {
+                if (e.type === "touchmove") {
+                    this.currentX = e.touches[0].clientX - this.initialX;
+                    this.currentY = e.touches[0].clientY - this.initialY;
+                } else {
+                    this.currentX = e.clientX - this.initialX;
+                    this.currentY = e.clientY - this.initialY;
+                }
+                this.xOffset = this.currentX;
+                this.yOffset = this.currentY;
+                this.setTranslate(this.currentX, this.currentY);
+            }
+        },
+          setTranslate(xPos, yPos) {
+            this.elem.target.parentElement.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+        },
       handleRenderLoop(){
       this.scene.render();
       },
@@ -61,7 +134,18 @@ export default {
       },//end change size
       createScene() {
       this.canvas=document.getElementById("renderCanvas") // 得到canvas对象的引用
-      this.engine= new BABYLON.Engine(this.canvas, true) // 初始化 BABYLON 3D engine
+      //this.engine= new BABYLON.Engine(this.canvas, true) // 初始化 BABYLON 3D engine
+
+    this.engine = new BABYLON.Engine(this.canvas, true, null, false);
+    this.engine.disablePerformanceMonitorInBackground = true;
+    this.engine.enableOfflineSupport = false;
+    this.engine.doNotHandleContextLost = true;
+    this.engine.useHighPrecisionFloats = false;
+
+
+
+
+
       console.log("canvas"+ this.canvas)
       console.log("engine"+this.engine)
 
@@ -365,6 +449,49 @@ export default {
       ground_material.minorUnitVisibility = 0;
       ground.material = ground_material;
 
+    //==============================================
+    //test func
+    //=============================================
+       function createGridTexture() {
+        const texture = new BABYLON.DynamicTexture('dynagrid', 128, scene, BABYLON.Texture.LINEAR_LINEAR);
+        const ctx = texture.getContext();
+        ctx.lineWidth = 2; // draw grid
+        ctx.strokeStyle = "#CCCCCC";
+        ctx.beginPath();
+        ctx.moveTo(0, 64);
+        ctx.lineTo(128, 64);
+        ctx.moveTo(64, 0);
+        ctx.lineTo(64, 128);
+        ctx.stroke();
+        ctx.lineWidth = 4; // draw outline
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.strokeRect(0, 0, 128, 128);
+        texture.update();
+        texture.hasAlpha = true;
+        return texture;
+    }
+
+    function createMaterial(gridTex) {
+        const mat = new BABYLON.PBRMaterial("defaultMaterial", scene);
+        mat.backFaceCulling = true;
+        mat.albedoColor = new BABYLON.Color3(1, 1, 1);
+        mat.emissiveIntensity = 0.2;
+        mat.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+        mat.emissiveTexture = gridTex;
+        mat.reflectionTexture = gridTex;
+        mat.metallic = 0;
+        mat.roughness = 0.75;
+        mat.cameraContrast = 2; // mimic toon shading
+        mat.cameraExposure = 1;
+        mat.environmentIntensity = 1;
+        return mat;
+    }
+
+    const gridTexture = createGridTexture();
+    const defaultMaterial = createMaterial(gridTexture);
+    ground.material = defaultMaterial;
+
+
       //uncomment the following line to make eviroment rotate.
       /* 
 	engine.runRenderLoop(function () {
@@ -424,4 +551,78 @@ export default {
   left: 0px;
   z-index: 1000;
 }
+
+
+
+
+
+
+
+       a { color: slategray; text-decoration: none; }
+        a:hover { color: orange; text-decoration: none; }
+        /*canvas { z-index: 0; position: absolute; width: 100%; height: 100%; outline: none; background: radial-gradient(circle, rgb(81, 90, 109) 0%, rgb(49, 53, 68) 100%); }*/
+        ul { background: #5f62702f; position: absolute; list-style-type: none; }
+        ul li { background: #242b35; border: 1px solid #161a2096; border-radius: 5px; padding: 3px; text-align: center; }
+        ul li:hover, ul li.select, ul li.toggle { background: orange; color: #222; cursor: pointer; }
+        ul li.separator { background: none; height: 3px; padding: 0; cursor: default; border: none; }
+        ul li.spacer { background: none; height: 3px; padding: 0; cursor: default; border: none; }
+        input[type=color] { width: 22px; height: 18px; border: none; background: #2e35414d; outline: none; border: none; border-radius: 50%; vertical-align: text-bottom; }
+        input[type=color]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type=color]::-webkit-color-swatch { border: none; border-radius: 20%; }
+        input[type=color]:hover { background: white; cursor: pointer; }
+        input[type=number] { width: 50px; margin-bottom: 1px; background: #2a313db7; color: #808fa3; padding: 2px; font-size: 11px; text-indent: 5px; border: solid 1px #343c49; border-radius: 3px; text-align: left; outline: none; }
+        input[type=number]:hover { color: orange; border: solid 1px #43495a; }
+        input[type=checkbox] { display: none; }
+        input[type=checkbox] + .material-icons::after { content:"check_box_outline_blank"; color: #475364; }
+        input[type=checkbox]:checked + .material-icons::after { content:"check_box"; color: orange; }
+        select { appearance: none; width: 18px; background-color: #2a313db7; color: #bbb; font-size: 14px; font-weight: bold; padding: 0; border: none; outline: none; }
+        select:hover { color: orange; cursor: pointer; }
+        option { font-size: 14px; font-weight: bold; color: #bbb; background-color: #252931; }
+        button { width: 115px; background-color: #353f4d; color: #bbb; box-shadow: inset 1px 1px 1px #3f4a58, inset -1px -1px 1px #2f3742; border-radius: 4px; padding: 3px; font-size: 10px; border: 1px solid #161a20bd; outline: none; }
+        button:hover { background-color: orange; color: #222; cursor: pointer; }
+        label { color: #5c6c81; margin-right: 5px; }
+        #menuH_L { background: none; left: 10px; top: 10px; }
+        #menuH_L li { display: inline-block; width: 30px; padding: 1px; box-shadow: inset 1px 1px 1px #323b47, inset -1px -1px 1px #29303a; }
+        #menuH_R { background: none; right: 10px; top: 10px; z-index: 999; }
+        #menuH_R li { display: inline-block; width: 30px; padding: 1px; box-shadow: inset 1px 1px 1px #323b47, inset -1px -1px 1px #29303a; }
+        #menuV { z-index: 1000; position: fixed; top: 0; right: 0; background: #222731f8; padding: 10px; width: 120px; height: 100%; transform: translate(200px, 0); transition: -webkit-transform 0.2s ease; overflow-y: scroll; }
+        #menuV li { background: none; text-align: left; border: none; padding: 0; color: #67778d; }
+        #menuV li:hover { background: none; color: orange; }
+        #menuV .category { color: #464c5e; background: #1e222b; border: solid 1px #181c22; font-size: 10px; font-weight: bold; text-align: center; margin: 6px 4px 6px 0; padding: 2px; }
+        #menuV .category:hover { color: #43495a; background: #1e222b; cursor: default; }
+        #toolbar_R { width: 30px; right: 10px; top: 80px; padding: 3px; border-radius: 5px; }
+        #toolbar_R li { margin-bottom: 2px; box-shadow: inset 1px 1px 1px #323b47, inset -1px -1px 1px #29303a; }
+        #toolbar_R li.separator { box-shadow: none; }
+        #toolbar_L { width: 30px; left: 10px; top: 80px; padding: 3px; border-radius: 5px; }
+        #toolbar_L li { margin-bottom: 2px; box-shadow: inset 1px 1px 1px #323b47, inset -1px -1px 1px #29303a; }
+        #toolbar_L li.separator { box-shadow: none; }
+        #color_palette { left: 10px; top: 210px; padding: 3px; border-radius: 5px; }
+        #color_palette li { width: 22px; height: 5px; margin-bottom: 1px; }
+        #color_palette li:hover { border: solid 1px orange; }
+        #hover { z-index: 1; background: none; left: 60%; top: 120px; }
+        #hover li { box-shadow: inset 1px 1px 1px #37414e, inset -1px -1px 1px #2f3742; }
+        #hover li:nth-child(1) { cursor: move; position: absolute; top: 0%; left: 0px; }
+        #hover li:nth-child(2) { position: absolute; top: -33px; left: 0%; }
+        #hover li:nth-child(3) { position: absolute; top: 0%; left: 30px; }
+        #hover li:nth-child(4) { position: absolute; top: 0%; left: -30px; }
+        #hover li:nth-child(5) { position: absolute; top: 33px; left: 0%; }
+        #axisview { background: #161a203f; bottom: 5px; right: 6px; width: 68px; height: 68px; border: 1px solid #161a2096; border-radius: 50%; box-shadow: inset 1px 1px 1px #38404d, inset -1px -1px 1px #38404d; }
+        #axisview li { border-radius: 50%; padding: 3px; color: #495363; border: 1px solid #161a2096; }
+        #axisview li:nth-child(1) { position: absolute; top: -28%; right: 0%; }
+        #axisview li:nth-child(2) { position: absolute; top: -36%; right: 44%; }
+        #axisview li:nth-child(3) { position: absolute; top: -18%; right: 83%; }
+        #axisview li:nth-child(4) { position: absolute; top: 22%; right: 103%; }
+        #axisview li:nth-child(5) { position: absolute; top: 65%; right: 97%; }
+        #loadingscreen { display: none; z-index: 1001; position: absolute; width: 100%; height: 100%; background: #000000bb; }
+        #loadingscreen .spinner { position: absolute; top: 50%; left: 50%; margin-left: -50px; margin-top: -50px; border-radius: 50%; background: #252e38; border: 2px solid #344558; animation: spin 3s infinite linear; }
+        #notifier { opacity: 0; transition: opacity 0.5s; position: absolute; left: 50%; top: 50%; margin-left: -50px; margin-top: -20px; padding: 3px 5px 3px 5px; background: orange; color: #111; border: dashed 1px #d18800; font-size: 10px; font-weight: bold; border-radius: 5px; }
+        #notifier.fade { opacity: 1; }
+        #status { color: #ffffff30; position: absolute; bottom: 4px; left: 5px; font-size: 10px; font-weight: bold; opacity: 0.8; }
+        #status span { color: #eee; padding: 0 1px 0 1px; }
+        #status i { color: #aaa; }
+        ::-webkit-scrollbar { display: none; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .material-icons { font-size: 18px; pointer-events: none; vertical-align: middle; text-align: center; }
+
+
 </style>
