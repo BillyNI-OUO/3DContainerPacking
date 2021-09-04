@@ -347,7 +347,14 @@ dragStart(e) {
           //Set the box material
           //======================================================
           box_instance.material =
-            box_mat_array[container["Fitted_items"][i]["TypeIndex"]];
+          box_mat_array[container["Fitted_items"][i]["TypeIndex"]];
+      
+        box_instance.receiveShadows = true;
+        box_instance.doNotSyncBoundingInfo = true;
+        box_instance.cullingStrategy = BABYLON.AbstractMesh.CULLINGSTRATEGY_BOUNDINGSPHERE_ONLY;
+        //scene.lights[1].getShadowGenerator().addShadowCaster(box_instance);
+
+
 
           console.log(box_instance);
 
@@ -366,7 +373,7 @@ dragStart(e) {
           //===========================================================
           //Create control box
           //===========================================================
-          console.log("control box");
+          //console.log("control box");
           console.log(
             sameTypeHaveBeenDraw[container["Fitted_items"][i]["TypeIndex"]]
           );
@@ -383,6 +390,8 @@ dragStart(e) {
             sameTypeHaveBeenDraw[
               container["Fitted_items"][i]["TypeIndex"]
             ] = true;
+
+
 
             //======================================================
             //Register actions for control box and boxes
@@ -420,20 +429,35 @@ dragStart(e) {
         new BABYLON.Vector3(0, 4, 0),
         scene
       );
+
+        function setLightPositionByAngle(light, angle, distance, height) {
+        const x = Math.cos(angle * Math.PI / 180) * distance;
+        const y = height;
+        const z = Math.sin(angle * Math.PI / 180) * distance;
+        const pos = new BABYLON.Vector3(x, y, z);
+        light.position = pos; // our primary shadow light
+        light.setDirectionToTarget(BABYLON.Vector3.Zero());
+    }
+
       camera.attachControl(this.canvas, true);
-      // 添加一组灯光到场景
-      // eslint-disable-next-line no-unused-vars
-      var light1 = new BABYLON.HemisphericLight(
-        "light1",
-        new BABYLON.Vector3(0, 150, 0),
-        scene
-      );
-      // eslint-disable-next-line no-unused-vars
-      var light2 = new BABYLON.PointLight(
-        "light2",
-        new BABYLON.Vector3(2, 150, -1),
-        scene
-      );
+        const ambient = new BABYLON.HemisphericLight("ambient", new BABYLON.Vector3(0, 1, 0), scene);
+        ambient.diffuse = new BABYLON.Color3(0.5, 0.5, 0.5);
+        ambient.specular = new BABYLON.Color3(0, 0, 0);
+        ambient.groundColor = new BABYLON.Color3(0.4, 0.4, 0.4);
+        ambient.intensity = 0.3;
+
+        const light = new BABYLON.DirectionalLight("light", new BABYLON.Vector3(0, -1, 0), scene);
+        setLightPositionByAngle(light, 120, 50, 100);
+        light.autoUpdateExtends = true;
+        light.diffuse = new BABYLON.Color3(1, 1, 1);
+        light.intensity = 1;
+
+        const shadowGen = new BABYLON.ShadowGenerator(512, light); // shadows updated manually on SPS.mesh changes,
+        shadowGen.getShadowMap().refreshRate = BABYLON.RenderTargetTexture.REFRESHRATE_RENDER_ONCE; // to save performance
+        shadowGen.filteringQuality = BABYLON.ShadowGenerator.QUALITY_LOW;
+        shadowGen.useExponentialShadowMap = false;
+        shadowGen.usePercentageCloserFiltering = true;
+        shadowGen.setDarkness(0.6);
 
       // Create my custom ground
       var ground = BABYLON.MeshBuilder.CreateGround("ground1", {
@@ -441,55 +465,32 @@ dragStart(e) {
         width: ground_size,
         subdivisions: 4,
       });
-
+      //========================================================
+      //Create ground Material
       //Attach grid material to the ground
-      var ground_material = new GridMaterial("grid", scene);
+      //===========================================================
+      
+        var ground_material = new GridMaterial("grid", this.scene);
+        ground_material.backFaceCulling = false;
+        ground_material.gridRatio = 1;
+        ground_material.mainColor = new BABYLON.Color3.White;
+        ground_material.lineColor = new BABYLON.Color3(0.7, 0.7, 0.7);
+        ground_material.opacity = 0.3;
+        //ground_material.freeze();
+        //ground_material.isPickable = false;
+        //ground_material.doNotSyncBoundingInfo = true;
+        
       ground_material.diffuseColor = BABYLON.Color3.Blue();
       ground_material.majorUnitFrequency = 20;
+      //ground_material.minorUnitFrequency = 5;
       ground_material.minorUnitVisibility = 0;
       ground.material = ground_material;
 
-    //==============================================
-    //test func
-    //=============================================
-       function createGridTexture() {
-        const texture = new BABYLON.DynamicTexture('dynagrid', 128, scene, BABYLON.Texture.LINEAR_LINEAR);
-        const ctx = texture.getContext();
-        ctx.lineWidth = 2; // draw grid
-        ctx.strokeStyle = "#CCCCCC";
-        ctx.beginPath();
-        ctx.moveTo(0, 64);
-        ctx.lineTo(128, 64);
-        ctx.moveTo(64, 0);
-        ctx.lineTo(64, 128);
-        ctx.stroke();
-        ctx.lineWidth = 4; // draw outline
-        ctx.strokeStyle = "#FFFFFF";
-        ctx.strokeRect(0, 0, 128, 128);
-        texture.update();
-        texture.hasAlpha = true;
-        return texture;
-    }
 
-    function createMaterial(gridTex) {
-        const mat = new BABYLON.PBRMaterial("defaultMaterial", scene);
-        mat.backFaceCulling = true;
-        mat.albedoColor = new BABYLON.Color3(1, 1, 1);
-        mat.emissiveIntensity = 0.2;
-        mat.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
-        mat.emissiveTexture = gridTex;
-        mat.reflectionTexture = gridTex;
-        mat.metallic = 0;
-        mat.roughness = 0.75;
-        mat.cameraContrast = 2; // mimic toon shading
-        mat.cameraExposure = 1;
-        mat.environmentIntensity = 1;
-        return mat;
-    }
 
-    const gridTexture = createGridTexture();
-    const defaultMaterial = createMaterial(gridTexture);
-    ground.material = defaultMaterial;
+   //const gridTexture = createGridTexture();
+    //const defaultMaterial = createMaterial(gridTexture);
+    //ground.material = defaultMaterial;
 
 
       //uncomment the following line to make eviroment rotate.
