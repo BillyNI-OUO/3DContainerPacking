@@ -7,7 +7,8 @@ from py3dbp import Packer, Bin, Item
 import json
 import uuid
 import configparser
-
+from flask import send_file
+import os
 #===========================================================
 #Gobal variable
 #===========================================================
@@ -20,6 +21,7 @@ import configparser
 app=Flask(__name__)
 #cors problem
 CORS(app, resources={r"/api/*": {"origins": "*"}})
+CORS(app, resources={r"/get_resource/*": {"origins": "*"}})
 #upload setting
 config=configparser.ConfigParser()
 config.read("cgi_config.ini")
@@ -153,8 +155,25 @@ def CheckValidJsonData(infoJsonData):
 
     firstkyes=infoJsonData.keys()
     #for key in FirstLayerKeys.keys():
-        
+#=============================================================
+#
+#
+#=============================================================
+@app.errorhandler(404)
+def page_not_found(error):
+   return "404 not found"
     
+#=============================================================
+#Function:testImg
+#
+#=============================================================
+@app.route('/get_resource/image/<filename>', methods=['GET'])
+def get_image(filename):
+    filepath="./textures/"+filename
+    if os.path.isfile(filepath):
+        return send_file(filepath, mimetype='image/gif')
+    else:
+        return "404 not found"
 
 
 #==============================================================

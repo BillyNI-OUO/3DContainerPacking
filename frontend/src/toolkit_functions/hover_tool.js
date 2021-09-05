@@ -52,16 +52,12 @@ dragElement(elem, offsets) {
             yOffset = currentY;
             setTranslate(currentX, currentY, elem.parentElement);
         }
-        console.log("xOff"+xOffset+" YOFF"+yOffset)
-        var ret=[]
-        ret.push(xOffset)
-        ret.push(yOffset)
-        return ret
     }
 
     function setTranslate(xPos, yPos, el) {
         el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
     }
+
 
 }//end drag element
 }//end hover_tool

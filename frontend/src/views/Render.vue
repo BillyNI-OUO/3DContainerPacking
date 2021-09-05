@@ -1,20 +1,46 @@
 <template>
   <div>
-
-      <canvas id="renderCanvas" ref="ref_renderCanvas"></canvas>
+    <canvas id="renderCanvas" ref="ref_renderCanvas"></canvas>
     <ul id="hover">
-        <li  id="camera" class="camera" title="Free Camera [S]" onclick="toolSelector('camera', false)" v-on:pointerdown="dragElement($event)"><i class="material-icons">control_camera</i></li>
-        <li class="add" title="Add [W]" onclick="toolSelector('add', true)"><i class="material-icons">create</i></li>
-        <li class="remove" title="Remove [D]" onclick="toolSelector('remove', true)"><i class="material-icons">clear</i></li>
-        <li class="transform" title="Transform [A]" onclick="toolSelector('transform', true)"><i class="material-icons">border_inner</i></li>
-        <li class="symmetry" title="Symmetry for Add, Remove, Transform, Paint Color">
-            <select id="inputsymmetry">
-                <option style="color: #444;" value="" selected="selected">&nbsp;S</option>
-                <option style="color: #C83C43;" value="x">&nbsp;X</option>
-                <option style="color: #47C64B;" value="y">&nbsp;Y</option>
-                <option style="color: #6493D2;" value="z">&nbsp;Z</option>
-            </select>
-        </li>
+      <li
+        id="camera"
+        class="camera"
+        title="Free Camera [S]"
+        onclick="toolSelector('camera', false)"
+        v-on:pointerdown="dragElement($event)"
+      >
+        <i class="material-icons">control_camera</i>
+      </li>
+      <li class="add" title="Add [W]" onclick="toolSelector('add', true)">
+        <i class="material-icons">create</i>
+      </li>
+      <li
+        class="remove"
+        title="Remove [D]"
+        onclick="toolSelector('remove', true)"
+      >
+        <i class="material-icons">clear</i>
+      </li>
+      <li
+        class="transform"
+        title="Transform [A]"
+        onclick="toolSelector('transform', true)"
+      >
+        <i class="material-icons">border_inner</i>
+      </li>
+      <li
+        class="symmetry"
+        title="Symmetry for Add, Remove, Transform, Paint Color"
+      >
+        <select id="inputsymmetry">
+          <option style="color: #444" value="" selected="selected">
+            &nbsp;S
+          </option>
+          <option style="color: #c83c43" value="x">&nbsp;X</option>
+          <option style="color: #47c64b" value="y">&nbsp;Y</option>
+          <option style="color: #6493d2" value="z">&nbsp;Z</option>
+        </select>
+      </li>
     </ul>
 
     <!-- dynamic -->
@@ -45,8 +71,8 @@ import rotationWithType from "@/Render_functions/RotationWithType";
 //import customLoadSreen from "@/Render_functions/RotationWithType"
 //import hover_tool from "@/toolkit_functions/hover_tool";
 
-import 'material-icons/iconfont/material-icons.css';
- import Swal from "sweetalert2";
+import "material-icons/iconfont/material-icons.css";
+import Swal from "sweetalert2";
 
 export default {
   name: "Render",
@@ -62,98 +88,91 @@ export default {
     box_infos: (state) => state.box_infos,
     render_infos: (state) => state.render_infos,
     render_loading_status: (state) => state.render_loading_status,
-  })
-  ,//end compute
-  data(){
-    return{
-      engine:"",
-      canvas:"",
-      xOffset : 0,
-      yOffset : 0
-    }
+  }), //end compute
+  data() {
+    return {
+      engine: "",
+      canvas: "",
+      xOffset: 0,
+      yOffset: 0,
+    };
   },
-  methods:{
-dragStart(e) {
-            if (e.type === "touchstart") {
-                this.initialX = e.touches[0].clientX - this.xOffset;
-                this.initialY = e.touches[0].clientY - this.yOffset;
-            } else {
-                this.initialX = e.clientX - this.xOffset;
-                this.initialY = e.clientY - this.yOffset;
-            }
-            if (e.target === this.elem.target)
-                this.active = true;
-        },
-    dragElement(elem) {
-      this.elem=elem;
-        this.active = false;
-        //let currentX, currentY, initialX, initialY;
-
-        // prevent fast-dragging problem with background elements
-        document.body.addEventListener("pointerdown", this.dragStart, false);
-        document.body.addEventListener("pointerup", this.dragEnd, false);
-        document.body.addEventListener("pointermove", this.drag, false);
-        document.body.addEventListener("touchstart", this.dragStart, false);
-        document.body.addEventListener("touchend", this.dragEnd, false);
-        document.body.addEventListener("touchmove", this.drag, false);
-
+  methods: {
+    dragStart(e) {
+      if (e.type === "touchstart") {
+        this.initialX = e.touches[0].clientX - this.xOffset;
+        this.initialY = e.touches[0].clientY - this.yOffset;
+      } else {
+        this.initialX = e.clientX - this.xOffset;
+        this.initialY = e.clientY - this.yOffset;
+      }
+      if (e.target === this.elem.target) this.active = true;
     },
-      dragEnd() {
-            this.initialX = this.currentX;
-            this.initialY = this.currentY;
-            this.active = false;
-            document.body.removeEventListener("pointerdown", this.dragStart, false);
-            document.body.removeEventListener("pointerup", this.dragEnd, false);
-            document.body.removeEventListener("pointermove", this.drag, false);
-            document.body.removeEventListener("touchstart", this.dragStart, false);
-            document.body.removeEventListener("touchend", this.dragEnd, false);
-            document.body.removeEventListener("touchmove", this.drag, false);
-        },
+    dragElement(elem) {
+      this.elem = elem;
+      this.active = false;
+      //let currentX, currentY, initialX, initialY;
+
+      // prevent fast-dragging problem with background elements
+      document.body.addEventListener("pointerdown", this.dragStart, false);
+      document.body.addEventListener("pointerup", this.dragEnd, false);
+      document.body.addEventListener("pointermove", this.drag, false);
+      document.body.addEventListener("touchstart", this.dragStart, false);
+      document.body.addEventListener("touchend", this.dragEnd, false);
+      document.body.addEventListener("touchmove", this.drag, false);
+    },
+    dragEnd() {
+      this.initialX = this.currentX;
+      this.initialY = this.currentY;
+      this.active = false;
+      document.body.removeEventListener("pointerdown", this.dragStart, false);
+      document.body.removeEventListener("pointerup", this.dragEnd, false);
+      document.body.removeEventListener("pointermove", this.drag, false);
+      document.body.removeEventListener("touchstart", this.dragStart, false);
+      document.body.removeEventListener("touchend", this.dragEnd, false);
+      document.body.removeEventListener("touchmove", this.drag, false);
+    },
     drag(e) {
-            if (this.active) {
-                if (e.type === "touchmove") {
-                    this.currentX = e.touches[0].clientX - this.initialX;
-                    this.currentY = e.touches[0].clientY - this.initialY;
-                } else {
-                    this.currentX = e.clientX - this.initialX;
-                    this.currentY = e.clientY - this.initialY;
-                }
-                this.xOffset = this.currentX;
-                this.yOffset = this.currentY;
-                this.setTranslate(this.currentX, this.currentY);
-            }
-        },
-          setTranslate(xPos, yPos) {
-            this.elem.target.parentElement.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
-        },
-      handleRenderLoop(){
+      if (this.active) {
+        if (e.type === "touchmove") {
+          this.currentX = e.touches[0].clientX - this.initialX;
+          this.currentY = e.touches[0].clientY - this.initialY;
+        } else {
+          this.currentX = e.clientX - this.initialX;
+          this.currentY = e.clientY - this.initialY;
+        }
+        this.xOffset = this.currentX;
+        this.yOffset = this.currentY;
+        this.setTranslate(this.currentX, this.currentY);
+      }
+    },
+    setTranslate(xPos, yPos) {
+      this.elem.target.parentElement.style.transform =
+        "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+    },
+    handleRenderLoop() {
       this.scene.render();
-      },
-      handleChangeWindowSize(){
+    },
+    handleChangeWindowSize() {
       this.engine.resize();
-      },//end change size
-      createScene() {
-      this.canvas=document.getElementById("renderCanvas") // 得到canvas对象的引用
+    }, //end change size
+    createScene() {
+      this.canvas = document.getElementById("renderCanvas"); // 得到canvas对象的引用
       //this.engine= new BABYLON.Engine(this.canvas, true) // 初始化 BABYLON 3D engine
 
-    this.engine = new BABYLON.Engine(this.canvas, true, null, false);
-    this.engine.disablePerformanceMonitorInBackground = true;
-    this.engine.enableOfflineSupport = false;
-    this.engine.doNotHandleContextLost = true;
-    this.engine.useHighPrecisionFloats = false;
+      this.engine = new BABYLON.Engine(this.canvas, true, null, false);
+      this.engine.disablePerformanceMonitorInBackground = true;
+      this.engine.enableOfflineSupport = false;
+      this.engine.doNotHandleContextLost = true;
+      this.engine.useHighPrecisionFloats = false;
 
+      console.log("canvas" + this.canvas);
+      console.log("engine" + this.engine);
 
-
-
-
-      console.log("canvas"+ this.canvas)
-      console.log("engine"+this.engine)
-
-
-
-      var render_infos=this.render_infos
+      var render_infos = this.render_infos;
       //create scene
       var scene = new BABYLON.Scene(this.engine);
+      this.scene = scene;
       //=========================================================================
       //global variables
       //=========================================================================
@@ -175,7 +194,7 @@ dragStart(e) {
       //=====================================================================
       //uncomment the following line to set debug mode
       //=====================================================================
-      //scene.debugLayer.show();
+      //this.scene.debugLayer.show();
 
       //======================starting create elements=======================
 
@@ -200,6 +219,28 @@ dragStart(e) {
         b = Math.random() * (max - min) + min;
         return new BABYLON.Color3(r, g, b);
       }
+      //=====================================================
+      //Create Skybox
+      // Not working for bbjs interal render reason
+      //=====================================================
+      var skybox = BABYLON.Mesh.CreateBox("skyBox_", { size: 1.0 }, this.scene);
+      var skyboxMaterial = new BABYLON.StandardMaterial(
+        "skyBox_material",
+        this.scene
+      );
+      skyboxMaterial.backFaceCulling = false;
+      skyboxMaterial.disableLighting = true;
+      skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+      skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+      skyboxMaterial.backFaceCulling = false;
+      skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture(
+        "http://127.0.0.1:5000/get_resource/image/skybox",
+        this.scene
+      );
+      skyboxMaterial.reflectionTexture.coordinatesMode =
+        BABYLON.Texture.SKYBOX_MODE;
+      skyboxMaterial.disableLighting = true;
+      skybox.material = skyboxMaterial;
 
       //=====================================================
       //create material array for containers
@@ -309,6 +350,7 @@ dragStart(e) {
         let mat = new BABYLON.StandardMaterial(box_mat_name, scene);
         mat.diffuseColor = getRandomColor(0.3, 1);
         mat.alpha = 0.5;
+        //mat.diffuseTexture = new BABYLON.Texture("http://127.0.0.1:5000/get_resource/image", scene);
         box_mat_array.push(mat);
       }
 
@@ -347,14 +389,13 @@ dragStart(e) {
           //Set the box material
           //======================================================
           box_instance.material =
-          box_mat_array[container["Fitted_items"][i]["TypeIndex"]];
-      
-        box_instance.receiveShadows = true;
-        box_instance.doNotSyncBoundingInfo = true;
-        box_instance.cullingStrategy = BABYLON.AbstractMesh.CULLINGSTRATEGY_BOUNDINGSPHERE_ONLY;
-        //scene.lights[1].getShadowGenerator().addShadowCaster(box_instance);
+            box_mat_array[container["Fitted_items"][i]["TypeIndex"]];
 
-
+          box_instance.receiveShadows = true;
+          box_instance.doNotSyncBoundingInfo = true;
+          box_instance.cullingStrategy =
+            BABYLON.AbstractMesh.CULLINGSTRATEGY_BOUNDINGSPHERE_ONLY;
+          //scene.lights[1].getShadowGenerator().addShadowCaster(box_instance);
 
           console.log(box_instance);
 
@@ -390,8 +431,6 @@ dragStart(e) {
             sameTypeHaveBeenDraw[
               container["Fitted_items"][i]["TypeIndex"]
             ] = true;
-
-
 
             //======================================================
             //Register actions for control box and boxes
@@ -430,34 +469,43 @@ dragStart(e) {
         scene
       );
 
-        function setLightPositionByAngle(light, angle, distance, height) {
-        const x = Math.cos(angle * Math.PI / 180) * distance;
+      function setLightPositionByAngle(light, angle, distance, height) {
+        const x = Math.cos((angle * Math.PI) / 180) * distance;
         const y = height;
-        const z = Math.sin(angle * Math.PI / 180) * distance;
+        const z = Math.sin((angle * Math.PI) / 180) * distance;
         const pos = new BABYLON.Vector3(x, y, z);
         light.position = pos; // our primary shadow light
         light.setDirectionToTarget(BABYLON.Vector3.Zero());
-    }
+      }
 
       camera.attachControl(this.canvas, true);
-        const ambient = new BABYLON.HemisphericLight("ambient", new BABYLON.Vector3(0, 1, 0), scene);
-        ambient.diffuse = new BABYLON.Color3(0.5, 0.5, 0.5);
-        ambient.specular = new BABYLON.Color3(0, 0, 0);
-        ambient.groundColor = new BABYLON.Color3(0.4, 0.4, 0.4);
-        ambient.intensity = 0.3;
+      const ambient = new BABYLON.HemisphericLight(
+        "ambient",
+        new BABYLON.Vector3(0, 1, 0),
+        scene
+      );
+      ambient.diffuse = new BABYLON.Color3(0.5, 0.5, 0.5);
+      ambient.specular = new BABYLON.Color3(0, 0, 0);
+      ambient.groundColor = new BABYLON.Color3(0.4, 0.4, 0.4);
+      ambient.intensity = 0.3;
 
-        const light = new BABYLON.DirectionalLight("light", new BABYLON.Vector3(0, -1, 0), scene);
-        setLightPositionByAngle(light, 120, 50, 100);
-        light.autoUpdateExtends = true;
-        light.diffuse = new BABYLON.Color3(1, 1, 1);
-        light.intensity = 1;
+      const light = new BABYLON.DirectionalLight(
+        "light",
+        new BABYLON.Vector3(0, -1, 0),
+        scene
+      );
+      setLightPositionByAngle(light, 120, 50, 100);
+      light.autoUpdateExtends = true;
+      light.diffuse = new BABYLON.Color3(1, 1, 1);
+      light.intensity = 1;
 
-        const shadowGen = new BABYLON.ShadowGenerator(512, light); // shadows updated manually on SPS.mesh changes,
-        shadowGen.getShadowMap().refreshRate = BABYLON.RenderTargetTexture.REFRESHRATE_RENDER_ONCE; // to save performance
-        shadowGen.filteringQuality = BABYLON.ShadowGenerator.QUALITY_LOW;
-        shadowGen.useExponentialShadowMap = false;
-        shadowGen.usePercentageCloserFiltering = true;
-        shadowGen.setDarkness(0.6);
+      const shadowGen = new BABYLON.ShadowGenerator(512, light); // shadows updated manually on SPS.mesh changes,
+      shadowGen.getShadowMap().refreshRate =
+        BABYLON.RenderTargetTexture.REFRESHRATE_RENDER_ONCE; // to save performance
+      shadowGen.filteringQuality = BABYLON.ShadowGenerator.QUALITY_LOW;
+      shadowGen.useExponentialShadowMap = false;
+      shadowGen.usePercentageCloserFiltering = true;
+      shadowGen.setDarkness(0.6);
 
       // Create my custom ground
       var ground = BABYLON.MeshBuilder.CreateGround("ground1", {
@@ -469,29 +517,26 @@ dragStart(e) {
       //Create ground Material
       //Attach grid material to the ground
       //===========================================================
-      
-        var ground_material = new GridMaterial("grid", this.scene);
-        ground_material.backFaceCulling = false;
-        ground_material.gridRatio = 1;
-        ground_material.mainColor = new BABYLON.Color3.White;
-        ground_material.lineColor = new BABYLON.Color3(0.7, 0.7, 0.7);
-        ground_material.opacity = 0.3;
-        //ground_material.freeze();
-        //ground_material.isPickable = false;
-        //ground_material.doNotSyncBoundingInfo = true;
-        
+
+      var ground_material = new GridMaterial("grid", this.scene);
+      ground_material.backFaceCulling = false;
+      ground_material.gridRatio = 1;
+      ground_material.mainColor = new BABYLON.Color3.White();
+      ground_material.lineColor = new BABYLON.Color3(0.7, 0.7, 0.7);
+      ground_material.opacity = 0.3;
+      //ground_material.freeze();
+      //ground_material.isPickable = false;
+      //ground_material.doNotSyncBoundingInfo = true;
+
       ground_material.diffuseColor = BABYLON.Color3.Blue();
       ground_material.majorUnitFrequency = 20;
       //ground_material.minorUnitFrequency = 5;
       ground_material.minorUnitVisibility = 0;
       ground.material = ground_material;
 
-
-
-   //const gridTexture = createGridTexture();
-    //const defaultMaterial = createMaterial(gridTexture);
-    //ground.material = defaultMaterial;
-
+      //const gridTexture = createGridTexture();
+      //const defaultMaterial = createMaterial(gridTexture);
+      //ground.material = defaultMaterial;
 
       //uncomment the following line to make eviroment rotate.
       /* 
@@ -500,8 +545,8 @@ dragStart(e) {
 	});
   */
       return scene;
-    },//end create scence
-  },//end method.s
+    }, //end create scence
+  }, //end method.s
   mounted() {
     console.log("render mounted");
     //=========================================================================
@@ -516,20 +561,22 @@ dragStart(e) {
     //try to create scence, and if error show alert
     try {
       this.scene = this.createScene(); //Call the createScene function
-      console.log("scene"+this.scene)
+      console.log("scene" + this.scene);
     } catch (e) {
       console.log(e);
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Something went wrong! wiil jump to formsend page in 5sec",
-        footer: '<p>Do you create the box and container information first?</p>',
+        footer: "<p>Do you create the box and container information first?</p>",
       });
-      setTimeout(()=>{this.$router.push("../formsend")},5000)
+      setTimeout(() => {
+        this.$router.push("../formsend");
+      }, 5000);
     }
     this.$store.dispatch("setRenderLoadingStatus", false);
     // 最后一步调用engine的runRenderLoop方案，执行scene.render()，让我们的3d场景渲染起来
-    this.engine.runRenderLoop(this.handleRenderLoop );
+    this.engine.runRenderLoop(this.handleRenderLoop);
     // 监听浏览器改变大小的事件，通过调用engine.resize()来自适应窗口大小
     window.addEventListener("resize", this.handleChangeWindowSize);
   }, //end monted
@@ -553,77 +600,387 @@ dragStart(e) {
   z-index: 1000;
 }
 
-
-
-
-
-
-
-       a { color: slategray; text-decoration: none; }
-        a:hover { color: orange; text-decoration: none; }
-        /*canvas { z-index: 0; position: absolute; width: 100%; height: 100%; outline: none; background: radial-gradient(circle, rgb(81, 90, 109) 0%, rgb(49, 53, 68) 100%); }*/
-        ul { background: #5f62702f; position: absolute; list-style-type: none; }
-        ul li { background: #242b35; border: 1px solid #161a2096; border-radius: 5px; padding: 3px; text-align: center; }
-        ul li:hover, ul li.select, ul li.toggle { background: orange; color: #222; cursor: pointer; }
-        ul li.separator { background: none; height: 3px; padding: 0; cursor: default; border: none; }
-        ul li.spacer { background: none; height: 3px; padding: 0; cursor: default; border: none; }
-        input[type=color] { width: 22px; height: 18px; border: none; background: #2e35414d; outline: none; border: none; border-radius: 50%; vertical-align: text-bottom; }
-        input[type=color]::-webkit-color-swatch-wrapper { padding: 0; }
-        input[type=color]::-webkit-color-swatch { border: none; border-radius: 20%; }
-        input[type=color]:hover { background: white; cursor: pointer; }
-        input[type=number] { width: 50px; margin-bottom: 1px; background: #2a313db7; color: #808fa3; padding: 2px; font-size: 11px; text-indent: 5px; border: solid 1px #343c49; border-radius: 3px; text-align: left; outline: none; }
-        input[type=number]:hover { color: orange; border: solid 1px #43495a; }
-        input[type=checkbox] { display: none; }
-        input[type=checkbox] + .material-icons::after { content:"check_box_outline_blank"; color: #475364; }
-        input[type=checkbox]:checked + .material-icons::after { content:"check_box"; color: orange; }
-        select { appearance: none; width: 18px; background-color: #2a313db7; color: #bbb; font-size: 14px; font-weight: bold; padding: 0; border: none; outline: none; }
-        select:hover { color: orange; cursor: pointer; }
-        option { font-size: 14px; font-weight: bold; color: #bbb; background-color: #252931; }
-        button { width: 115px; background-color: #353f4d; color: #bbb; box-shadow: inset 1px 1px 1px #3f4a58, inset -1px -1px 1px #2f3742; border-radius: 4px; padding: 3px; font-size: 10px; border: 1px solid #161a20bd; outline: none; }
-        button:hover { background-color: orange; color: #222; cursor: pointer; }
-        label { color: #5c6c81; margin-right: 5px; }
-        #menuH_L { background: none; left: 10px; top: 10px; }
-        #menuH_L li { display: inline-block; width: 30px; padding: 1px; box-shadow: inset 1px 1px 1px #323b47, inset -1px -1px 1px #29303a; }
-        #menuH_R { background: none; right: 10px; top: 10px; z-index: 999; }
-        #menuH_R li { display: inline-block; width: 30px; padding: 1px; box-shadow: inset 1px 1px 1px #323b47, inset -1px -1px 1px #29303a; }
-        #menuV { z-index: 1000; position: fixed; top: 0; right: 0; background: #222731f8; padding: 10px; width: 120px; height: 100%; transform: translate(200px, 0); transition: -webkit-transform 0.2s ease; overflow-y: scroll; }
-        #menuV li { background: none; text-align: left; border: none; padding: 0; color: #67778d; }
-        #menuV li:hover { background: none; color: orange; }
-        #menuV .category { color: #464c5e; background: #1e222b; border: solid 1px #181c22; font-size: 10px; font-weight: bold; text-align: center; margin: 6px 4px 6px 0; padding: 2px; }
-        #menuV .category:hover { color: #43495a; background: #1e222b; cursor: default; }
-        #toolbar_R { width: 30px; right: 10px; top: 80px; padding: 3px; border-radius: 5px; }
-        #toolbar_R li { margin-bottom: 2px; box-shadow: inset 1px 1px 1px #323b47, inset -1px -1px 1px #29303a; }
-        #toolbar_R li.separator { box-shadow: none; }
-        #toolbar_L { width: 30px; left: 10px; top: 80px; padding: 3px; border-radius: 5px; }
-        #toolbar_L li { margin-bottom: 2px; box-shadow: inset 1px 1px 1px #323b47, inset -1px -1px 1px #29303a; }
-        #toolbar_L li.separator { box-shadow: none; }
-        #color_palette { left: 10px; top: 210px; padding: 3px; border-radius: 5px; }
-        #color_palette li { width: 22px; height: 5px; margin-bottom: 1px; }
-        #color_palette li:hover { border: solid 1px orange; }
-        #hover { z-index: 1; background: none; left: 60%; top: 120px; }
-        #hover li { box-shadow: inset 1px 1px 1px #37414e, inset -1px -1px 1px #2f3742; }
-        #hover li:nth-child(1) { cursor: move; position: absolute; top: 0%; left: 0px; }
-        #hover li:nth-child(2) { position: absolute; top: -33px; left: 0%; }
-        #hover li:nth-child(3) { position: absolute; top: 0%; left: 30px; }
-        #hover li:nth-child(4) { position: absolute; top: 0%; left: -30px; }
-        #hover li:nth-child(5) { position: absolute; top: 33px; left: 0%; }
-        #axisview { background: #161a203f; bottom: 5px; right: 6px; width: 68px; height: 68px; border: 1px solid #161a2096; border-radius: 50%; box-shadow: inset 1px 1px 1px #38404d, inset -1px -1px 1px #38404d; }
-        #axisview li { border-radius: 50%; padding: 3px; color: #495363; border: 1px solid #161a2096; }
-        #axisview li:nth-child(1) { position: absolute; top: -28%; right: 0%; }
-        #axisview li:nth-child(2) { position: absolute; top: -36%; right: 44%; }
-        #axisview li:nth-child(3) { position: absolute; top: -18%; right: 83%; }
-        #axisview li:nth-child(4) { position: absolute; top: 22%; right: 103%; }
-        #axisview li:nth-child(5) { position: absolute; top: 65%; right: 97%; }
-        #loadingscreen { display: none; z-index: 1001; position: absolute; width: 100%; height: 100%; background: #000000bb; }
-        #loadingscreen .spinner { position: absolute; top: 50%; left: 50%; margin-left: -50px; margin-top: -50px; border-radius: 50%; background: #252e38; border: 2px solid #344558; animation: spin 3s infinite linear; }
-        #notifier { opacity: 0; transition: opacity 0.5s; position: absolute; left: 50%; top: 50%; margin-left: -50px; margin-top: -20px; padding: 3px 5px 3px 5px; background: orange; color: #111; border: dashed 1px #d18800; font-size: 10px; font-weight: bold; border-radius: 5px; }
-        #notifier.fade { opacity: 1; }
-        #status { color: #ffffff30; position: absolute; bottom: 4px; left: 5px; font-size: 10px; font-weight: bold; opacity: 0.8; }
-        #status span { color: #eee; padding: 0 1px 0 1px; }
-        #status i { color: #aaa; }
-        ::-webkit-scrollbar { display: none; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .material-icons { font-size: 18px; pointer-events: none; vertical-align: middle; text-align: center; }
-
-
+a {
+  color: slategray;
+  text-decoration: none;
+}
+a:hover {
+  color: orange;
+  text-decoration: none;
+}
+/*canvas { z-index: 0; position: absolute; width: 100%; height: 100%; outline: none; background: radial-gradient(circle, rgb(81, 90, 109) 0%, rgb(49, 53, 68) 100%); }*/
+ul {
+  background: #5f62702f;
+  position: absolute;
+  list-style-type: none;
+}
+ul li {
+  background: #242b35;
+  border: 1px solid #161a2096;
+  border-radius: 5px;
+  padding: 3px;
+  text-align: center;
+}
+ul li:hover,
+ul li.select,
+ul li.toggle {
+  background: orange;
+  color: #222;
+  cursor: pointer;
+}
+ul li.separator {
+  background: none;
+  height: 3px;
+  padding: 0;
+  cursor: default;
+  border: none;
+}
+ul li.spacer {
+  background: none;
+  height: 3px;
+  padding: 0;
+  cursor: default;
+  border: none;
+}
+input[type="color"] {
+  width: 22px;
+  height: 18px;
+  border: none;
+  background: #2e35414d;
+  outline: none;
+  border: none;
+  border-radius: 50%;
+  vertical-align: text-bottom;
+}
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 20%;
+}
+input[type="color"]:hover {
+  background: white;
+  cursor: pointer;
+}
+input[type="number"] {
+  width: 50px;
+  margin-bottom: 1px;
+  background: #2a313db7;
+  color: #808fa3;
+  padding: 2px;
+  font-size: 11px;
+  text-indent: 5px;
+  border: solid 1px #343c49;
+  border-radius: 3px;
+  text-align: left;
+  outline: none;
+}
+input[type="number"]:hover {
+  color: orange;
+  border: solid 1px #43495a;
+}
+input[type="checkbox"] {
+  display: none;
+}
+input[type="checkbox"] + .material-icons::after {
+  content: "check_box_outline_blank";
+  color: #475364;
+}
+input[type="checkbox"]:checked + .material-icons::after {
+  content: "check_box";
+  color: orange;
+}
+select {
+  appearance: none;
+  width: 18px;
+  background-color: #2a313db7;
+  color: #bbb;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 0;
+  border: none;
+  outline: none;
+}
+select:hover {
+  color: orange;
+  cursor: pointer;
+}
+option {
+  font-size: 14px;
+  font-weight: bold;
+  color: #bbb;
+  background-color: #252931;
+}
+button {
+  width: 115px;
+  background-color: #353f4d;
+  color: #bbb;
+  box-shadow: inset 1px 1px 1px #3f4a58, inset -1px -1px 1px #2f3742;
+  border-radius: 4px;
+  padding: 3px;
+  font-size: 10px;
+  border: 1px solid #161a20bd;
+  outline: none;
+}
+button:hover {
+  background-color: orange;
+  color: #222;
+  cursor: pointer;
+}
+label {
+  color: #5c6c81;
+  margin-right: 5px;
+}
+#menuH_L {
+  background: none;
+  left: 10px;
+  top: 10px;
+}
+#menuH_L li {
+  display: inline-block;
+  width: 30px;
+  padding: 1px;
+  box-shadow: inset 1px 1px 1px #323b47, inset -1px -1px 1px #29303a;
+}
+#menuH_R {
+  background: none;
+  right: 10px;
+  top: 10px;
+  z-index: 999;
+}
+#menuH_R li {
+  display: inline-block;
+  width: 30px;
+  padding: 1px;
+  box-shadow: inset 1px 1px 1px #323b47, inset -1px -1px 1px #29303a;
+}
+#menuV {
+  z-index: 1000;
+  position: fixed;
+  top: 0;
+  right: 0;
+  background: #222731f8;
+  padding: 10px;
+  width: 120px;
+  height: 100%;
+  transform: translate(200px, 0);
+  transition: -webkit-transform 0.2s ease;
+  overflow-y: scroll;
+}
+#menuV li {
+  background: none;
+  text-align: left;
+  border: none;
+  padding: 0;
+  color: #67778d;
+}
+#menuV li:hover {
+  background: none;
+  color: orange;
+}
+#menuV .category {
+  color: #464c5e;
+  background: #1e222b;
+  border: solid 1px #181c22;
+  font-size: 10px;
+  font-weight: bold;
+  text-align: center;
+  margin: 6px 4px 6px 0;
+  padding: 2px;
+}
+#menuV .category:hover {
+  color: #43495a;
+  background: #1e222b;
+  cursor: default;
+}
+#toolbar_R {
+  width: 30px;
+  right: 10px;
+  top: 80px;
+  padding: 3px;
+  border-radius: 5px;
+}
+#toolbar_R li {
+  margin-bottom: 2px;
+  box-shadow: inset 1px 1px 1px #323b47, inset -1px -1px 1px #29303a;
+}
+#toolbar_R li.separator {
+  box-shadow: none;
+}
+#toolbar_L {
+  width: 30px;
+  left: 10px;
+  top: 80px;
+  padding: 3px;
+  border-radius: 5px;
+}
+#toolbar_L li {
+  margin-bottom: 2px;
+  box-shadow: inset 1px 1px 1px #323b47, inset -1px -1px 1px #29303a;
+}
+#toolbar_L li.separator {
+  box-shadow: none;
+}
+#color_palette {
+  left: 10px;
+  top: 210px;
+  padding: 3px;
+  border-radius: 5px;
+}
+#color_palette li {
+  width: 22px;
+  height: 5px;
+  margin-bottom: 1px;
+}
+#color_palette li:hover {
+  border: solid 1px orange;
+}
+#hover {
+  z-index: 1;
+  background: none;
+  left: 60%;
+  top: 120px;
+}
+#hover li {
+  box-shadow: inset 1px 1px 1px #37414e, inset -1px -1px 1px #2f3742;
+}
+#hover li:nth-child(1) {
+  cursor: move;
+  position: absolute;
+  top: 0%;
+  left: 0px;
+}
+#hover li:nth-child(2) {
+  position: absolute;
+  top: -33px;
+  left: 0%;
+}
+#hover li:nth-child(3) {
+  position: absolute;
+  top: 0%;
+  left: 30px;
+}
+#hover li:nth-child(4) {
+  position: absolute;
+  top: 0%;
+  left: -30px;
+}
+#hover li:nth-child(5) {
+  position: absolute;
+  top: 33px;
+  left: 0%;
+}
+#axisview {
+  background: #161a203f;
+  bottom: 5px;
+  right: 6px;
+  width: 68px;
+  height: 68px;
+  border: 1px solid #161a2096;
+  border-radius: 50%;
+  box-shadow: inset 1px 1px 1px #38404d, inset -1px -1px 1px #38404d;
+}
+#axisview li {
+  border-radius: 50%;
+  padding: 3px;
+  color: #495363;
+  border: 1px solid #161a2096;
+}
+#axisview li:nth-child(1) {
+  position: absolute;
+  top: -28%;
+  right: 0%;
+}
+#axisview li:nth-child(2) {
+  position: absolute;
+  top: -36%;
+  right: 44%;
+}
+#axisview li:nth-child(3) {
+  position: absolute;
+  top: -18%;
+  right: 83%;
+}
+#axisview li:nth-child(4) {
+  position: absolute;
+  top: 22%;
+  right: 103%;
+}
+#axisview li:nth-child(5) {
+  position: absolute;
+  top: 65%;
+  right: 97%;
+}
+#loadingscreen {
+  display: none;
+  z-index: 1001;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #000000bb;
+}
+#loadingscreen .spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -50px;
+  margin-top: -50px;
+  border-radius: 50%;
+  background: #252e38;
+  border: 2px solid #344558;
+  animation: spin 3s infinite linear;
+}
+#notifier {
+  opacity: 0;
+  transition: opacity 0.5s;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -50px;
+  margin-top: -20px;
+  padding: 3px 5px 3px 5px;
+  background: orange;
+  color: #111;
+  border: dashed 1px #d18800;
+  font-size: 10px;
+  font-weight: bold;
+  border-radius: 5px;
+}
+#notifier.fade {
+  opacity: 1;
+}
+#status {
+  color: #ffffff30;
+  position: absolute;
+  bottom: 4px;
+  left: 5px;
+  font-size: 10px;
+  font-weight: bold;
+  opacity: 0.8;
+}
+#status span {
+  color: #eee;
+  padding: 0 1px 0 1px;
+}
+#status i {
+  color: #aaa;
+}
+::-webkit-scrollbar {
+  display: none;
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.material-icons {
+  font-size: 18px;
+  pointer-events: none;
+  vertical-align: middle;
+  text-align: center;
+}
 </style>
