@@ -365,6 +365,7 @@ def reciveJsonFromClient():
     else:
         container_infos=preProcessContainerInfos(container_infos)
         box_infos=preProcessBoxInfos(box_infos)
+        print(box_infos)
         jsonData=Processing3DBP(container_infos, box_infos)
     return jsonData
 #==================================================================
@@ -374,25 +375,23 @@ def reciveJsonFromClient():
 def preProcessContainerInfos(container_infos):
     preProcessedInfo=[]
     for container_type_index, container_info in enumerate(container_infos):
+        new_container_info={}
         #if the sameType of container number only is one, do nothing and pass it to algorithm
         if (container_info['Numbers'] ==1):
             container_info['TypeIndex']=1
+            container_info['name_with_index']=container_info['TypeName']+"_0"
             preProcessedInfo.append(container_info)
         #else multiple numbers condition, create copy and pass it into algorithm
         else:
-            for number_index in  container_info['Numbers']:
-                name_with_index=container_info['TypeName']+"_"+number_index
-                container_info['name_with_index']=name_with_index
-                container_info['TypeIndex']=container_type_index
-                #if the index is 0 new instance keep the original ID
-                if (number_index==0):
-                    preProcessedInfo.append(container_info)
-                else:
-                    newUUID=str(uuid.uuid4())
-                    container_info["ID"]=newUUID
-                    #else it will create new uuidv4 for this instance
-                    preProcessedInfo.append(container_info)
-    print(preProcessedInfo)
+            #create the numbers of clone
+            for number_index in  range(0, int(container_info['Numbers'])):
+                new_container_info=container_info
+                new_container_info['name_with_index']=container_info['TypeName']+"_"+str(number_index)
+                new_container_info['TypeIndex']=container_type_index
+                #create new uuid expect index 0
+                if number_index!=0:
+                    new_container_info['ID']=str(uuid.uuid4())
+                preProcessedInfo.append(new_container_info)
     return preProcessedInfo
 #=====================================================================
 #Function name
