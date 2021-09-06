@@ -9,22 +9,21 @@
       </a-tab-pane>
        <!--end of tap pane 1-->
 
-       <!--Tap 2 shows new pallets-->
-            <a-tab-pane key="2" tab="Select palletes">
-        <create-pallet/>
-      </a-tab-pane>
-
-
-      <!--end of tap pane 2-->
-
-      <a-tab-pane key="3" tab="Create containers" >
         <!--Tap 2 shows new create container-->
+      <a-tab-pane key="2" tab="Create containers" >
         <create-container/>
-       </a-tab-pane>
+      </a-tab-pane>
        <!--end tap pane 2-->
 
 
-      <!--Tab 3 shows new create box-->
+      <!--Tap 3 shows new pallets-->
+      <a-tab-pane key="3" tab="Select palletes">
+        <create-pallet/>
+      </a-tab-pane>
+      <!--end of tap pane 3-->
+
+
+      <!--Tab 4 shows new create box-->
       <a-tab-pane key="4" tab="Create boxes">
         <create-boxes/>
       </a-tab-pane>

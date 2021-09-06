@@ -4,7 +4,7 @@
     <!--card container make element in center-->
     <div class="container container-bg pb-3 mr-3 pr-3 rounded">
       <!--Butoon to create new container-->
-      <button class="btn btn-success m-3 float-md-left">
+      <button class="btn btn-success m-3 float-md-left" @click="savePalletInfo">
         Save changes.
       </button>
       <!--End new button-->
@@ -21,7 +21,7 @@
           <div>
             <!--Modified!, to let user can select pallect he/her want, add a select model here-->
             <div class="input-group mb-3">
-                <select v-model="pallet_info.TypeName" class="form-select font-black">
+                <select v-model="pallet_info.TypeName" class="form-select font-black" @change="selectOnChange($event)">
                 <option v-for="(typename, index) in pallet_types" :key="index" >{{typename}}</option>
                 </select>
             </div>
@@ -35,7 +35,7 @@
                 type="text"
                 class="form-control mb-2" 
                 placeholder="Name of the box type"
-                v-model="pallet_info.typename"
+                v-model="pallet_info.TypeName"
               />
             </div>
             <!--end of Modified-->
@@ -122,16 +122,16 @@
     </div>
     <!--end container-->
     <!--end root div-->
-    <button v-on:click="updateWithFakeData"> Update with fake data</button>
   </div>
 </template>
 
 <script>
 import { v4 as uuidv4 } from "uuid";
+import Swal from "sweetalert2";
 export default {
 data(){
     return{
-       pallet_types:["a","b","c"],
+      pallet_types:["140X102","122X102","122X90", "110X75", "138X89"],
       pallet_info: {
         ID: uuidv4(),
         TypeName: "",
@@ -141,9 +141,70 @@ data(){
         Weight: "",
         Numbers: "",
       },
+      pallet_infos:[]
     }
 },//end data
-
+methods:{
+  selectOnChange(envt){
+          switch(envt.target.value){ 
+        case "140X102":
+          this.pallet_info.TypeName="140X102"
+          this.pallet_info.X=140
+          this.pallet_info.Z=102
+          this.pallet_info.Y=12
+          this.pallet_info.Weight=25
+          this.pallet_info.Numbers=1
+          break;
+        case "122X102":
+          this.pallet_info.TypeName="122X102"
+          this.pallet_info.X=122
+          this.pallet_info.Z=102
+          this.pallet_info.Y=12
+          this.pallet_info.Weight=22
+          this.pallet_info.Numbers=1
+          break;
+        case "122X90":
+          this.pallet_info.TypeName="122x90"
+          this.pallet_info.X=122
+          this.pallet_info.Z=90
+          this.pallet_info.Y=12
+          this.pallet_info.Weight=20
+          this.pallet_info.Numbers=1
+          break;
+        case "110X75":
+          this.pallet_info.TypeName="110X75"
+          this.pallet_info.X=110
+          this.pallet_info.Z=75
+          this.pallet_info.Y=12
+          this.pallet_info.Weight=12
+          this.pallet_info.Numbers=1
+          break;
+        case "138X89":
+          this.pallet_info.TypeName="138X89"
+          this.pallet_info.X=138
+          this.pallet_info.Z=89
+          this.pallet_info.Y=12
+          this.pallet_info.Weight=18
+          this.pallet_info.Numbers=1
+          break;
+        default:
+          console.log("default, not a recognizable item")
+      }//end switch
+  },//end selectOnChange
+  savePalletInfo() {
+      //show messsage
+      Swal.fire({
+        icon: "success",
+        title: "Your work has been saved",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      this.pallet_infos.push(this.pallet_info)
+      this.$store.dispatch("appendPalletInfos", this.pallet_infos);
+      this.pallet_infos=[];
+      this.pallet_info={ID:uuidv4()};
+    },//end showBoxInfo
+},
 }
 </script>
 <style scoped>

@@ -10,6 +10,7 @@ const store = new Vuex.Store({
         box_infos:[],
         render_infos:[],
         render_loading_status:true,
+        pallet_infos:[],
     },
     mutations: {
         // 將state設定為參數
@@ -24,6 +25,10 @@ const store = new Vuex.Store({
         },
         MUTATE_APPEND_BOX_INFO(state, box_info_to_be_append){
             state.box_infos=[...state.box_infos, ...box_info_to_be_append]
+        },
+        MUTATE_APPEND_PALLET_INFO(state, pallet_info_to_be_append){
+            state.pallet_infos=[...state.pallet_infos,...pallet_info_to_be_append]
+            console.log(state.pallet_infos)
         },
         MUTATE_DELETE_CONTAINER_WITH_UUID(state, uuid){
 
@@ -61,6 +66,9 @@ const store = new Vuex.Store({
         },
         appendBoxInfos:(context, box_info)=>{
             context.commit("MUTATE_APPEND_BOX_INFO", box_info)
+        },
+        appendPalletInfos:(context, pallet_info)=>{
+            context.commit("MUTATE_APPEND_PALLET_INFO", pallet_info)
         },
         deleteContainer_infosItemWithUUID:(context, uuid)=>{
             context.commit("MUTATE_DELETE_CONTAINER_WITH_UUID", uuid)
