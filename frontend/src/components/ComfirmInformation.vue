@@ -389,14 +389,16 @@ export default {
           //check the status
           console.log(response.data);
           console.log("statuscode"+response.data["status"])
-          if (response.data["status"] >0 && response.data["status"] <100) {
+          if (response.data["status"] >0 && response.data["status"] <200) {
             console.log("status success");
+            console.log(response.data)
+            this.$store.dispatch("setRenderLoadingStatus", true);
             this.$store.dispatch("loadRenderInfos", response.data);
             this.$router.push("../render");
-          } else if (response.data["status"]> 200 &&response.data["status"]< 300) {
+          } else if (response.data["status"]>=200 &&response.data["status"]< 300) {
             console.log("status fail");
             this.$router.push('../PackingFailPage')
-          } else if (response.data["status"]> 300 && response.data["status"]<400) {
+          } else if (response.data["status"]>= 300 && response.data["status"]<400) {
             console.log("status partial success");
             this.$router.push('../render')
           } else {

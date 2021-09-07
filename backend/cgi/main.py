@@ -13,8 +13,8 @@ import os
 #Gobal variable
 #===========================================================
 #RESULT_JSON_INFOS=[]
-PALLET_WEIGHT_LIMMIT=450
-
+PALLET_WEIGHT_LIMMIT=450  #kg
+MAX_CONTAINER_HEIGHT=225 #cm
 #============================================================
 #Gobal config
 #============================================================
@@ -126,38 +126,8 @@ def Processing3DBP(container_infos, box_infos):
     print(result_json_info)
     return result_json_info
 
-#============================================================================
-#
-#
-#=============================================================================
-def createPackerWithBox(box_infos):
-    packer=Packer()
-    for index, box_info in enumerate(box_infos):
-        #if the sameType of box only is one, do nothing and pass it to algorithm
-        if (box_info['Numbers'] ==1):
-            packer.add_item(Item(box_info['ID'], box_info['name_with_index'], box_info['X'], box_info['Y'], box_info['Z'], box_info['Weight'], type_index=index))
-            return packer
-        #else create copy and pass it into algorithm
-        else:
-            for number_index in range(int(box_info['Numbers'])):
-                name_with_index=box_info['TypeName']+"_"+str(+number_index)
-                #if the index is 0 new instance keep the original ID
-                if (number_index==0):
-                    packer.add_item(Item(box_info['ID'], name_with_index, box_info['X'], box_info['Y'], box_info['Z'], box_info['Weight'], type_index=index))
-                    return packer
-                else:
-                    #else it will create new uuidv4 for this instance
-                    packer.add_item(Item(str(uuid.uuid4()), name_with_index, box_info['X'], box_info['Y'], box_info['Z'], box_info['Weight'], type_index=index))
-                    return packer   
 
 
-#=============================================================================
-#
-#
-#=============================================================================
-def packTheBoxOnPalletAsVirtualContainer(remain_box_infos, pallet_info):
-    packer=Packer()
-    
 
 
 #===============================================================================
@@ -165,16 +135,15 @@ def packTheBoxOnPalletAsVirtualContainer(remain_box_infos, pallet_info):
 #Description :Base on Processing3DBP
 #==========================================================================
 def Processing3DBPWithPallet(container_infos, box_infos, pallet_infos):
+
+    virtual_container_with_packed_box_array=[]
     #return the containers with packed information
-    containers_array=[]
-    pallets_array=[]
-    remain_box_infos=[]
     packer = Packer()
-    #0~99:success, 100~199:fail, 300~399:partial sucess 200~299:critical error
-    #200 can not push all packed pallets into container
-    #201 can not push all boxes into pallets
-    flag_success=True
-    flag_partial_success=False
+    #0:success, 1:fail, 2:partial sucess 3:critical error
+    statusNumber=-1000
+    pallet_status_number=-1000
+    flag_success_pallet=True
+    flag_partial_success_pallet=False
     
 
     total_container_types=len(container_infos)
@@ -182,96 +151,125 @@ def Processing3DBPWithPallet(container_infos, box_infos, pallet_infos):
     total_pallet_types=len(pallet_infos)
 
 
-    #processing box_info
-    packer_with_box=createPackerWithBox(box_infos)
+    #dictionary for searching pallet and virtual container pair
+    id_to_pallet=None
+
+
+    #pack box_info
+    for index, box_info in enumerate(box_infos):
+        #if the sameType of box only is one, do nothing and pass it to algorithm
+        packer.add_item(Item(box_info['ID'], box_info['name_with_index'], box_info['X'], box_info['Y'], box_info['Z'], box_info['Weight'],box_info['TypeIndex']))
     
 
-    #processing container_info
+    #sort the pallet_infos base on area, from large to small
+    pallet_infos=sorted(pallet_infos, key=lambda pallet_info: pallet_info["X"]* pallet_info["Z"], reverse=True)
+    ids=[pallet_info['ID'] for pallet_info in pallet_infos]
+    id_to_pallet=dict(zip(ids, pallet_infos))
 
-    #Processing pallet info
-    #and create a virtual container for packing, virtual container is the space upon on the palleYt
-    for container_type_index, container_info in enumerate(container_infos):
-        #if the sameType of container number only is one, do nothing and pass it to algorithm
-        if (container_info['Numbers'] ==1):
-            #if number of pallet is also one 
-            if len(pallet_infos)==1:
-                pallet_info=pallet_infos[0]
-                virtual_container={}
-                virtual_container['X']=pallet_info['X']
-                virtual_container['Y']=container_info['Y']-pallet_info['Y']
-                virtual_container['Z']=pallet_info['Z']
-                virtual_container['Weight']=PALLET_WEIGHT_LIMMIT-pallet_info['Weight']
-                #eror handling
-                if virtual_container['Y']<0 or virtual_container['Weight']<0:
-                    print("There is error in container, pallet can't event be packed by contianer.")
-                    #set status code as error, and send to broswer
-                    final_info_dictionary={"status":200}
-                    result_json_info=json.dumps(final_info_dictionary, indent=4)
-                    return result_json_info
+    virtual_containers=[]
 
-                packer_with_box.add_bin(Bin(pallet_info['ID'], pallet_info['TypeName'], virtual_container['X'], virtual_container['Y'], virtual_container['Z'], virtual_container['Weight'], type_index=1))
-                packer_with_box.pack()
-                #pack the one pallet once 
-                b=packer_with_box.bins[0]
-                pallets_array.append(b.getResultDictionary())
-            #one container with multiple pallet
-            else:
-                for pallet_type_index, pallet_info in enumerate(pallet_infos):
-                    virtual_container={}
-                    virtual_container['X']=pallet_info['X']
-                    virtual_container['Y']=container_info['Y']-pallet_info['Y']
-                    virtual_container['Z']=pallet_info['Z']
-                    #eror handling
-                    if virtual_container['Y']<0 or virtual_container['Weight']<0:
-                        print("There is error in container, pallet can't event be packed by contianer.")
-                        #set status code as error, and send to broswer
-                        final_info_dictionary={"status":200}
-                        result_json_info=json.dumps(final_info_dictionary, indent=4)
-                        return result_json_info
-                    packer_with_box.add_bin(Bin(pallet_info['ID'], pallet_info['TypeName'], virtual_container['X'], virtual_container['Y'], virtual_container['Z'], virtual_container['Weight'], type_index=pallet_type_index))
-                    packer_with_box.pack()
-                    b=packer_with_box.bins[0]
 
-                    
-                
 
-        #else multiple numbers of containers condition, create copy and pass it into algorithm
-        else:
-            for number_index in  container_info['Numbers']:
-                name_with_index=container_info['TypeName']+"_"+number_index
-                #if the index is 0 new instance keep the original ID
-                if (number_index==0):
-                    packer.add_bin(Bin(container_info['ID'], name_with_index, container_info['X'], container_info['Y'], container_info['Z'], container_info['Weight_limmit'], type_index=container_type_index))
-                else:
-                    #else it will create new uuidv4 for this instance
-                    packer.add_bin(Bin(str(uuid.uuid4()), name_with_index, container_info['X'], container_info['Y'], container_info['Z'], container_info['Weight_limmit'], type_index=container_type_index))    
-    #calculate
-    packer.pack()
-
-    containers_array=[]
-    statusNumber=-1
-
-    for b in packer.bins:
-        #if there if unfitted_item
+    #create the virtual container to pack, virtual container is the space upon
+    for index, pallet_info in enumerate(pallet_infos):
+        virtual_container=pallet_info.copy()
+        virtual_container["Weight_limmit"]=PALLET_WEIGHT_LIMMIT-pallet_info["Weight"]
+        virtual_container["Y"]=MAX_CONTAINER_HEIGHT-pallet_info["Y"]
+        virtual_container["Total_box_weight"]=0
+        #pack all remain box into one container at once
+        packer.add_bin(Bin(virtual_container['ID'],
+        virtual_container['name_with_index'], 
+        virtual_container['X'],
+        virtual_container['Y'],
+        virtual_container['Z'],
+        virtual_container['Weight_limmit'],
+        virtual_container['TypeIndex']
+        ))
+        packer.pack()
+        b=packer.bins[0]
         if len(b.unfitted_items)!=0:
-            flag_success=False
+            flag_success_pallet=False
         if len(b.items)!=0:
-            flag_partial_success=True
-        #result_json_info=json.dumps(b.getResultDictionary(), indent=4)
-        containers_array.append(b.getResultDictionary())
+            total_weight=0
+            for i in b.items:
+                total_weight+=i.weight
+            virtual_container["Total_box_weight"]=total_weight
+            flag_partial_success_pallet=True
+        virtual_container_with_packed_box_array.append(b.getResultDictionary())
+        virtual_containers.append(virtual_container)
+        #all remain box have been packed
+        if len(b.unfitted_items)==0:
+            break
+        else:
+            packer=Packer()
+            for box_info in b.unfitted_item:
+                packer.add_Item(Item(box_info['ID'], box_info['name_with_index'], box_info['X'], box_info['Y'], box_info['Z'], box_info['Weight'],box_info['TypeIndex']))
 
-    #add statusNumber
-    statusNumber=None
-    if(flag_success==True):
+
+    #find virtual container by ID
+    id_to_virtualcontainer=dict(zip(ids, virtual_containers))
+
+    if(flag_success_pallet==True):
         #allsuccess
-        statusNumber=1
-    elif(flag_success==False and flag_partial_success==True):
+        pallet_status_number=10
+    elif(flag_success_pallet==False and flag_partial_success_pallet==True):
         #partial success
-        statusNumber=3
+        pallet_status_number=30
     else:
         #fail
-        statusNumber=2
+        pallet_status_number=20
 
+    #pack virtual container into real container
+    status_number=-1000
+
+    flag_success=True
+    flag_partial_success=False
+
+    packer=Packer(TWO_D_MODE=True)
+    remain_container_infos=container_infos
+    containers_array=[]
+    packed_pallet_infos=[]
+    for virtual_container in virtual_container_with_packed_box_array:
+        print(virtual_container)
+        pallet=id_to_pallet[virtual_container['ID']]
+        pallet['Fitted_items']=virtual_container['Fitted_items']
+        pallet['Weight']=id_to_virtualcontainer[virtual_container['ID']]['Total_box_weight']+pallet['Weight']
+        packed_pallet_infos.append(pallet)
+
+    for packed_pallet_info in packed_pallet_infos:
+        packer.add_item(Item(
+        packed_pallet_info['ID'],
+        packed_pallet_info['name_with_index'], 
+        packed_pallet_info['X'],
+        packed_pallet_info['Y'],
+        packed_pallet_info['Z'],
+        packed_pallet_info['Weight'],
+        packed_pallet_info['TypeIndex'],
+        packed_pallet_info['Fitted_items']
+        ))
+
+
+    if len(remain_container_infos) >0:
+        container_info=remain_container_infos.pop(0)
+        packer.add_bin(Bin(container_info['ID'],
+        container_info['name_with_index'],
+        container_info['X'],
+        container_info['Y'],
+        container_info['Z'],
+        container_info['Weight_limmit'],
+        container_info['TypeIndex']
+        ))
+        packer.pack()
+        b=packer.bins[0]
+        containers_array.append(b.getResultDictionary())
+
+
+    else:
+        #error
+        statusNumber=300+pallet_status_number
+
+
+    statusNumber=100+pallet_status_number
     #add status of containers
     final_info_dictionary={
         "status":statusNumber,
@@ -287,7 +285,6 @@ def Processing3DBPWithPallet(container_infos, box_infos, pallet_infos):
         #print(b.getResultDictionary())
     print(result_json_info)
     return result_json_info
-
 
 
 
@@ -356,16 +353,23 @@ def upLoadExcelSettingFile():
 def reciveJsonFromClient():
     info_jsondata=request.get_json(force=True)
     #print(info_jsondata)
+    #retrive data from json
     container_infos=info_jsondata['containers']
     box_infos=info_jsondata['boxes']
+    pallet_infos=info_jsondata['pallets']
+
+
+    #preprocess the data
+    container_infos=preProcessContainerInfos(container_infos)
+    box_infos=preProcessBoxInfos(box_infos)
+    #pallet mode
     if info_jsondata['pallet_mode']==1:
         print("Pallet mode on")
-        pallet_infos=info_jsondata['pallet_infos']
+        pallet_infos=preProcessBoxInfos(pallet_infos)
         jsonData=Processing3DBPWithPallet(container_infos, box_infos, pallet_infos)
+    #none pallet mode
     else:
-        container_infos=preProcessContainerInfos(container_infos)
-        box_infos=preProcessBoxInfos(box_infos)
-        print(box_infos)
+        #print(box_infos)
         jsonData=Processing3DBP(container_infos, box_infos)
     return jsonData
 #==================================================================

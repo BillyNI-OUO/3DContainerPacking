@@ -177,7 +177,8 @@ export default {
       //global variables
       //=========================================================================
       var controlBoxes_originate_cordinate_z = 100;
-      var controlBoxes_originate_cordinate_x = -50;
+      var max_box_width=0
+      var controlBoxes_originate_cordinate_x = 0-max_box_width/2 -200;
       var controlBoxes_margin = 20;
       //array that store the mesh of the box inside the containers
       var box_mesh_array = [];
@@ -379,6 +380,13 @@ export default {
           let box_x = xyz_array[0];
           let box_y = xyz_array[1];
           let box_z = xyz_array[2];
+
+          //update the max_box_width if found one
+          if (box_x> max_box_width){
+            max_box_width=box_x
+          }
+
+
           let box_mesh_name = container["Fitted_items"][i]["ID"];
           let box_instance = BABYLON.MeshBuilder.CreateBox(box_mesh_name, {
             width: box_x,
@@ -557,7 +565,7 @@ export default {
     /******* Add the create scene function ******/
 
     /******* End of the create scene function ******/
-    this.$store.dispatch("setRenderLoadingStatus", true);
+
     //try to create scence, and if error show alert
     try {
       this.scene = this.createScene(); //Call the createScene function

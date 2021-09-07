@@ -188,10 +188,10 @@ export default {
         {
           ID: uuidv4(),
           TypeName: "helloContainer",
-          X: "60",
-          Y: "60",
-          Z: "60",
-          Weight_limmit: "200",
+          X: "227",
+          Y: "225",
+          Z: "580",
+          Weight_limmit: "20000",
           Numbers: "1",
         },
       ];
