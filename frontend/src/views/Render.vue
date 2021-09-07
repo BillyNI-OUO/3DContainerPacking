@@ -1071,7 +1071,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 #renderCanvas {
   width: 100%;
   height: 100%;
