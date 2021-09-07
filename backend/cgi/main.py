@@ -186,21 +186,22 @@ def Processing3DBPWithPallet(container_infos, box_infos, pallet_infos):
         virtual_container['TypeIndex']
         ))
         packer.pack()
-        b=packer.bins[0]
-        if len(b.unfitted_items)!=0:
-            flag_success_pallet=False
-        if len(b.items)!=0:
-            total_weight=0
-            for i in b.items:
-                total_weight+=i.weight
-            virtual_container["Total_box_weight"]=total_weight
-            flag_partial_success_pallet=True
-        virtual_container_with_packed_box_array.append(b.getResultDictionary())
+        for b in packer.bins:
+            if len(b.unfitted_items)!=0:
+                flag_success_pallet=False
+            if len(b.items)!=0:
+                total_weight=0
+                for i in b.items:
+                    total_weight+=i.weight
+                virtual_container["Total_box_weight"]=total_weight
+                flag_partial_success_pallet=True
+            virtual_container_with_packed_box_array.append(b.getResultDictionary())
         virtual_containers.append(virtual_container)
         #all remain box have been packed
         if len(b.unfitted_items)==0:
             break
         else:
+            print("!!!!!!!!!!!!!!!!!!!!find unfitted_items")
             packer=Packer()
             for box_info in b.unfitted_item:
                 packer.add_Item(Item(box_info['ID'], box_info['name_with_index'], box_info['X'], box_info['Y'], box_info['Z'], box_info['Weight'],box_info['TypeIndex']))
@@ -229,12 +230,15 @@ def Processing3DBPWithPallet(container_infos, box_infos, pallet_infos):
     remain_container_infos=container_infos
     containers_array=[]
     packed_pallet_infos=[]
+
+
     for virtual_container in virtual_container_with_packed_box_array:
-        print(virtual_container)
         pallet=id_to_pallet[virtual_container['ID']]
         pallet['Fitted_items']=virtual_container['Fitted_items']
         pallet['Weight']=id_to_virtualcontainer[virtual_container['ID']]['Total_box_weight']+pallet['Weight']
         packed_pallet_infos.append(pallet)
+
+    print(packed_pallet_infos)
 
     for packed_pallet_info in packed_pallet_infos:
         packer.add_item(Item(
@@ -261,8 +265,13 @@ def Processing3DBPWithPallet(container_infos, box_infos, pallet_infos):
         ))
         packer.pack()
         b=packer.bins[0]
-        containers_array.append(b.getResultDictionary())
 
+
+        #there is a bug need to be fix, maybe i didn't modify the algorithm right, there will have unfitted item even
+        # the result totally packed, the following is a mitigration way at present 
+        b.unfitted_items=[]
+        containers_array.append(b.getResultDictionary())
+        print(b.getResultDictionary())
 
     else:
         #error
@@ -270,12 +279,14 @@ def Processing3DBPWithPallet(container_infos, box_infos, pallet_infos):
 
 
     statusNumber=100+pallet_status_number
+
     #add status of containers
     final_info_dictionary={
         "status":statusNumber,
-        "containers":containers_array,
         "total_container_types":total_container_types,
-        "total_box_types":total_box_types
+        "total_pallet_types":total_pallet_types,
+        "total_box_types":total_box_types,
+        "containers":containers_array,
         }
 
     result_json_info=json.dumps(final_info_dictionary, indent=4)
@@ -389,13 +400,14 @@ def preProcessContainerInfos(container_infos):
         else:
             #create the numbers of clone
             for number_index in  range(0, int(container_info['Numbers'])):
-                new_container_info=container_info
+                new_container_info=container_info.copy()
                 new_container_info['name_with_index']=container_info['TypeName']+"_"+str(number_index)
                 new_container_info['TypeIndex']=container_type_index
                 #create new uuid expect index 0
                 if number_index!=0:
                     new_container_info['ID']=str(uuid.uuid4())
                 preProcessedInfo.append(new_container_info)
+    #print(preProcessedInfo)
     return preProcessedInfo
 #=====================================================================
 #Function name

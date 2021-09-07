@@ -394,7 +394,12 @@ export default {
             console.log(response.data)
             this.$store.dispatch("setRenderLoadingStatus", true);
             this.$store.dispatch("loadRenderInfos", response.data);
+            if (this.pallet_mode){
+              this.$store.dispatch("setPalletMode",true)
+            }
             this.$router.push("../render");
+            //open in new page
+            //let routeUrl = this.$router.resolve({ path: "../render", query: {} }); window.open(routeUrl.href, '_blank');
           } else if (response.data["status"]>=200 &&response.data["status"]< 300) {
             console.log("status fail");
             this.$router.push('../PackingFailPage')

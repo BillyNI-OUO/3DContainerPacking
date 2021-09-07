@@ -11,6 +11,7 @@ const store = new Vuex.Store({
         render_infos:[],
         render_loading_status:true,
         pallet_infos:[],
+        pallet_mode:false,
     },
     mutations: {
         // 將state設定為參數
@@ -58,6 +59,9 @@ const store = new Vuex.Store({
         },
         MUTATE_RENDER_LOADING_STATUS(state, new_staus){
             state.render_loading_status=new_staus;
+        },
+        MUTATE_PALLET_MODE(state, new_status){
+            state.pallet_mode=new_status;
         }
     },//end mutation
     actions: {
@@ -91,6 +95,9 @@ const store = new Vuex.Store({
         setRenderLoadingStatus:(context, new_status)=>{
             context.commit("MUTATE_RENDER_LOADING_STATUS", new_status);
             console.log("render status become"+new_status)
+        },
+        setPalletMode:(context, new_status)=>{
+            context.commit("MUTATE_PALLET_MODE", new_status)
         }
     },//end actions
     getters:{

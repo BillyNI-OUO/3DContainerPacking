@@ -143,13 +143,13 @@ class Bin:
         return{
             "ID":self.ID,
             "TypeName":self.name,
+            "TypeIndex":self.type_index,
             "X":float(self.width),
             "Y":float(self.height),
             "Z":float(self.depth),
             "Weight_limmit":float(self.max_weight),
             "Fitted_items":FittedItemArray,
             "UnFitted_items":unFittedItemArray,
-            "TypeIndex":self.type_index
     }
 
     def get_volume(self):
