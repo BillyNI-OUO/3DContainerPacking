@@ -168,7 +168,8 @@ def Processing3DBPWithPallet(container_infos, box_infos, pallet_infos):
 
     virtual_containers=[]
 
-
+    ids_of_box=[box['ID'] for box in box_infos]
+    id_to_box=dict(zip(ids_of_box, box_infos))
 
     #create the virtual container to pack, virtual container is the space upon
     for index, pallet_info in enumerate(pallet_infos):
@@ -203,8 +204,9 @@ def Processing3DBPWithPallet(container_infos, box_infos, pallet_infos):
         else:
             print("!!!!!!!!!!!!!!!!!!!!find unfitted_items")
             packer=Packer()
-            for box_info in b.unfitted_item:
-                packer.add_Item(Item(box_info['ID'], box_info['name_with_index'], box_info['X'], box_info['Y'], box_info['Z'], box_info['Weight'],box_info['TypeIndex']))
+            for box_info in b.get_unfitted_items_as_dict_array():
+                name_with_index= id_to_box[box_info['ID']]['name_with_index']
+                packer.add_item(Item(box_info['ID'], name_with_index, box_info['X'], box_info['Y'], box_info['Z'], box_info['Weight'],box_info['TypeIndex']))
 
 
     #find virtual container by ID
@@ -384,8 +386,9 @@ def reciveJsonFromClient():
         jsonData=Processing3DBP(container_infos, box_infos)
     return jsonData
 #==================================================================
-#
-#
+#Function: PreProcessContainerInfos
+#Description: expand the same type of Object
+#example: box1 with numbers=3 => [box1, box1, box1]
 #==================================================================
 def preProcessContainerInfos(container_infos):
     preProcessedInfo=[]

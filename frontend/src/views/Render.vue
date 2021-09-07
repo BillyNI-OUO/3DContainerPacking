@@ -347,13 +347,17 @@ export default {
       }
 
       //=====================================================
-      //Create material array for 
-
-
-
-
-
-
+      //create material array for pallet
+      //=====================================================
+      var pallet_mat_array=[];
+      for(let i=0; i<render_infos["total_pallet_types"]; i++){
+          let pallet_mat_name="palletmat"+i
+          let mat=new BABYLON.StandardMaterial(pallet_mat_name, scene);
+          mat.diffuseColor = getRandomColor(0.5, 1);
+          mat.alpha = 0.5;
+        //mat.diffuseTexture = new BABYLON.Texture("http://127.0.0.1:5000/get_resource/image", scene);
+        pallet_mat_array.push(mat);
+      }
 
       //=====================================================
       //create material array for boxes
@@ -362,7 +366,7 @@ export default {
       for (let i = 0; i < render_infos["total_box_types"]; i++) {
         let box_mat_name = "boxmat" + i;
         let mat = new BABYLON.StandardMaterial(box_mat_name, scene);
-        mat.diffuseColor = getRandomColor(0.3, 1);
+        mat.diffuseColor = getRandomColor(0.5, 1);
         mat.alpha = 0.5;
         //mat.diffuseTexture = new BABYLON.Texture("http://127.0.0.1:5000/get_resource/image", scene);
         box_mat_array.push(mat);
@@ -375,18 +379,59 @@ export default {
       for (const [index_of_container, container] of render_infos[
         "containers"
       ].entries()) {
-        console.log(container["Fitted_items"].length);
-        for (let i = 0; i < container["Fitted_items"].length; i++) {
+
+        //For loop for pallet
+        for(const  pallet of container['Fitted_items']){
+
+          //====================================================================
+          //rotate the every pallets first, so that we are able to get the ofset
+          //====================================================================
+
+          let origin_xyz_array_of_current_pallet = [
+            pallet["X"],
+            pallet["Y"],
+            pallet["Z"],
+          ];
+         let new_xyz_array_of_current_pallet = rotationWithType(origin_xyz_array_of_current_pallet, pallet["rotateType"]);
+          let pallet_x = new_xyz_array_of_current_pallet[0];
+          let pallet_y = new_xyz_array_of_current_pallet[1];
+          let pallet_z = new_xyz_array_of_current_pallet[2];
+
+          let pallet_mesh_name = pallet["ID"];
+          let pallet_instance = BABYLON.MeshBuilder.CreateBox(pallet_mesh_name, {
+            width: pallet_x,
+            height: pallet_y,
+            depth: pallet_z,
+          });
+
+          pallet_instance.position.x =
+            left_top_positions_array[index_of_container]["X"] +
+            pallet["position_x"] +
+            pallet_x / 2;
+          pallet_instance.position.y =
+            pallet_y / 2 + pallet["position_y"];
+          pallet_instance.position.z =
+            //left_top_positions_array[index_of_container]["Z"] +
+          pallet["position_z"] + pallet_z / 2;
+
+
+        //console.log(container["Fitted_items"].length);
+
+
+        //=======================================================================
+        //For loop to create the boxes
+        //=======================================================================
+        for (let i = 0; i < pallet["Fitted_items"].length; i++) {
           //==========================================================
           //Rotate the boxes based on differend conditions
           //==========================================================
-          let rotateType = container["Fitted_items"][i]["RotationType"];
+          let rotateType = pallet["Fitted_items"][i]["RotationType"];
           console.log("rotateType" + rotateType);
           //rotate the box
           let origin_xyz_array = [
-            container["Fitted_items"][i]["X"],
-            container["Fitted_items"][i]["Y"],
-            container["Fitted_items"][i]["Z"],
+            pallet["Fitted_items"][i]["X"],
+            pallet["Fitted_items"][i]["Y"],
+            pallet["Fitted_items"][i]["Z"],
           ];
           let xyz_array = rotationWithType(origin_xyz_array, rotateType);
 
@@ -394,13 +439,19 @@ export default {
           let box_y = xyz_array[1];
           let box_z = xyz_array[2];
 
+
+
+          //==================================================
           //update the max_box_width if found one
+          //this is nothing to do with create box, just make sure the
+          //distance between drawing box and control boxes.
+          //==================================================
           if (box_x> max_box_width){
             max_box_width=box_x
           }
 
 
-          let box_mesh_name = container["Fitted_items"][i]["ID"];
+          let box_mesh_name = pallet["Fitted_items"][i]["ID"];
           let box_instance = BABYLON.MeshBuilder.CreateBox(box_mesh_name, {
             width: box_x,
             height: box_y,
@@ -410,7 +461,7 @@ export default {
           //Set the box material
           //======================================================
           box_instance.material =
-            box_mat_array[container["Fitted_items"][i]["TypeIndex"]];
+            box_mat_array[pallet["Fitted_items"][i]["TypeIndex"]];
 
           box_instance.receiveShadows = true;
           box_instance.doNotSyncBoundingInfo = true;
@@ -425,22 +476,29 @@ export default {
           //======================================================
           box_instance.position.x =
             left_top_positions_array[index_of_container]["X"] +
-            container["Fitted_items"][i]["position_x"] +
-            box_x / 2;
+            pallet["Fitted_items"][i]["position_x"] +
+            box_x / 2 +     //+pallet offset
+            pallet["position_x"];
           box_instance.position.y =
-            box_y / 2 + container["Fitted_items"][i]["position_y"];
+            box_y / 2 + 
+            pallet["Fitted_items"][i]["position_y"]+
+            pallet["Y"] //+pallet height
+            ;
           box_instance.position.z =
             //left_top_positions_array[index_of_container]["Z"] +
-            container["Fitted_items"][i]["position_z"] + box_z / 2;
+            pallet["Fitted_items"][i]["position_z"] + 
+            box_z / 2+
+            pallet["position_z"]
+            ;
           //===========================================================
           //Create control box
           //===========================================================
           //console.log("control box");
           console.log(
-            sameTypeHaveBeenDraw[container["Fitted_items"][i]["TypeIndex"]]
+            sameTypeHaveBeenDraw[pallet["Fitted_items"][i]["TypeIndex"]]
           );
           if (
-            sameTypeHaveBeenDraw[container["Fitted_items"][i]["TypeIndex"]] ==
+            sameTypeHaveBeenDraw[pallet["Fitted_items"][i]["TypeIndex"]] ==
             false
           ) {
             let control_box = box_instance.clone("abox");
@@ -450,7 +508,7 @@ export default {
             controlBoxes_originate_cordinate_z =
               controlBoxes_originate_cordinate_z - box_z - controlBoxes_margin;
             sameTypeHaveBeenDraw[
-              container["Fitted_items"][i]["TypeIndex"]
+              pallet["Fitted_items"][i]["TypeIndex"]
             ] = true;
 
             //======================================================
@@ -460,26 +518,27 @@ export default {
             actions.makeOverOut(control_box);
             actions.makeOnClickShowInfo(
               control_box,
-              container["Fitted_items"][i]
+              pallet["Fitted_items"][i]
             );
             control_box_mesh_arrary.push(control_box);
           } //end create control box
 
           box_instance.actionManager = new BABYLON.ActionManager(scene);
           console.log("test");
-          console.log(container["Fitted_items"][i]);
+          console.log(pallet["Fitted_items"][i]);
           actions.makeOverOut(
             box_instance,
-            container["Fitted_items"][i]["TypeName"],
-            container["Fitted_items"][i]["X"],
-            container["Fitted_items"][i]["Y"],
-            container["Fitted_items"][i]["Z"],
-            container["Fitted_items"][i]["Weight"]
+            pallet["Fitted_items"][i]["TypeName"],
+            pallet["Fitted_items"][i]["X"],
+            pallet["Fitted_items"][i]["Y"],
+            pallet["Fitted_items"][i]["Z"],
+            pallet["Fitted_items"][i]["Weight"]
           );
 
           box_mesh_array.push(box_instance);
         } //end inner for
-      } //end outter for
+        }//end for (pallet)
+      } //end outter for (container)
 
       const camera = new BABYLON.ArcRotateCamera(
         "camera",
@@ -775,6 +834,9 @@ export default {
       for (const [index_of_container, container] of render_infos[
         "containers"
       ].entries()) {
+
+
+        
         console.log(container["Fitted_items"].length);
         for (let i = 0; i < container["Fitted_items"].length; i++) {
           //==========================================================

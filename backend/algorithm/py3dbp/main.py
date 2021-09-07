@@ -58,7 +58,7 @@ class Item:
             "position_z":float(self.position[2]),
             "RotationType":self.rotation_type,
             "TypeIndex":self.type_index,
-            "Fitted_Items":self.Fitted_items
+            "Fitted_items":self.Fitted_items
             }
         else:
             return{"ID":self.ID,
@@ -118,6 +118,12 @@ class Bin:
         self.max_weight = set_to_decimal(self.max_weight, number_of_decimals)
         self.number_of_decimals = number_of_decimals
 
+    def get_unfitted_items_as_dict_array(self):
+        unFittedItemArray=[]
+        for unfitted_item in self.unfitted_items:
+            unFittedItemArray.append(unfitted_item.getResultDictionary())
+        return unFittedItemArray
+        
     def string(self):
         return f"""
             ID:{self.ID},
