@@ -424,6 +424,12 @@ export default {
         container_info_uuid
       );
     },
+      deletePalletInfo(container_info_uuid) {
+      this.$store.dispatch(
+        "deletePallet_infosItemWithUUID",
+        container_info_uuid
+      );
+    },
     deleteBoxInfo(box_info_uuid) {
       this.$store.dispatch("deleteBox_infosItemWithUUID", box_info_uuid);
     },

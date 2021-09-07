@@ -38,10 +38,16 @@ const store = new Vuex.Store({
                 return new_array;
             },[])
         },
+        MUTATE_DELETE_PALLET_WITH_UUID(state, uuid){
+            state.pallet_infos=state.pallet_infos.reduce((new_array, current_val)=>{
+                current_val.ID!==uuid && new_array.push(current_val);
+                return new_array;
+            },[])
+        },
         MUTATE_DELETE_BOX_WITH_UUID(state, uuid){
 
             //initial value is empty array
-            console.log(uuid)
+            //console.log(uuid)
             state.box_infos=state.box_infos.reduce((new_array, current_val)=>{
                 current_val.ID!==uuid && new_array.push(current_val);
                 return new_array;
@@ -72,6 +78,9 @@ const store = new Vuex.Store({
         },
         deleteContainer_infosItemWithUUID:(context, uuid)=>{
             context.commit("MUTATE_DELETE_CONTAINER_WITH_UUID", uuid)
+        },
+        deletePallet_infosItemWithUUID:(context, uuid)=>{
+            context.commit("MUTATE_DELETE_PALLET_WITH_UUID", uuid)
         },
         deleteBox_infosItemWithUUID:(context, uuid) =>{
             context.commit("MUTATE_DELETE_BOX_WITH_UUID", uuid)

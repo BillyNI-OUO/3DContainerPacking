@@ -87,6 +87,7 @@ export default {
     container_infos: (state) => state.container_infos,
     box_infos: (state) => state.box_infos,
     render_infos: (state) => state.render_infos,
+    pallet_infos:(state)=>state.pallet_infos,
     render_loading_status: (state) => state.render_loading_status,
   }), //end compute
   data() {
