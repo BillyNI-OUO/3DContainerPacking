@@ -21,6 +21,15 @@ import store from './store.js'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
+//google icon
+
+
+
+//loading page
+import VueLoading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
+
+
 
 //Flickity
 //import Flickity from 'vue-flickity';
@@ -37,6 +46,9 @@ Vue.use(Vuex);
 
 //load axios for vue
 Vue.use(VueAxios, axios)
+
+
+Vue.use(VueLoading)
 
 
 //load vuex

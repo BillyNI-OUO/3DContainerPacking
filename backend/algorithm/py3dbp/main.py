@@ -1,3 +1,5 @@
+from flask.typing import TeardownCallable
+from werkzeug.wrappers import response
 from .constants import RotationType, Axis
 from .auxiliary_methods import intersect, set_to_decimal
 
@@ -8,7 +10,7 @@ START_POSITION = [0, 0, 0]
 
 
 class Item:
-    def __init__(self,ID ,name, width, height, depth, weight, type_index):
+    def __init__(self,ID ,name, width, height, depth, weight, type_index, Fitted_items=None):
         self.ID=ID
         self.name = name
         self.width = width
@@ -19,6 +21,7 @@ class Item:
         self.position = START_POSITION
         self.number_of_decimals = DEFAULT_NUMBER_OF_DECIMALS
         self.type_index=type_index
+        self.Fitted_items=Fitted_items
 
     def format_numbers(self, number_of_decimals):
         self.width = set_to_decimal(self.width, number_of_decimals)
@@ -42,18 +45,34 @@ class Item:
         #java packer will be happy
     def getResultDictionary(self):
         #conver position information into float
-        return{"ID":self.ID,
-        "TypeName":self.name,
-        "X":float(self.width),
-        "Y":float(self.height),
-        "Z":float(self.depth), 
-        "Weight":float(self.weight),
-        "position_x":float(self.position[0]),
-        "position_y":float(self.position[1]),
-        "position_z":float(self.position[2]),
-        "RotationType":self.rotation_type,
-        "TypeIndex":self.type_index
-        }
+
+        if self.Fitted_items!=None:
+            return{"ID":self.ID,
+            "TypeName":self.name,
+            "X":float(self.width),
+            "Y":float(self.height),
+            "Z":float(self.depth), 
+            "Weight":float(self.weight),
+            "position_x":float(self.position[0]),
+            "position_y":float(self.position[1]),
+            "position_z":float(self.position[2]),
+            "RotationType":self.rotation_type,
+            "TypeIndex":self.type_index,
+            "Fitted_items":self.Fitted_items
+            }
+        else:
+            return{"ID":self.ID,
+            "TypeName":self.name,
+            "X":float(self.width),
+            "Y":float(self.height),
+            "Z":float(self.depth), 
+            "Weight":float(self.weight),
+            "position_x":float(self.position[0]),
+            "position_y":float(self.position[1]),
+            "position_z":float(self.position[2]),
+            "RotationType":self.rotation_type,
+            "TypeIndex":self.type_index,
+            }
 
     def get_volume(self):
         return set_to_decimal(
@@ -99,6 +118,12 @@ class Bin:
         self.max_weight = set_to_decimal(self.max_weight, number_of_decimals)
         self.number_of_decimals = number_of_decimals
 
+    def get_unfitted_items_as_dict_array(self):
+        unFittedItemArray=[]
+        for unfitted_item in self.unfitted_items:
+            unFittedItemArray.append(unfitted_item.getResultDictionary())
+        return unFittedItemArray
+        
     def string(self):
         return f"""
             ID:{self.ID},
@@ -124,13 +149,13 @@ class Bin:
         return{
             "ID":self.ID,
             "TypeName":self.name,
+            "TypeIndex":self.type_index,
             "X":float(self.width),
             "Y":float(self.height),
             "Z":float(self.depth),
             "Weight_limmit":float(self.max_weight),
             "Fitted_items":FittedItemArray,
             "UnFitted_items":unFittedItemArray,
-            "TypeIndex":self.type_index
     }
 
     def get_volume(self):
@@ -185,13 +210,54 @@ class Bin:
 
         return fit
 
+    def put_item_only_2D_rotate(self, item, pivot):
+        fit = False
+        valid_item_position = item.position
+        item.position = pivot
+
+        for i in range(0, len(RotationType.TWO_D)):
+            item.rotation_type = RotationType.TWO_D[i]
+            dimension = item.get_dimension()
+            if (
+                self.width < pivot[0] + dimension[0] or
+                self.height < pivot[1] + dimension[1] or
+                self.depth < pivot[2] + dimension[2]
+            ):
+                continue
+
+            fit = True
+
+            for current_item_in_bin in self.items:
+                if intersect(current_item_in_bin, item):
+                    fit = False
+                    break
+
+            if fit:
+                if self.get_total_weight() + item.weight > self.max_weight:
+                    fit = False
+                    return fit
+
+                self.items.append(item)
+
+            if not fit:
+                item.position = valid_item_position
+
+            return fit
+
+        if not fit:
+            item.position = valid_item_position
+
+        return fit
+
+
 
 class Packer:
-    def __init__(self):
+    def __init__(self, TWO_D_MODE=False):
         self.bins = []
         self.items = []
         self.unfit_items = []
         self.total_items = 0
+        self.TWO_D_MODE=TWO_D_MODE
 
     def add_bin(self, bin):
         return self.bins.append(bin)
@@ -205,6 +271,8 @@ class Packer:
         fitted = False
 
         if not bin.items:
+            if self.TWO_D_MODE:
+                response=bin.put_item_only_2D_rotate(item, START_POSITION)
             response = bin.put_item(item, START_POSITION)
 
             if not response:
@@ -237,9 +305,15 @@ class Packer:
                         ib.position[2] + d
                     ]
 
-                if bin.put_item(item, pivot):
-                    fitted = True
-                    break
+
+                if self.TWO_D_MODE:
+                    if bin.put_item_only_2D_rotate(item, pivot):
+                        fitted = True
+                        break
+                else:
+                    if bin.put_item(item, pivot):
+                        fitted = True
+                        break
             if fitted:
                 break
 

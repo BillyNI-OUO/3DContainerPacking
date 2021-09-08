@@ -9,6 +9,9 @@ const store = new Vuex.Store({
         container_infos: [],
         box_infos:[],
         render_infos:[],
+        render_loading_status:true,
+        pallet_infos:[],
+        pallet_mode:false,
     },
     mutations: {
         // 將state設定為參數
@@ -24,6 +27,10 @@ const store = new Vuex.Store({
         MUTATE_APPEND_BOX_INFO(state, box_info_to_be_append){
             state.box_infos=[...state.box_infos, ...box_info_to_be_append]
         },
+        MUTATE_APPEND_PALLET_INFO(state, pallet_info_to_be_append){
+            state.pallet_infos=[...state.pallet_infos,...pallet_info_to_be_append]
+            console.log(state.pallet_infos)
+        },
         MUTATE_DELETE_CONTAINER_WITH_UUID(state, uuid){
 
             //initial value is empty array
@@ -32,10 +39,16 @@ const store = new Vuex.Store({
                 return new_array;
             },[])
         },
+        MUTATE_DELETE_PALLET_WITH_UUID(state, uuid){
+            state.pallet_infos=state.pallet_infos.reduce((new_array, current_val)=>{
+                current_val.ID!==uuid && new_array.push(current_val);
+                return new_array;
+            },[])
+        },
         MUTATE_DELETE_BOX_WITH_UUID(state, uuid){
 
             //initial value is empty array
-            console.log(uuid)
+            //console.log(uuid)
             state.box_infos=state.box_infos.reduce((new_array, current_val)=>{
                 current_val.ID!==uuid && new_array.push(current_val);
                 return new_array;
@@ -44,6 +57,12 @@ const store = new Vuex.Store({
         MUTATE_RENDER_DATA(state, new_render_infos){
             state.render_infos=new_render_infos;
         },
+        MUTATE_RENDER_LOADING_STATUS(state, new_staus){
+            state.render_loading_status=new_staus;
+        },
+        MUTATE_PALLET_MODE(state, new_status){
+            state.pallet_mode=new_status;
+        }
     },//end mutation
     actions: {
         loadContainerInfos: (context, container_infos) => {
@@ -58,14 +77,27 @@ const store = new Vuex.Store({
         appendBoxInfos:(context, box_info)=>{
             context.commit("MUTATE_APPEND_BOX_INFO", box_info)
         },
+        appendPalletInfos:(context, pallet_info)=>{
+            context.commit("MUTATE_APPEND_PALLET_INFO", pallet_info)
+        },
         deleteContainer_infosItemWithUUID:(context, uuid)=>{
             context.commit("MUTATE_DELETE_CONTAINER_WITH_UUID", uuid)
+        },
+        deletePallet_infosItemWithUUID:(context, uuid)=>{
+            context.commit("MUTATE_DELETE_PALLET_WITH_UUID", uuid)
         },
         deleteBox_infosItemWithUUID:(context, uuid) =>{
             context.commit("MUTATE_DELETE_BOX_WITH_UUID", uuid)
         },
         loadRenderInfos:(context, render_infos)=>{
             context.commit("MUTATE_RENDER_DATA", render_infos)
+        },
+        setRenderLoadingStatus:(context, new_status)=>{
+            context.commit("MUTATE_RENDER_LOADING_STATUS", new_status);
+            console.log("render status become"+new_status)
+        },
+        setPalletMode:(context, new_status)=>{
+            context.commit("MUTATE_PALLET_MODE", new_status)
         }
     },//end actions
     getters:{

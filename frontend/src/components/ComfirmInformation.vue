@@ -4,13 +4,24 @@
   <div>
     <!-- STEPPER-->
     <div class="container m-3">
-   <a-steps :current="1" status="error">
-    <a-step title="Finished" description="This is a description." />
-    <a-step title="In Progress" description="This is a description." />
-    <a-step title="Waiting" description="This is a description." />
-  </a-steps>
-  </div>
+      <a-steps :current="1" status="error">
+        <a-step title="Finished" description="This is a description." />
+        <a-step title="In Progress" description="This is a description." />
+        <a-step title="Waiting" description="This is a description." />
+      </a-steps>
+    </div>
     <!--end stepper-->
+    <!--show error message if there are empty value-->
+    <div v-if="PalletArrayHaveNoData" class="m-3">
+      <a-alert
+        message="There are no data for  pallet"
+        description="Please go to previous page to create new container, or it will be render in no-pallet mode"
+        type="error"
+        closable
+        @close="ConAlertOnClose"
+      />
+    </div>
+    <!--end error message -->
     <!--show error message if there are empty value-->
     <div v-if="ContainerArrayHaveNoData" class="m-3">
       <a-alert
@@ -53,11 +64,19 @@
           </span>
           <!--flex container -->
           <div class="">
-          <h4>{{ container_info.TypeName }}</h4>
+            <h4>{{ container_info.TypeName }}</h4>
           </div>
           <div class="item">
             <img
-              class="card-img img-thumbnail rounded float-start mr-4 iconImage   shadow-sm"
+              class="
+                card-img
+                img-thumbnail
+                rounded
+                float-start
+                mr-4
+                iconImage
+                shadow-sm
+              "
               src="../../imgs/container.png"
             />
             <span class="caption">numbers</span>
@@ -106,6 +125,88 @@
       </b-collapse>
     </div>
     <!--end-of container toggle-->
+
+    <!--beggin of pallet toggle-->
+    <div class="container-lg w-100 p-3">
+      <b-button v-b-toggle href="#pallet-collapse" class="w-100 button_bg"
+        >Pallets</b-button
+      >
+      <b-collapse id="pallet-collapse" class="mt-2">
+        <!--The container info have a ID array, if same type of container >0, we take the first ID as key  -->
+        <b-card
+          v-for="pallet_info in pallet_infos"
+          :key="pallet_info.ID"
+          class="mb-1 border-dark card-bg"
+        >
+          <span
+            class="float-end delete-span"
+            @click="deletePalletInfo(pallet_info.ID)"
+          >
+            X
+          </span>
+          <!--flex container -->
+          <div class="">
+            <h4>{{ pallet_info.TypeName }}</h4>
+          </div>
+          <div class="item">
+            <img
+              class="
+                card-img
+                img-thumbnail
+                rounded
+                float-start
+                mr-4
+                iconImage
+                shadow-sm
+              "
+              src="../../imgs/pallet.png"
+            />
+            <span class="caption">numbers</span>
+          </div>
+          <h1 class="display-6 ml-5">X{{ pallet_info.Numbers }}</h1>
+
+          <b-button
+            v-b-toggle
+            v-bind:href="concateStringToGetPalletIDhref(pallet_info.ID)"
+            variant="light"
+            size="sm"
+            block
+            class="moveToBottom shadow-sm"
+            >Details</b-button
+          >
+          <b-collapse
+            v-bind:id="concateStringToGetPalletID(pallet_info.ID)"
+            class="mt-2"
+          >
+            <!-- pallet detial-->
+            <b-card class="shadow">
+              <table class="table">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">X</th>
+                    <th scope="col">Y</th>
+                    <th scope="col">Z</th>
+                    <th scope="col">Weight</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">{{ pallet_info.ID }}</th>
+                    <td>{{ pallet_info.X }}</td>
+                    <td>{{ pallet_info.Y }}</td>
+                    <td>{{ pallet_info.Z }}</td>
+                    <td>{{ pallet_info.Weight }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <!--end of pallet detial-->
+            </b-card>
+          </b-collapse>
+        </b-card>
+      </b-collapse>
+    </div>
+    <!--end-of pallet toggle-->
 
     <!--beggin of box toggle-->
     <div class="container-lg w-100 p-3">
@@ -191,12 +292,20 @@
 <script>
 import { mapState } from "vuex";
 import Swal from "sweetalert2";
+import { API_LOCATION } from "../config";
 export default {
   //get the information from store first
   computed: {
     BoxArrayHaveNoData() {
       console.log("box_infos.length" + this.box_infos.length);
       if (this.box_infos.length === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    PalletArrayHaveNoData() {
+      if (this.pallet_infos.length === 0) {
         return true;
       } else {
         return false;
@@ -212,6 +321,7 @@ export default {
     ...mapState({
       container_infos: (state) => state.container_infos,
       box_infos: (state) => state.box_infos,
+      pallet_infos: (state) => state.pallet_infos,
     }),
   }, //end compute
   methods: {
@@ -222,7 +332,7 @@ export default {
     sendTestMessage() {
       this.axios({
         method: "get",
-        baseURL: "http://localhost:5000",
+        baseURL: API_LOCATION,
         url: "/api/",
         "Content-Type": "application/json",
       }).then((response) => {
@@ -241,61 +351,87 @@ export default {
     concateStringToGetBoxIDhref(index) {
       return "#innerbox_box_id" + index;
     },
+    concateStringToGetPalletID(index) {
+      console.log(index);
+      return "innerbox_pallet_id" + index;
+    },
+    concateStringToGetPalletIDhref(index) {
+      console.log(index);
+      return "#innerbox_pallet_id" + index;
+    },
     sendStoredMessage() {
+      if (this.pallet_infos.length > 0) {
+        this.pallet_mode = 1;
+      }
+      console.log("before send");
+      console.log(this.container_infos);
       this.axios({
         method: "post",
-        baseURL: "http://localhost:5000",
+        baseURL: API_LOCATION,
         url: "/api/recv/3dbinpack/info",
         "Content-Type": "application/json",
         data: {
+          pallet_mode: this.pallet_mode,
           containers: this.container_infos,
           boxes: this.box_infos,
+          pallets: this.pallet_infos,
         },
       })
         .then((response) => {
           //if request success, console log the status
+
+          //check the status
           console.log(response.data);
-          if (response.data["status"] == 1) {
+          console.log("statuscode" + response.data["status"]);
+          if (response.data["status"] > 0 && response.data["status"] < 200) {
             console.log("status success");
-          } else if (response.data["status" == 2]) {
+            console.log(response.data);
+            this.$store.dispatch("setRenderLoadingStatus", true);
+            this.$store.dispatch("loadRenderInfos", response.data);
+
+            if (this.pallet_mode) {
+              this.$store.dispatch("setPalletMode", true);
+            }
+            this.$router.push("../render");
+            //open in new page
+            //let routeUrl = this.$router.resolve({ path: "../render", query: {} }); window.open(routeUrl.href, '_blank');
+          } else if (
+            response.data["status"] >= 200 &&
+            response.data["status"] < 300
+          ) {
             console.log("status fail");
-          } else if (response.data["status"] == 3) {
+            this.$router.push("../PackingFailPage");
+          } else if (
+            response.data["status"] >= 300 &&
+            response.data["status"] < 400
+          ) {
             console.log("status partial success");
+            this.$router.push("../render");
           } else {
             console.log("unknow status code.");
+            this.$router.push("../PackingFailPage");
           }
-          this.$store.dispatch("loadRenderInfos", response.data);
         })
         .catch((error) => {
           //in error condition
-          console.log(error.response.data.error);
-          let timerInterval;
           Swal.fire({
-            title: "There is connection error to the backend server!",
-            html: "Please retry sending data after <b></b> milliseconds, or contact the adminitrator",
-            timer: 20000,
-            timerProgressBar: true,
-            didOpen: () => {
-              Swal.showLoading();
-              const b = Swal.getHtmlContainer().querySelector("b");
-              timerInterval = setInterval(() => {
-                b.textContent = Swal.getTimerLeft();
-              }, 100);
-            },
-            willClose: () => {
-              clearInterval(timerInterval);
-            },
-          }).then((result) => {
-            /* Read more about handling dismissals below */
-            if (result.dismiss === Swal.DismissReason.timer) {
-              console.log("I was closed by the timer");
-            }
+            icon: "error",
+            title: "Oops...",
+            text: "Something went wrong!, ",
+            footer: "<p>Cannot connect to backend server</p>",
           });
+          console.log(error.response.data.error);
         });
     }, //end sendStoreMessage
     deleteContainerInfo(container_info_uuid) {
       this.$store.dispatch(
         "deleteContainer_infosItemWithUUID",
+        container_info_uuid
+      );
+    },
+    deletePalletInfo(container_info_uuid) {
+      this.$store.dispatch(
+        "deletePallet_infosItemWithUUID",
         container_info_uuid
       );
     },
@@ -305,6 +441,7 @@ export default {
   }, //end methods,
   data: function () {
     return {
+      pallet_mode: 0,
       //OnClickShowNumber: true,
     };
   },
@@ -341,12 +478,12 @@ export default {
 .button_bg {
   background-color: rgb(49, 48, 133);
 }
-.container{
+.container {
   display: block;
-  position:relative;
+  position: relative;
   width: 70%;
 }
-.card-bg{
+.card-bg {
   background: #fff;
 }
 </style>

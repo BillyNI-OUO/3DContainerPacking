@@ -7,7 +7,7 @@ class RotationType:
     RT_WDH = 5
 
     ALL = [RT_WHD, RT_HWD, RT_HDW, RT_DHW, RT_DWH, RT_WDH]
-
+    TWO_D=[RT_DHW, RT_WHD]
 
 class Axis:
     WIDTH = 0

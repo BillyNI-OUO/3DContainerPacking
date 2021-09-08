@@ -27,6 +27,16 @@ const routes = [
     path: '/render',
     name: 'render',
     component:()=> import ('../views/Render.vue')
+  },
+  {
+    path:'/loading',
+    name: 'LoadingPage',
+    component:()=>import('../views/LoadingPage.vue')
+  },
+  {
+    path:'/PackingFailPage',
+    name:'packingFail',
+    component:()=>import('../views/PackingFail.vue')
   }
 ]
 
