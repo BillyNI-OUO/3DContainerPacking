@@ -10,6 +10,7 @@ class RotationType:
 */
 
 var rotateWithType = function (xyz_array, rotationType) {
+   //console.log("rotationType"+rotationType)
     if(rotationType==0){
         return xyz_array
 

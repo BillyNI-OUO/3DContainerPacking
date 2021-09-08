@@ -186,7 +186,7 @@ def Processing3DBPWithPallet(container_infos, box_infos, pallet_infos):
         virtual_container['Weight_limmit'],
         virtual_container['TypeIndex']
         ))
-        packer.pack()
+        packer.pack(bigger_first=True)
         for b in packer.bins:
             if len(b.unfitted_items)!=0:
                 flag_success_pallet=False
@@ -374,6 +374,10 @@ def reciveJsonFromClient():
 
     #preprocess the data
     container_infos=preProcessContainerInfos(container_infos)
+
+    #sorted by volume
+    box_infos=sorted(box_infos,  key=lambda box_info: int(box_info["X"])* int(box_info["Z"])*int(box_info['Y']), reverse=True)
+
     box_infos=preProcessBoxInfos(box_infos)
     #pallet mode
     if info_jsondata['pallet_mode']==1:

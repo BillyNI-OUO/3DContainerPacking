@@ -175,6 +175,15 @@ export default {
       var render_infos = this.render_infos;
       //create scene
       var scene = new BABYLON.Scene(this.engine);
+      this.scene=scene
+      //==========================================================================
+      //Enable physical engine
+      //==========================================================================
+      //this.scene.enablePhysics(new BABYLON.Vector3(0,-10,0), new BABYLON.AmmoJSPlugin());
+
+
+
+
       this.scene = scene;
       //=========================================================================
       //global variables
@@ -392,7 +401,7 @@ export default {
             pallet["Y"],
             pallet["Z"],
           ];
-         let new_xyz_array_of_current_pallet = rotationWithType(origin_xyz_array_of_current_pallet, pallet["rotateType"]);
+         let new_xyz_array_of_current_pallet = rotationWithType(origin_xyz_array_of_current_pallet, pallet["RotationType"]);
           let pallet_x = new_xyz_array_of_current_pallet[0];
           let pallet_y = new_xyz_array_of_current_pallet[1];
           let pallet_z = new_xyz_array_of_current_pallet[2];
@@ -435,6 +444,9 @@ export default {
           ];
           let xyz_array = rotationWithType(origin_xyz_array, rotateType);
 
+          //if the pallet is rotated, the box load on this pallet also have to be rotated
+          //  not something like this=>  xyz_array=rotationWithType(xyz_array,  pallet["RotationType"])
+          
           let box_x = xyz_array[0];
           let box_y = xyz_array[1];
           let box_z = xyz_array[2];
@@ -474,22 +486,44 @@ export default {
           //======================================================
           //Set the box position
           //======================================================
-          box_instance.position.x =
-            left_top_positions_array[index_of_container]["X"] +
-            pallet["Fitted_items"][i]["position_x"] +
+
+          //if pallet have been rotated, exchange x, z position
+          if(pallet["RotationType"]!=0){
+
+            console.log("rotated!!!!!!!!!!!!!")
+            box_instance.position.x =left_top_positions_array[index_of_container]["X"] +
+            pallet["Fitted_items"][i]["position_z"] +
             box_x / 2 +     //+pallet offset
             pallet["position_x"];
+            
           box_instance.position.y =
             box_y / 2 + 
             pallet["Fitted_items"][i]["position_y"]+
             pallet["Y"] //+pallet height
             ;
           box_instance.position.z =
-            //left_top_positions_array[index_of_container]["Z"] +
+          //left_top_positions_array[index_of_container]["Z"] +
+            pallet["Fitted_items"][i]["position_x"] + 
+            box_z / 2+
+            pallet["position_z"]
+            ;
+          }else{
+          box_instance.position.x =left_top_positions_array[index_of_container]["X"] +
+            pallet["Fitted_items"][i]["position_x"] +
+            box_x / 2 +     //+pallet offset
+            pallet["position_x"];
+            
+          box_instance.position.y =
+            box_y / 2 + 
+            pallet["Fitted_items"][i]["position_y"]+
+            pallet["Y"] //+pallet height
+            ;
+          box_instance.position.z =//left_top_positions_array[index_of_container]["Z"] +
             pallet["Fitted_items"][i]["position_z"] + 
             box_z / 2+
             pallet["position_z"]
             ;
+          }
           //===========================================================
           //Create control box
           //===========================================================
