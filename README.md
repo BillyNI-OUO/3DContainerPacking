@@ -1,6 +1,6 @@
 # my-3dbinpacking
 
-### "packed the pallets, containers, boxes automaticllys"
+### "packed the pallets, containers, boxes automatically"
 ![Alt text](https://github.com/N0nent1ty/3D-Binpacking-GUI/blob/master/screenshot/show_packing_image.PNG?raw=true )
 ### "user interface to create container"
 ![Alt text](https://github.com/N0nent1ty/3D-Binpacking-GUI/blob/master/screenshot/create_container.PNG?raw=true )
