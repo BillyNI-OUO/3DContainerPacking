@@ -25,9 +25,6 @@ import VueAxios from 'vue-axios'
 
 
 
-//loading page
-import VueLoading from 'vue-loading-overlay';
-import 'vue-loading-overlay/dist/vue-loading.css';
 
 
 
@@ -47,8 +44,6 @@ Vue.use(Vuex);
 //load axios for vue
 Vue.use(VueAxios, axios)
 
-
-Vue.use(VueLoading)
 
 
 //load vuex
