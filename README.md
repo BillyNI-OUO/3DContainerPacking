@@ -1,6 +1,13 @@
 # my-3dbinpacking
 
+
+![Alt text](https://github.com/N0nent1ty/3D-Binpacking-GUI/blob/master/screenshot/show_packing_image.PNG?raw=true "Title")
+
+
+
+
 ## Project setup
+#go to frontend directory and run the following command
 ```
 npm install
 ```
