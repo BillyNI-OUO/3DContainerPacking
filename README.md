@@ -23,15 +23,19 @@ https://github.com/BabylonJS/Babylon.js
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### start fronend dev server
 ```
 npm run serve
 ```
 
-### go to $(proj_dir)/backend/cgi
+### go to $(proj_dir)/backend/cgi to start backend dev server
 ```
 python main.py to start backend
 ```
+
+
+
+
 ### Compiles and minifies for production
 ```
 npm run build
