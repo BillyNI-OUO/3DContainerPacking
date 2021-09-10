@@ -46,8 +46,9 @@ npm run build
 npm run lint
 ```
 
-
-### feel free to send email to ask the quetions
+<!-- CONTACT -->
+## Contact
+feel free to send email to ask the quetions
 ```
 shengchikuo@gmail.com
 ```
