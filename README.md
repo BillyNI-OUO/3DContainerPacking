@@ -44,7 +44,7 @@ npm run lint
 
 ### feel free to send email to ask the quetions
 ```
-
+shengchikuo@gmail.com
 ```
 
 
