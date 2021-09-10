@@ -11,7 +11,7 @@
       </a-steps>
     </div>
     <!--end stepper-->
-        <!--show error message if there are empty value-->
+    <!--show error message if there are empty value-->
     <div v-if="PalletArrayHaveNoData" class="m-3">
       <a-alert
         message="There are no data for  pallet"
@@ -196,7 +196,7 @@
                     <td>{{ pallet_info.X }}</td>
                     <td>{{ pallet_info.Y }}</td>
                     <td>{{ pallet_info.Z }}</td>
-                    <td>{{ pallet_info.Weight}}</td>
+                    <td>{{ pallet_info.Weight }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -207,12 +207,6 @@
       </b-collapse>
     </div>
     <!--end-of pallet toggle-->
-
-
-
-
-
-
 
     <!--beggin of box toggle-->
     <div class="container-lg w-100 p-3">
@@ -298,7 +292,7 @@
 <script>
 import { mapState } from "vuex";
 import Swal from "sweetalert2";
-import { API_LOCATION } from "../config"
+import { API_LOCATION } from "../config";
 export default {
   //get the information from store first
   computed: {
@@ -310,10 +304,10 @@ export default {
         return false;
       }
     },
-    PalletArrayHaveNoData(){
-      if(this.box_infos.length===0){ 
+    PalletArrayHaveNoData() {
+      if (this.pallet_infos.length === 0) {
         return true;
-      }else{
+      } else {
         return false;
       }
     },
@@ -327,7 +321,7 @@ export default {
     ...mapState({
       container_infos: (state) => state.container_infos,
       box_infos: (state) => state.box_infos,
-      pallet_infos:(state)=>state.pallet_infos,
+      pallet_infos: (state) => state.pallet_infos,
     }),
   }, //end compute
   methods: {
@@ -357,30 +351,30 @@ export default {
     concateStringToGetBoxIDhref(index) {
       return "#innerbox_box_id" + index;
     },
-    concateStringToGetPalletID(index){
-      console.log(index)
-      return "innerbox_pallet_id"+index
+    concateStringToGetPalletID(index) {
+      console.log(index);
+      return "innerbox_pallet_id" + index;
     },
-    concateStringToGetPalletIDhref(index){
-      console.log(index)
-      return "#innerbox_pallet_id"+index
+    concateStringToGetPalletIDhref(index) {
+      console.log(index);
+      return "#innerbox_pallet_id" + index;
     },
     sendStoredMessage() {
-      if (this.pallet_infos.length>0){
-        this.pallet_mode=1
+      if (this.pallet_infos.length > 0) {
+        this.pallet_mode = 1;
       }
-      console.log("before send")
-      console.log(this.container_infos)
+      console.log("before send");
+      console.log(this.container_infos);
       this.axios({
         method: "post",
         baseURL: API_LOCATION,
         url: "/api/recv/3dbinpack/info",
         "Content-Type": "application/json",
         data: {
-          pallet_mode:this.pallet_mode,
+          pallet_mode: this.pallet_mode,
           containers: this.container_infos,
           boxes: this.box_infos,
-          pallets:this.pallet_infos
+          pallets: this.pallet_infos,
         },
       })
         .then((response) => {
@@ -388,29 +382,35 @@ export default {
 
           //check the status
           console.log(response.data);
-          console.log("statuscode"+response.data["status"])
-          if (response.data["status"] >0 && response.data["status"] <200) {
+          console.log("statuscode" + response.data["status"]);
+          if (response.data["status"] > 0 && response.data["status"] < 200) {
             console.log("status success");
-            console.log(response.data)
+            console.log(response.data);
             this.$store.dispatch("setRenderLoadingStatus", true);
             this.$store.dispatch("loadRenderInfos", response.data);
-            if (this.pallet_mode){
-              this.$store.dispatch("setPalletMode",true)
+
+            if (this.pallet_mode) {
+              this.$store.dispatch("setPalletMode", true);
             }
             this.$router.push("../render");
             //open in new page
             //let routeUrl = this.$router.resolve({ path: "../render", query: {} }); window.open(routeUrl.href, '_blank');
-          } else if (response.data["status"]>=200 &&response.data["status"]< 300) {
+          } else if (
+            response.data["status"] >= 200 &&
+            response.data["status"] < 300
+          ) {
             console.log("status fail");
-            this.$router.push('../PackingFailPage')
-          } else if (response.data["status"]>= 300 && response.data["status"]<400) {
+            this.$router.push("../PackingFailPage");
+          } else if (
+            response.data["status"] >= 300 &&
+            response.data["status"] < 400
+          ) {
             console.log("status partial success");
-            this.$router.push('../render')
+            this.$router.push("../render");
           } else {
             console.log("unknow status code.");
-            this.$router.push('../PackingFailPage')
+            this.$router.push("../PackingFailPage");
           }
-
         })
         .catch((error) => {
           //in error condition
@@ -418,7 +418,7 @@ export default {
             icon: "error",
             title: "Oops...",
             text: "Something went wrong!, ",
-            footer: '<p>Cannot connect to backend server</p>',
+            footer: "<p>Cannot connect to backend server</p>",
           });
           console.log(error.response.data.error);
         });
@@ -429,7 +429,7 @@ export default {
         container_info_uuid
       );
     },
-      deletePalletInfo(container_info_uuid) {
+    deletePalletInfo(container_info_uuid) {
       this.$store.dispatch(
         "deletePallet_infosItemWithUUID",
         container_info_uuid
@@ -441,7 +441,7 @@ export default {
   }, //end methods,
   data: function () {
     return {
-      pallet_mode:0,
+      pallet_mode: 0,
       //OnClickShowNumber: true,
     };
   },
