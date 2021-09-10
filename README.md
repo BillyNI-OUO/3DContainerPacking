@@ -1,9 +1,18 @@
 # my-3dbinpacking
 
-### "packed tha pallet, container, boxes automaticlly"
+### "packed the pallets, containers, boxes automaticllys"
 ![Alt text](https://github.com/N0nent1ty/3D-Binpacking-GUI/blob/master/screenshot/show_packing_image.PNG?raw=true )
 ### "user interface to create container"
 ![Alt text](https://github.com/N0nent1ty/3D-Binpacking-GUI/blob/master/screenshot/create_container.PNG?raw=true )
+
+
+
+### Reference
+```
+https://github.com/enzoruiz/3dbinpacking
+https://vuejs.org/
+https://github.com/BabylonJS/Babylon.js
+```
 
 
 
@@ -31,6 +40,14 @@ npm run build
 ```
 npm run lint
 ```
+
+
+### feel free to send email to ask the quetions
+```
+
+```
+
+
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
