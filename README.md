@@ -1,8 +1,9 @@
 # my-3dbinpacking
 
-
-![Alt text](https://github.com/N0nent1ty/3D-Binpacking-GUI/blob/master/screenshot/show_packing_image.PNG?raw=true "packed tha pallet, container, boxes automaticlly")
-![Alt text](https://github.com/N0nent1ty/3D-Binpacking-GUI/blob/master/screenshot/create_container.PNG?raw=true "user interface to create container")
+### "packed tha pallet, container, boxes automaticlly"
+![Alt text](https://github.com/N0nent1ty/3D-Binpacking-GUI/blob/master/screenshot/show_packing_image.PNG?raw=true )
+### "user interface to create container"
+![Alt text](https://github.com/N0nent1ty/3D-Binpacking-GUI/blob/master/screenshot/create_container.PNG?raw=true )
 
 
 
@@ -17,7 +18,7 @@ npm install
 npm run serve
 ```
 
-###go to $(proj_dir)/backend/cgi
+### go to $(proj_dir)/backend/cgi
 ```
 python main.py to start backend
 ```
