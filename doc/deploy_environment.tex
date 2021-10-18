@@ -1,0 +1,256 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[obeyspaces]{url}
+
+\usepackage{mdframed}
+\usepackage{minted}
+\usepackage{hyperref}
+\definecolor{bg}{rgb}{0.95,0.95,0.95}
+
+\documentclass[border=10pt,multi,tikz]{standalone}
+\usepackage[edges]{forest}
+\definecolor{folderbg}{RGB}{124,166,198}
+\definecolor{folderborder}{RGB}{110,144,169}
+\newlength\Size
+\setlength\Size{4pt}
+\tikzset{%
+  folder/.pic={%
+    \filldraw [draw=folderborder, top color=folderbg!50, bottom color=folderbg] (-1.05*\Size,0.2\Size+5pt) rectangle ++(.75*\Size,-0.2\Size-5pt);
+    \filldraw [draw=folderborder, top color=folderbg!50, bottom color=folderbg] (-1.15*\Size,-\Size) rectangle (1.15*\Size,\Size);
+  },
+  file/.pic={%
+    \filldraw [draw=folderborder, top color=folderbg!5, bottom color=folderbg!10] (-\Size,.4*\Size+5pt) coordinate (a) |- (\Size,-1.2*\Size) coordinate (b) -- ++(0,1.6*\Size) coordinate (c) -- ++(-5pt,5pt) coordinate (d) -- cycle (d) |- (c) ;
+  },
+}
+\forestset{%
+  declare autowrapped toks={pic me}{},
+  pic dir tree/.style={%
+    for tree={%
+      folder,
+      font=\ttfamily,
+      grow'=0,
+    },
+    before typesetting nodes={%
+      for tree={%
+        edge label+/.option={pic me},
+      },
+    },
+  },
+  pic me set/.code n args=2{%
+    \forestset{%
+      #1/.style={%
+        inner xsep=2\Size,
+        pic me={pic {#2}},
+      }
+    }
+  },
+  pic me set={directory}{folder},
+  pic me set={file}{file},
+}
+
+
+\title{Developing the 3D bin packing project}
+\author{Cipher Kuo }
+\date{October 2021}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+
+
+\section{Contact}
+\href{mailto:shengchikuo@gmail.com}{shengchikuo@gmail.com} 
+\newline
+\href{mailto:cipherk@supermicro.com.tw}{cipherk@supermicro.com.tw} 
+
+\section{Prerequisites}
+Before getting your hand dirty, 
+you will need to setup your development environment to make sure the system you are using is able to let you follow the instruction guide rapidly without any fine tuning.\newline
+
+This instruction guide will take the Linux(Ubuntu20.04) as an example, and show how to setup the environment under this Linux distribution step by step, furthermore, we have successfully tested this project under the Windows system, but this document will not mention the relevant settings on Windows.\newline
+
+
+Therefore, it is strongly recommend using the same operating system to prevent you from unknown trouble shooting.
+If you are currently using Windows operating system,
+You can still use the following methods without changing the operating system, you can activate WSL2(Windows subsystem linux)to have a Linux like environment and shell, you can open the WSL2 feature by following the\href{https://docs.microsoft.com/en-us/windows/wsl/install}{ \color{blue}Microsoft official manual.}, and it is default installed on Windows 11 \newline
+
+In case have unknown problems under other operating systems, please raise an issue on Github or write to contact
+
+\subsection*{Download the source code}
+Before download the source code, make sure there is \textbf{git} on your system.\newline
+following instruction will install the \textbf{git} on your Debian like(Ubuntu) system.
+
+
+\begin{mdframed}[backgroundcolor=bg]
+\begin{minted}{bash}
+sudo apt-get update
+sudo apt-get install git -y
+\end{minted}
+\end{mdframed}
+
+\noindent After download the git, your are able to download the source code to current work directory.
+\begin{mdframed}[backgroundcolor=bg]
+\begin{minted}{bash}
+git clone https://github.com/N0nent1ty/3D-Binpacking-GUI
+\end{minted}
+\end{mdframed}
+
+\noindent Because the font end side of this project employeed the /textbf{npm} as a javascript library package management tool, you will need to install the nodejs in advance.
+Following instructions will installed the nodejs, and let you able to use npm.
+
+\begin{mdframed}[backgroundcolor=bg]
+\begin{minted}{bash}
+sudo apt-get update
+sudo apt-get install nodejs -y
+sudo apt-get install npm
+\end{minted}
+\end{mdframed}
+
+Science the back end of this project is written in \textbf{Python3}, and utilized a python package \texbf{Flask}(a Web framework) to develop the CGI, to install a package, you will need to install the python, and python package.
+
+\begin{mdframed}[backgroundcolor=bg]
+\begin{minted}{bash}
+sudo apt-get update
+sudo apt-get install python3 -y
+sudo apt-get install python3-pip
+\end{minted}
+\end{mdframed}
+
+\noindent Afterward, you are able to install flask by following instruction.
+\begin{mdframed}[backgroundcolor=bg]
+\begin{minted}{bash}
+pip3 install Flask==2.0.2
+pip3 install flask_cors==3.0.10
+\end{minted}
+\end{mdframed}
+
+%\begin{comment}
+comment example
+%\end{comment}
+
+
+
+\section{Architecture introduction}
+The entire architecture can be basically separated into three modules.\newline
+\begin{enumerate}
+\item USER INTERFACE
+\item ALGORITHM
+\item 3D-RENDERING \& other interactive functionalities.
+\end{enumerate}
+
+\textit{In the following paragraph we we will use abbreviation 3D-RENDERING for short.}
+\newline
+
+In order to have more user friendly functionality, we combined the USER INTERFACE and 3D-RENDERING together, so that what user need to do is type the necessary input information into the USER INTERFACE and click a send button subsequently, then render image will show up.\newline
+
+hypothetically, let us assume what the usage scenario would looks like in case we separate this two modules.
+In such context, The user will use user input module to formalize the input data and let the algorithm module to generate a json or bit format data output which is definitely not human readable, then the user need to feed this output file to another application(third module) so that the output became visible.\newline
+
+This approach seem like cumbersome but it has its own advantage.
+Take our project in example, the javascript libraries and css libraries has its own dependencies, and some will conflict with each other, We chose this solution not because they are the best option in their respective modules, but because they have the best compatibility when combining modules today.
+
+So instead of three module in this project, what you will see is two moudle, frontend and backend,
+
+You can take a view of architecture of the project by following instruction.
+\begin{mdframed}[backgroundcolor=bg]
+\begin{minted}{bash}
+tree -L 2 ./3D-Binpacking-GUI/
+\end{minted}
+\end{mdframed}
+
+\begin{forest}
+  pic dir tree,
+  where level=0{}{% folder icons by default; override using file for file icons
+    directory,
+  },
+  [3D-Binpacking-GUI
+    [Backend
+        [algorithm
+        ]
+        [cgi
+        ]
+    ]
+    [experiment
+    ]
+    [frontend
+        [package.json, file
+        ]
+        [public
+        ]
+        [src
+        ]
+    ]
+    [sreenshot
+    ]
+    [LICENSE, file
+    ]
+  ]
+\end{forest}
+In order to keep modern font-back-seperate design and
+under the aforementioned architecture, you can see the algorithm folder under the backend folder, algorithm module will work as a back end service which will call by a resfull API.
+
+
+\section{Deploy the fontend}
+If you have settled the environment by the previous instructions, you should have \textfb{npm} on your system, installing the dependencies will become quite simple, what you need to do is go to the frontend directory and
+\begin{mdframed}[backgroundcolor=bg]
+\begin{minted}{bash}
+npm i
+\end{minted}
+\end{mdframed}
+the dependencies listed in package.json will automatically install for you.\newline
+To start a developer server, type the following instruction on the terminal and enter.
+\begin{mdframed}[backgroundcolor=bg]
+\begin{minted}{bash}
+npm run serve
+\end{minted}
+\end{mdframed}
+If everything goes well, it will open the port 8080 as default port number and you should see the following output result,
+\begin{mdframed}[backgroundcolor=bg]
+\begin{minted}{bash}
+  App running at:
+  - Local:   http://localhost:8080/ 
+  - Network: http://192.168.88.243:8080/
+
+  Note that the development build is not optimized.
+  To create a production build, run npm run build.
+\end{minted}
+\end{mdframed}
+
+
+It is worth to menthion that this server is only for development and test, of course you can deploy them with Nginx or other web server like Apache httpd, but this is out of the scope. 
+
+In the front-back-separate design, the front end will need to communicate the back end service with specific url and back end port, the default is number 5000, if you want to change the back end listening port, remember to change the setting where the fron end data will send to.
+
+The configuration file for the port is under the following path,\newline
+\path{$project_dir/frontend/src/config/index.js}
+
+
+
+\section{Deploy the backend}
+Please note that, although the algorithm package \texbf{py3dbp} is a open source python package  credited by this \href{https://github.com/enzoruiz/3dbinpacking}{\color{blue}repository}, the same package in this project is modified with lot's of the function interface so that it can fit the need of our own project, therefore, do not install the standard package with the \textbf{pip3 install py3dbp}, install the customized package by the following command.
+\begin{mdframed}[backgroundcolor=bg]
+\begin{minted}{bash}
+cd \$project_dir/backend/algorithm/
+sudo python3 ./setup.py install
+\end{minted}
+\end{mdframed}
+To startup the backend gunicorn server, there is script name under the backend folder, what you need to do is install the gunicorn server with pip then start up the server with this script.\newline
+\noindent install gunicorn
+\begin{mdframed}[backgroundcolor=bg]
+\begin{minted}{bash}
+pip3 install gunicorn
+\end{minted}
+\end{mdframed}
+\noindent run the script to start up backend server,
+this script will open port number 5000 on your machine.
+\noindent install gunicorn
+\begin{mdframed}[backgroundcolor=bg]
+\begin{minted}{bash}
+./run_gunicorn.sh
+\end{minted}
+\end{mdframed}
+
+\end{document}
