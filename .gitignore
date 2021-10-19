@@ -3,6 +3,12 @@
 **/dist
 **/venv
 **/ResfulApiCgi
+**/*.dvi
+**/*.out
+**/*.log
+**/*.toc
+**/*.pyg
+**/*.aux
 
 # local env files
 .env.local
