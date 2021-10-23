@@ -174,6 +174,23 @@ class Bin:
         else:
             #優化限制式
 
+    def check_in_box(self, item):
+        L = item.positions()
+        max_x, max_y, max_z = [0, 0, 0]
+        for xyz in L:
+            x, y, z = xyz
+            if x > max_x:
+                max_x = x
+            if y > max_y:
+                max_y = y
+            if z > max_z:
+                max_z = z
+        if max_x > self.width or max_y > self.height or max_z > self.depth
+            return False
+        else:
+            return True
+            
+
     def check_space_legal(self, item):
         L = item.positions() #找到8個點
         if not self.occupied:
@@ -260,7 +277,8 @@ class Bin:
                 self.width < pivot[0] + dimension[0] or
                 self.height < pivot[1] + dimension[1] or
                 self.depth < pivot[2] + dimension[2] or
-                not check_space_legal(item)
+                not check_space_legal(item) or
+                not check_in_box(item)
             ):
                 continue#超出棧版大小
 
