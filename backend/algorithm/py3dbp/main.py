@@ -174,8 +174,10 @@ class Bin:
         else:
             #優化限制式
 
-    def check_space_legal(self, item, pointer):
+    def check_space_legal(self, item):
         L = item.positions() #找到8個點
+        if not self.occupied:
+            return True
         for i in self.occupied:
             x_lim, y_lim, z_lim = i
             for xyz in L:
@@ -257,7 +259,8 @@ class Bin:
             if (
                 self.width < pivot[0] + dimension[0] or
                 self.height < pivot[1] + dimension[1] or
-                self.depth < pivot[2] + dimension[2]
+                self.depth < pivot[2] + dimension[2] or
+                not check_space_legal(item)
             ):
                 continue#超出棧版大小
 
