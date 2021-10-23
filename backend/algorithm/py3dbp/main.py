@@ -104,6 +104,7 @@ class Item:
 
         return dimension
 
+<<<<<<< HEAD
     def position(self, position):
         b = list((position[0]+self.depth), position[1], position[2])
         c = list((position[0]+self.depth), position[1]+self.width, position[2])
@@ -113,6 +114,23 @@ class Item:
         g = list(position[0]+self.depth, position[1], position[2]+self.height)
         h = list(position[0]+self.depth, position[1]+self.width, position[2]+self.height)
         corners = list(position, b, c, d, e, f, g, h)
+=======
+    def rotate(self, rotation_type):
+        if(rotation_type==1):
+            self.depth, self.height = self.height, self.depth
+        elif(rotation_type==2):
+            self.depth, self.width = self.width, self.depth
+            self.width, self.height = self.height, self.width
+
+    def position(self):
+        b = list(self.position[0]+self.depth, self.position[1], self.position[2])
+        c = list(self.position[0]+self.depth, self.position[1]+self.width, self.position[2])
+        d = list(self.position[0], self.position[1]+self.width, self.position[2])
+        e = list(self.position[0], self.position[1]+self.width, self.position[2]+self.height)
+        f = list(self.position[0], self.position[1], self.position[2]+self.height)
+        g = list(self.position[0]+self.depth, self.position[1], self.position[2]+self.height)
+        h = list(self.position[0]+self.depth, self.position[1]+self.width, self.position[2]+self.height)
+        corners = list(self.position, b, c, d, e, f, g, h)
         return corners
 
     def limitation(self, rotation):
