@@ -18,7 +18,6 @@ export default {
       CustomNavbar,
   }
 }
-
 </script>
 <style scoped>
 .slide-enter-active,
@@ -31,6 +30,3 @@ transition:opacity 0.7s, transform 0.7s;
   transform: translateX(-40%);
 }
 </style>
-
-
-

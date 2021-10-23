@@ -1,22 +1,24 @@
 <template>
   <a-carousel :after-change="onChange">
     <div>
-        <div class="box">
-  <h5 class="card-header">First step</h5>
-  <div class="card-body">
-    <h5 class="card-title">Go to formsend page and create the container infomation</h5>
-    <a href="#" class="btn btn-primary">Go somewhere</a>
-  </div>
-</div>
+      <div class="box">
+        <h5 class="card-header">First step</h5>
+        <div class="card-body">
+          <h5 class="card-title">Go to formsend page and create the container infomation</h5>
+          <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+      </div>
     </div>
-    <div></div>
-    <div><h3>
-      3
+    <div>
+      <h5>
       Check the information and edit the setting.
-      </h3></div>
-    <div><h3>
+      </h5>
+    </div>
+    <div>
+      <h3>
         Send the request and rendering.
-      </h3></div>
+      </h3>
+    </div>
   </a-carousel>
 </template>
 <script>
