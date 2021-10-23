@@ -2,7 +2,8 @@ from flask.typing import TeardownCallable
 from werkzeug.wrappers import response
 from .constants import RotationType, Axis
 from .auxiliary_methods import intersect, set_to_decimal
-
+from shapely.geometry import Polygon
+import numpy as np
 
 
 DEFAULT_NUMBER_OF_DECIMALS = 3
@@ -115,6 +116,10 @@ class Item:
         h = list(self.position[0]+self.depth, self.position[1]+self.width, self.position[2]+self.height)
         corners = list(position, b, c, d, e, f, g, h)
 
+    def four_xypositions(self):
+        x, y, z = self.get_dimension()
+        return [self.position[0], self.position[1]+z, self.position[0], self.position[1], self.position[0]+x, self.position[1], self.position[0]+x, self.position[1]+z]
+
     def rotate(self, rotation_type):
         if(rotation_type==1):
             self.depth, self.height = self.height, self.depth
@@ -204,6 +209,13 @@ class Bin:
                     return False
         return True
 
+    def check_float(self, item, poly1):
+        a = np.array(item.four_xypositions()).reshape(4, 2)
+        poly2 = Polygon(a).convex_hull
+        if poly1.intersection(poly2).area < poly2.area :
+            return True
+        else:
+            return False
 
 
     def format_numbers(self, number_of_decimals):
@@ -266,7 +278,7 @@ class Bin:
 
         return set_to_decimal(total_weight, self.number_of_decimals)
 
-    def put_item(self, item, pivot):
+    def put_item(self, item, pivot, poly1):
         fit = False
         valid_item_position = item.position
         item.position = pivot
@@ -290,6 +302,11 @@ class Bin:
             best_rot_flag = False
             item.rotation_type = i
             dimension = item.get_dimension()
+
+            if pivot[1]:
+                if self.check_float(item, poly1):
+                    continue
+
             if (
                 self.width < pivot[0] + dimension[0] or
                 self.height < pivot[1] + dimension[1] or
@@ -344,6 +361,11 @@ class Bin:
         for i in range(0, len(RotationType.TWO_D)):
             item.rotation_type = RotationType.TWO_D[i]
             dimension = item.get_dimension()
+
+            if pivot[1]:
+                if self.check_float(item, poly1):
+                    continue            
+
             if (
                 self.width < pivot[0] + dimension[0] or
                 self.height < pivot[1] + dimension[1] or
@@ -364,7 +386,7 @@ class Bin:
                 if self.get_total_weight() + item.weight > self.max_weight:
                     fit = False
                     return fit
-
+                self.occupied.append(item.limitation(i))
                 self.items.append(item)
 
             if not fit:
@@ -400,16 +422,27 @@ class Packer:
 
         if not bin.items:
             if self.TWO_D_MODE:
-                response=bin.put_item_only_2D_rotate(item, START_POSITION)
-            response = bin.put_item(item, START_POSITION)
+                response=bin.put_item_only_2D_rotate(item, START_POSITION, Polygon())
+            response = bin.put_item(item, START_POSITION, Polygon())
 
             if not response:
                 bin.unfitted_items.append(item)
 
             return
 
+        point_list = []
+        poly_array = np.array(point_list)
+        poly1 = Polygon() #更新這層上面
+        this_poly = Polygon() #下面那層
+        
         for axis in range(0, 3):
             items_in_bin = bin.items
+
+            if axis == Axis.HEIGHT:
+                this_poly = poly1
+                point_list = []
+                poly_array = np.array(point_list)
+                poly1 = Polygon()
 
             for ib in items_in_bin:
                 pivot = [0, 0, 0]
@@ -435,12 +468,28 @@ class Packer:
 
 
                 if self.TWO_D_MODE:
-                    if bin.put_item_only_2D_rotate(item, pivot):
+                    if bin.put_item_only_2D_rotate(item, pivot, this_poly):
                         fitted = True
+                        tmp1 = np.array(item.four_xypositions()).reshape(4, 2)
+                        if point_list:
+                            union_poly1 = np.concatenate((point_list,tmp1))
+                            poly1 = MultiPoint(union_poly1).convex_hull
+                        else:
+                            point_list = item.four_xypositions()
+                            poly_array = np.array(item.four_xypositions()).reshape(4, 2)
+                            poly1 = Polygon(poly_array).convex_hull
                         break
                 else:
-                    if bin.put_item(item, pivot):
+                    if bin.put_item(item, pivot, this_poly):
                         fitted = True
+                        tmp2 = np.array(item.four_xypositions()).reshape(4, 2)
+                        if point_list:
+                            union_poly1 = np.concatenate((point_list,tmp2))
+                            poly1 = MultiPoint(union_poly1).convex_hull
+                        else:
+                            point_list = item.four_xypositions()
+                            poly_array = np.array(item.four_xypositions()).reshape(4, 2)
+                            poly1 = Polygon(poly_array).convex_hull
                         break
             if fitted:
                 break
