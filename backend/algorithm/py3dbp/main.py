@@ -369,3 +369,7 @@ class Packer:
             if distribute_items:
                 for item in bin.items:
                     self.items.remove(item)
+    
+    #kate
+    def sort_items(self):
+        self.items.sort(key = lambda s: s.get_sort_key())

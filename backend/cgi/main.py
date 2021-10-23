@@ -160,6 +160,7 @@ def Processing3DBPWithPallet(container_infos, box_infos, pallet_infos):
         #if the sameType of box only is one, do nothing and pass it to algorithm
         packer.add_item(Item(box_info['ID'], box_info['name_with_index'], box_info['X'], box_info['Y'], box_info['Z'], box_info['Weight'],box_info['TypeIndex']))
     
+    packer.sort_items()
 
     #sort the pallet_infos base on area, from large to small
     pallet_infos=sorted(pallet_infos, key=lambda pallet_info: pallet_info["X"]* pallet_info["Z"], reverse=True)
