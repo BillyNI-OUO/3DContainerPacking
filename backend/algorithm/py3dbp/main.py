@@ -165,6 +165,7 @@ class Bin:
         self.number_of_decimals = DEFAULT_NUMBER_OF_DECIMALS
         self.type_index=type_index
         #kate
+        self.my_wdh = sort([width, height, depth], reverse = True)
         self.pointer = [0,0,0]
         self.occupied = []
 
@@ -270,7 +271,23 @@ class Bin:
         valid_item_position = item.position
         item.position = pivot
 
+        #最好放置角度
+        best_rot = -1
+        if self.my_wdh == [self.width, self.depth, self.height]
+            best_rot = 0
+        elif self.my_wdh == [self.height, self.depth, self.width]
+            best_rot = 1
+        elif self.my_wdh == [self.depth, self.width, self.height]
+            best_rot = 2
+        elif self.ny_wdh == [self.height, self.width, self.depth]
+            best_rot = 3
+        elif self.ny_wdh == [self.width, self.height, self.depth]
+            best_rot = 4
+        elif self.my_wdh == [self.depth, self.height, self.width]
+            best_rot = 5
+
         for i in range(0, len(RotationType.ALL)):
+            best_rot_flag = False
             item.rotation_type = i
             dimension = item.get_dimension()
             if (
@@ -295,16 +312,27 @@ class Bin:
                     return fit
                 
                 #加入限制式
-                self.occupied.append(item.limitation(i))
-                self.items.append(item)
+                if i == best_rot
+                    self.occupied.append(item.limitation(i))
+                    self.items.append(item)
+                else:
+                    best_rot_flag = True
+
 
             if not fit:
                 item.position = valid_item_position
 
-            return fit
+            if best_rot_flag:
+                continue
+            else:
+                return fit
 
         if not fit:
             item.position = valid_item_position
+
+        if best_rot_flag:
+            self.occupied.append(item.limitation(i))
+            self.items.append(item)
 
         return fit
 
@@ -319,7 +347,9 @@ class Bin:
             if (
                 self.width < pivot[0] + dimension[0] or
                 self.height < pivot[1] + dimension[1] or
-                self.depth < pivot[2] + dimension[2]
+                self.depth < pivot[2] + dimension[2] or
+                not check_space_legal(item) or
+                not check_in_box(item)
             ):
                 continue
 
