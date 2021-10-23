@@ -97,6 +97,24 @@ class Item:
 
         return dimension
 
+    def limitation(self, rotation):
+        self.rotation_type = rotation
+        if self.rotation_type == 0:
+            x0 = self.position[0]+self.depth
+            y0 = self.position[1]+self.width
+            z0 = self.position[2]+self.heigh
+            minmax=list(self.position[0], x0, self.position[1], y0, self.position[2], z0)
+        elif self.rotation_type == 1:
+            x1 = self.position[0]+self.height
+            y1 = self.position[1]+self.width
+            z1 = self.position[2]+self.depth
+            minmax=list(self.position[0], x1, self.position[1], y1, self.position[2], z1)
+        elif self.rotation_type == 2:
+            x2 = self.position[0]+self.width
+            y2 = self.position[1]+self.height
+            z2 = self.position[2]+self.depth
+            minmax=list(self.position[0], x2, self.position[1], y2, self.position[2], z2)
+        return minmax
 
 class Bin:
     def __init__(self, ID, name, width, height, depth, max_weight, type_index):
