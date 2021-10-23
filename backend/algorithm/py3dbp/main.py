@@ -104,13 +104,6 @@ class Item:
 
         return dimension
 
-    def rotate(self, rotation_type):
-        if(rotation_type==1):
-            self.depth, self.height = self.height, self.depth
-        elif(rotation_type==2):
-            self.depth, self.width = self.width, self.depth
-            self.width, self.height = self.height, self.width
-
     def position(self, position):
         b = list((position[0]+self.depth), position[1], position[2])
         c = list((position[0]+self.depth), position[1]+self.width, position[2])
@@ -124,11 +117,21 @@ class Item:
 
     def limitation(self, rotation):
         self.rotation_type = rotation
-        if self.rotation_type == 1:
-            self.rotate(1)
+        if self.rotation_type == 0:
+            x0 = self.position[0]+self.depth
+            y0 = self.position[1]+self.width
+            z0 = self.position[2]+self.heigh
+            minmax=list(self.position[0], x0, self.position[1], y0, self.position[2], z0)
+        elif self.rotation_type == 1:
+            x1 = self.position[0]+self.height
+            y1 = self.position[1]+self.width
+            z1 = self.position[2]+self.depth
+            minmax=list(self.position[0], x1, self.position[1], y1, self.position[2], z1)
         elif self.rotation_type == 2:
-            self.rotate(2)    
-        minmax=list(self.position[0], self.position[0]+self.depth, self.position[1], self.position[1+self.width], self.position[2], self.position[2]+self.height)
+            x2 = self.position[0]+self.width
+            y2 = self.position[1]+self.height
+            z2 = self.position[2]+self.depth
+            minmax=list(self.position[0], x2, self.position[1], y2, self.position[2], z2)
         return minmax
 
 class Bin:
