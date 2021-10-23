@@ -22,6 +22,13 @@ class Item:
         self.number_of_decimals = DEFAULT_NUMBER_OF_DECIMALS
         self.type_index=type_index
         self.Fitted_items=Fitted_items
+        #kate
+        self.my_wdh = sort([width, height, depth], reverse = True)
+        self.sort_key =  [my_wdh[0]*my_wdh[1]*my_wdh[2], my_wdh[0]*my_wdh[1], weight, ID]
+    
+    def get_sort_key(self):
+        ret = list(self.sort_key)
+        return ret
 
     def format_numbers(self, number_of_decimals):
         self.width = set_to_decimal(self.width, number_of_decimals)
