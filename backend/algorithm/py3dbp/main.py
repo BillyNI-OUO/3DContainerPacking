@@ -140,19 +140,18 @@ class Bin:
         self.occupied = []
 
     def optimize_limitation():
-        if len(self.occupied)<=1:
+        if len(self.occupied) <= 1 :
             return
         else:
             #優化限制式
 
-    def check_legal(self, item, pointer, rotation_type):
+    def check_space_legal(self, item, pointer, rotation_type):
         L = item.genxyz(rotation_type) #找到8個點
         for i in self.occupied:
-            x_lim = i[0]
-            y_lim = i[1]
-            z_lim = i[2]
+            x_lim, y_lim, z_lim = i
             for xyz in L:
-                if xyz[0] > x_lim[0] and xyz[0] < x_lim[1] and xyz[1] > y_lim[0] and xyz[1] < y_lim[1] and xyz[2] > z_lim[0] and xyz[2] < z_lim[1]
+                x, y, z = xyz
+                if x > x_lim[0] and x < x_lim[1] and y > y_lim[0] and y < y_lim[1] and z > z_lim[0] and z < z_lim[1]
                     return False
         return True
 
