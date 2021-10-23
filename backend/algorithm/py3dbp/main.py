@@ -135,6 +135,17 @@ class Bin:
         self.unfitted_items = []
         self.number_of_decimals = DEFAULT_NUMBER_OF_DECIMALS
         self.type_index=type_index
+        #kate
+        self.pointer = [0,0,0]
+        self.occupied = []
+
+    def check_legal(self, item, pointer):
+        for r in item.rotation_type:
+            for i in self.occupied:
+                for x_lim, y_lim, z_lim in i:
+                    if 
+
+
 
     def format_numbers(self, number_of_decimals):
         self.width = set_to_decimal(self.width, number_of_decimals)
@@ -209,7 +220,7 @@ class Bin:
                 self.height < pivot[1] + dimension[1] or
                 self.depth < pivot[2] + dimension[2]
             ):
-                continue
+                continue#超出棧版大小
 
             fit = True
 
@@ -222,7 +233,9 @@ class Bin:
                 if self.get_total_weight() + item.weight > self.max_weight:
                     fit = False
                     return fit
-
+                
+                #加入限制式
+                self.occupied.append(item.limitation(i))
                 self.items.append(item)
 
             if not fit:
@@ -358,10 +371,11 @@ class Packer:
         self.bins.sort(
             key=lambda bin: bin.get_volume(), reverse=bigger_first
         )
+        """
         self.items.sort(
             key=lambda item: item.get_volume(), reverse=bigger_first
         )
-
+        """
         for bin in self.bins:
             for item in self.items:
                 self.pack_to_bin(bin, item)
