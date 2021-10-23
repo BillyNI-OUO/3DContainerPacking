@@ -273,17 +273,17 @@ class Bin:
 
         #最好放置角度
         best_rot = -1
-        if self.my_wdh == [self.width, self.depth, self.height]
+        if item.my_wdh == [item.width, item.depth, item.height]
             best_rot = 0
-        elif self.my_wdh == [self.height, self.depth, self.width]
+        elif item.my_wdh == [item.height, item.depth, item.width]
             best_rot = 1
-        elif self.my_wdh == [self.depth, self.width, self.height]
+        elif item.my_wdh == [item.depth, item.width, item.height]
             best_rot = 2
-        elif self.ny_wdh == [self.height, self.width, self.depth]
+        elif item.ny_wdh == [item.height, item.width, item.depth]
             best_rot = 3
-        elif self.ny_wdh == [self.width, self.height, self.depth]
+        elif item.ny_wdh == [item.width, item.height, item.depth]
             best_rot = 4
-        elif self.my_wdh == [self.depth, self.height, self.width]
+        elif item.my_wdh == [item.depth, item.height, item.width]
             best_rot = 5
 
         for i in range(0, len(RotationType.ALL)):
