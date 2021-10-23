@@ -104,6 +104,17 @@ class Item:
 
         return dimension
 
+    def position(self, position):
+        b = list((position[0]+self.depth), position[1], position[2])
+        c = list((position[0]+self.depth), position[1]+self.width, position[2])
+        d = list(position[0], position[1]+self.width, position[2])
+        e = list(position[0], position[1]+self.width, position[2]+self.height)
+        f = list(position[0], position[1], position[2]+self.height)
+        g = list(position[0]+self.depth, position[1], position[2]+self.height)
+        h = list(position[0]+self.depth, position[1]+self.width, position[2]+self.height)
+        corners = list(position, b, c, d, e, f, g, h)
+        return corners
+
     def limitation(self, rotation):
         self.rotation_type = rotation
         if self.rotation_type == 0:
