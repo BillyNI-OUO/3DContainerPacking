@@ -23,9 +23,10 @@ class Item:
         self.number_of_decimals = DEFAULT_NUMBER_OF_DECIMALS
         self.type_index=type_index
         self.Fitted_items=Fitted_items
+        self.format_numbers(self.number_of_decimals)
         #kate
-        self.my_wdh = sort([width, height, depth], reverse = True)
-        self.sort_key =  [my_wdh[0]*my_wdh[1]*my_wdh[2], my_wdh[0]*my_wdh[1], weight, ID]
+        self.my_wdh = sorted([self.width, self.height, self.depth], reverse = True)
+        self.sort_key =  [self.my_wdh[0]*self.my_wdh[1]*self.my_wdh[2], self.my_wdh[0]*self.my_wdh[1], self.weight, self.ID]
     
     def get_sort_key(self):
         ret = list(self.sort_key)
@@ -107,15 +108,15 @@ class Item:
 
 
     def positions(self):
-        b = list((self.position[0]+self.depth), self.position[1], self.position[2])
-        c = list((self.position[0]+self.depth), self.position[1]+self.width, self.position[2])
-        d = list(self.position[0], self.position[1]+self.width, self.position[2])
-        e = list(self.position[0], self.position[1]+self.width, self.position[2]+self.height)
-        f = list(self.position[0], self.position[1], self.position[2]+self.height)
-        g = list(self.position[0]+self.depth, self.position[1], self.position[2]+self.height)
-        h = list(self.position[0]+self.depth, self.position[1]+self.width, self.position[2]+self.height)
-        corners = list(position, b, c, d, e, f, g, h)
-
+        b = list([(self.position[0]+self.depth), self.position[1], self.position[2]])
+        c = list([(self.position[0]+self.depth), self.position[1]+self.width, self.position[2]])
+        d = list([self.position[0], self.position[1]+self.width, self.position[2]])
+        e = list([self.position[0], self.position[1]+self.width, self.position[2]+self.height])
+        f = list([self.position[0], self.position[1], self.position[2]+self.height])
+        g = list([self.position[0]+self.depth, self.position[1], self.position[2]+self.height])
+        h = list([self.position[0]+self.depth, self.position[1]+self.width, self.position[2]+self.height])
+        corners = list([self.position, b, c, d, e, f, g, h])
+        return corners
     def four_xypositions(self):
         x, y, z = self.get_dimension()
         return [self.position[0], self.position[1]+z, self.position[0], self.position[1], self.position[0]+x, self.position[1], self.position[0]+x, self.position[1]+z]
@@ -128,14 +129,14 @@ class Item:
             self.width, self.height = self.height, self.width
 
     def position(self):
-        b = list(self.position[0]+self.depth, self.position[1], self.position[2])
-        c = list(self.position[0]+self.depth, self.position[1]+self.width, self.position[2])
-        d = list(self.position[0], self.position[1]+self.width, self.position[2])
-        e = list(self.position[0], self.position[1]+self.width, self.position[2]+self.height)
-        f = list(self.position[0], self.position[1], self.position[2]+self.height)
-        g = list(self.position[0]+self.depth, self.position[1], self.position[2]+self.height)
-        h = list(self.position[0]+self.depth, self.position[1]+self.width, self.position[2]+self.height)
-        corners = list(self.position, b, c, d, e, f, g, h)
+        b = list([self.position[0]+self.depth, self.position[1], self.position[2]])
+        c = list([self.position[0]+self.depth, self.position[1]+self.width, self.position[2]])
+        d = list([self.position[0], self.position[1]+self.width, self.position[2]])
+        e = list([self.position[0], self.position[1]+self.width, self.position[2]+self.height])
+        f = list([self.position[0], self.position[1], self.position[2]+self.height])
+        g = list([self.position[0]+self.depth, self.position[1], self.position[2]+self.height])
+        h = list([self.position[0]+self.depth, self.position[1]+self.width, self.position[2]+self.height])
+        corners = list([self.position, b, c, d, e, f, g, h])
         return corners
 
     def limitation(self, rotation):
@@ -143,18 +144,18 @@ class Item:
         if self.rotation_type == 0:
             x0 = self.position[0]+self.depth
             y0 = self.position[1]+self.width
-            z0 = self.position[2]+self.heigh
-            minmax=list(self.position[0], x0, self.position[1], y0, self.position[2], z0)
+            z0 = self.position[2]+self.height
+            minmax=list([self.position[0], x0, self.position[1], y0, self.position[2], z0])
         elif self.rotation_type == 1:
             x1 = self.position[0]+self.height
             y1 = self.position[1]+self.width
             z1 = self.position[2]+self.depth
-            minmax=list(self.position[0], x1, self.position[1], y1, self.position[2], z1)
+            minmax=list([self.position[0], x1, self.position[1], y1, self.position[2], z1])
         elif self.rotation_type == 2:
             x2 = self.position[0]+self.width
             y2 = self.position[1]+self.height
             z2 = self.position[2]+self.depth
-            minmax=list(self.position[0], x2, self.position[1], y2, self.position[2], z2)
+            minmax=list([self.position[0], x2, self.position[1], y2, self.position[2], z2])
         return minmax
 
 class Bin:
@@ -170,42 +171,45 @@ class Bin:
         self.number_of_decimals = DEFAULT_NUMBER_OF_DECIMALS
         self.type_index=type_index
         #kate
-        self.my_wdh = sort([width, height, depth], reverse = True)
+        self.my_wdh = sorted([width, height, depth], reverse = True)
         self.pointer = [0,0,0]
         self.occupied = []
 
-    def optimize_limitation():
+    def optimize_limitation(self):
         if len(self.occupied) <= 1 :
             return
-        else:
+        #else:
             #優化限制式
 
     def check_in_box(self, item):
         L = item.positions()
+        print(L)
         max_x, max_y, max_z = [0, 0, 0]
+
         for xyz in L:
             x, y, z = xyz
-            if x > max_x:
+            if x > max_x :
                 max_x = x
-            if y > max_y:
+            if y > max_y :
                 max_y = y
-            if z > max_z:
+            if z > max_z :
                 max_z = z
-        if max_x > self.width or max_y > self.height or max_z > self.depth
+        if max_x > self.width or max_y > self.height or max_z > self.depth :
             return False
         else:
             return True
-            
+         
 
     def check_space_legal(self, item):
         L = item.positions() #找到8個點
         if not self.occupied:
             return True
+        print(self.occupied)
         for i in self.occupied:
             x_lim, y_lim, z_lim = i
             for xyz in L:
                 x, y, z = xyz
-                if x > x_lim[0] and x < x_lim[1] and y > y_lim[0] and y < y_lim[1] and z > z_lim[0] and z < z_lim[1]
+                if x > x_lim[0] and x < x_lim[1] and y > y_lim[0] and y < y_lim[1] and z > z_lim[0] and z < z_lim[1]:
                     return False
         return True
 
@@ -285,17 +289,17 @@ class Bin:
 
         #最好放置角度
         best_rot = -1
-        if item.my_wdh == [item.width, item.depth, item.height]
+        if item.my_wdh == [item.width, item.depth, item.height] :
             best_rot = 0
-        elif item.my_wdh == [item.height, item.depth, item.width]
+        elif item.my_wdh == [item.height, item.depth, item.width] :
             best_rot = 1
-        elif item.my_wdh == [item.depth, item.width, item.height]
+        elif item.my_wdh == [item.depth, item.width, item.height] :
             best_rot = 2
-        elif item.ny_wdh == [item.height, item.width, item.depth]
+        elif item.ny_wdh == [item.height, item.width, item.depth] :
             best_rot = 3
-        elif item.ny_wdh == [item.width, item.height, item.depth]
+        elif item.ny_wdh == [item.width, item.height, item.depth] :
             best_rot = 4
-        elif item.my_wdh == [item.depth, item.height, item.width]
+        elif item.my_wdh == [item.depth, item.height, item.width] :
             best_rot = 5
 
         for i in range(0, len(RotationType.ALL)):
@@ -311,8 +315,8 @@ class Bin:
                 self.width < pivot[0] + dimension[0] or
                 self.height < pivot[1] + dimension[1] or
                 self.depth < pivot[2] + dimension[2] or
-                not check_space_legal(item) or
-                not check_in_box(item)
+                not self.check_space_legal(item) or
+                not self.check_in_box(item)
             ):
                 continue#超出棧版大小
 
@@ -329,7 +333,7 @@ class Bin:
                     return fit
                 
                 #加入限制式
-                if i == best_rot
+                if i == best_rot :
                     self.occupied.append(item.limitation(i))
                     self.items.append(item)
                 else:
