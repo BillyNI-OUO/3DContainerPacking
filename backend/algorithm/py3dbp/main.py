@@ -108,13 +108,13 @@ class Item:
 
 
     def positions(self):
-        b = list([(self.position[0]+self.depth), self.position[1], self.position[2]])
-        c = list([(self.position[0]+self.depth), self.position[1]+self.width, self.position[2]])
-        d = list([self.position[0], self.position[1]+self.width, self.position[2]])
-        e = list([self.position[0], self.position[1]+self.width, self.position[2]+self.height])
-        f = list([self.position[0], self.position[1], self.position[2]+self.height])
-        g = list([self.position[0]+self.depth, self.position[1], self.position[2]+self.height])
-        h = list([self.position[0]+self.depth, self.position[1]+self.width, self.position[2]+self.height])
+        b = [self.position[0]+self.depth, self.position[1], self.position[2]]
+        c = [self.position[0]+self.depth, self.position[1]+self.width, self.position[2]]
+        d = [self.position[0], self.position[1]+self.width, self.position[2]]
+        e = [self.position[0], self.position[1]+self.width, self.position[2]+self.height]
+        f = [self.position[0], self.position[1], self.position[2]+self.height]
+        g = [self.position[0]+self.depth, self.position[1], self.position[2]+self.height]
+        h = [self.position[0]+self.depth, self.position[1]+self.width, self.position[2]+self.height)
         return [self.position, b, c, d, e, f, g, h]
 
     def four_xypositions(self):
