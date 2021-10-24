@@ -115,8 +115,8 @@ class Item:
         f = list([self.position[0], self.position[1], self.position[2]+self.height])
         g = list([self.position[0]+self.depth, self.position[1], self.position[2]+self.height])
         h = list([self.position[0]+self.depth, self.position[1]+self.width, self.position[2]+self.height])
-        corners = list([self.position, b, c, d, e, f, g, h])
-        return corners
+        return [self.position, b, c, d, e, f, g, h]
+
     def four_xypositions(self):
         x, y, z = self.get_dimension()
         return [self.position[0], self.position[1]+z, self.position[0], self.position[1], self.position[0]+x, self.position[1], self.position[0]+x, self.position[1]+z]
@@ -128,34 +128,23 @@ class Item:
             self.depth, self.width = self.width, self.depth
             self.width, self.height = self.height, self.width
 
-    def position(self):
-        b = list([self.position[0]+self.depth, self.position[1], self.position[2]])
-        c = list([self.position[0]+self.depth, self.position[1]+self.width, self.position[2]])
-        d = list([self.position[0], self.position[1]+self.width, self.position[2]])
-        e = list([self.position[0], self.position[1]+self.width, self.position[2]+self.height])
-        f = list([self.position[0], self.position[1], self.position[2]+self.height])
-        g = list([self.position[0]+self.depth, self.position[1], self.position[2]+self.height])
-        h = list([self.position[0]+self.depth, self.position[1]+self.width, self.position[2]+self.height])
-        corners = list([self.position, b, c, d, e, f, g, h])
-        return corners
-
     def limitation(self, rotation):
         self.rotation_type = rotation
         if self.rotation_type == 0:
             x0 = self.position[0]+self.depth
             y0 = self.position[1]+self.width
             z0 = self.position[2]+self.height
-            minmax=list([self.position[0], x0, self.position[1], y0, self.position[2], z0])
+            minmax=[[self.position[0], x0], [self.position[1], y0], [self.position[2], z0]]
         elif self.rotation_type == 1:
             x1 = self.position[0]+self.height
             y1 = self.position[1]+self.width
             z1 = self.position[2]+self.depth
-            minmax=list([self.position[0], x1, self.position[1], y1, self.position[2], z1])
+            minmax=[[self.position[0], x1], [self.position[1], y1], [self.position[2], z1]]
         elif self.rotation_type == 2:
             x2 = self.position[0]+self.width
             y2 = self.position[1]+self.height
             z2 = self.position[2]+self.depth
-            minmax=list([self.position[0], x2, self.position[1], y2, self.position[2], z2])
+            minmax=[[self.position[0], x2], [self.position[1], y2], [self.position[2], z2]]
         return minmax
 
 class Bin:
