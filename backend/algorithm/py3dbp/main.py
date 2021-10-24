@@ -114,7 +114,7 @@ class Item:
         e = [self.position[0], self.position[1]+self.width, self.position[2]+self.height]
         f = [self.position[0], self.position[1], self.position[2]+self.height]
         g = [self.position[0]+self.depth, self.position[1], self.position[2]+self.height]
-        h = [self.position[0]+self.depth, self.position[1]+self.width, self.position[2]+self.height)
+        h = [self.position[0]+self.depth, self.position[1]+self.width, self.position[2]+self.height]
         return [self.position, b, c, d, e, f, g, h]
 
     def four_xypositions(self):
@@ -172,7 +172,6 @@ class Bin:
 
     def check_in_box(self, item):
         L = item.positions()
-        print(L)
         max_x, max_y, max_z = [0, 0, 0]
 
         for xyz in L:
@@ -284,9 +283,9 @@ class Bin:
             best_rot = 1
         elif item.my_wdh == [item.depth, item.width, item.height] :
             best_rot = 2
-        elif item.ny_wdh == [item.height, item.width, item.depth] :
+        elif item.my_wdh == [item.height, item.width, item.depth] :
             best_rot = 3
-        elif item.ny_wdh == [item.width, item.height, item.depth] :
+        elif item.my_wdh == [item.width, item.height, item.depth] :
             best_rot = 4
         elif item.my_wdh == [item.depth, item.height, item.width] :
             best_rot = 5
@@ -363,8 +362,8 @@ class Bin:
                 self.width < pivot[0] + dimension[0] or
                 self.height < pivot[1] + dimension[1] or
                 self.depth < pivot[2] + dimension[2] or
-                not check_space_legal(item) or
-                not check_in_box(item)
+                not self.check_space_legal(item) or
+                not self.check_in_box(item)
             ):
                 continue
 
@@ -415,7 +414,7 @@ class Packer:
 
         if not bin.items:
             if self.TWO_D_MODE:
-                response=bin.put_item_only_2D_rotate(item, START_POSITION, Polygon())
+                response=bin.put_item_only_2D_rotate(item, START_POSITION)
             response = bin.put_item(item, START_POSITION, Polygon())
 
             if not response:
@@ -461,7 +460,7 @@ class Packer:
 
 
                 if self.TWO_D_MODE:
-                    if bin.put_item_only_2D_rotate(item, pivot, this_poly):
+                    if bin.put_item_only_2D_rotate(item, pivot):
                         fitted = True
                         tmp1 = np.array(item.four_xypositions()).reshape(4, 2)
                         if point_list:
